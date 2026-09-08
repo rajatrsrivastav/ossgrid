@@ -1,6 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Enable static HTML export
+  output: 'export',
+  
+  // Disable Image Optimization API since we are doing a static export
+  images: {
+    unoptimized: true,
+  },
+
+  // Note: headers() are NOT supported when using `output: 'export'`.
+  // If you are hosting on Cloudflare or S3, you must configure these security headers
+  // in your Cloudflare dashboard (Cloudflare Rules) or S3/CloudFront metadata instead.
+  /*
   async headers() {
     return [
       {
@@ -34,6 +46,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  */
 };
 
 export default nextConfig;

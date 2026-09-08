@@ -1,0 +1,67 @@
+name: Build and Deploy to S3
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 6 AM UTC
+  workflow_dispatch:     # Allow manual triggers
+  push:
+    branches:
+      - main             # Deploy when pushing to main
+
+# Prevent overlapping runs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  id-token: write      # Required for requesting the JWT (AWS OIDC)
+  contents: write      # Required for committing the updated JSON data back
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # Use personal access token if you have branch protection rules
+          # Otherwise default GITHUB_TOKEN is fine for committing to main
+          token: ${{ github.token }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Data Pipeline (Scraping)
+        run: npm run sync-data
+
+      - name: Commit Updated Data (If Changed)
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/data/
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: auto-update scraped mentorship data [skip ci]"
+            git push
+          else
+            echo "No data changes to commit."
+          fi
+
+      - name: Build Static Export
+        run: npm run build
+
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          # Do not pass aws-access-key-id or aws-secret-access-key!
+
+      - name: Deploy to S3 Bucket
+        run: |
+          aws s3 sync ./out s3://${{ secrets.AWS_S3_BUCKET }} --delete
