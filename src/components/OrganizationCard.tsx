@@ -5,9 +5,10 @@ import { truncate } from "@/lib/utils";
 
 interface OrganizationCardProps {
   org: Organization;
+  basePath?: string;
 }
 
-export default function OrganizationCard({ org }: OrganizationCardProps) {
+export default function OrganizationCard({ org, basePath = "/organization" }: OrganizationCardProps) {
   const maxTechBadges = 4;
   const visibleTech = org.technologies.slice(0, maxTechBadges);
   const extraTechCount = org.technologies.length - maxTechBadges;
@@ -16,7 +17,7 @@ export default function OrganizationCard({ org }: OrganizationCardProps) {
 
   return (
     <Link
-      href={`/organization/${org.id}`}
+      href={`${basePath}/${org.id}`}
       className="glass-card flex flex-col h-full group"
       style={{ textDecoration: "none" }}
     >

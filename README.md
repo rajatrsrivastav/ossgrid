@@ -1,10 +1,10 @@
-# 🌐 LFX Organizations
+# 🌐 OSSGrid
 
-> **Discover, explore, and filter Linux Foundation Mentorship (LFX) organizations, projects, technologies, and mentors.**
+> **A frictionless, high-performance web dashboard for exploring organizations, projects, and tech stacks across major open-source mentorship programs.**
 
-Inspired by [gsocorganizations.dev](https://gsocorganizations.dev), this is a fast, public, no-login-required dashboard for exploring the LFX Mentorship ecosystem.
+This is a fast, public, no-login-required dashboard for exploring the open-source mentorship ecosystem (including LFX, GSoC, Outreachy, and more).
 
-[![Sync LFX Data](https://github.com/rajatrsrivastav/ossgrid/actions/workflows/sync-data.yml/badge.svg)](https://github.com/rajatrsrivastav/ossgrid/actions/workflows/sync-data.yml)
+[![Sync LFX Data](https://github.com/rajatrsrivastav/ossgrid/actions/workflows/sync-data.yml/badge.svg)](https://github.com/rajatrsrivastav/ossgrid/actions/workflows/sync-data.yml
 
 ## ✨ Features
 
