@@ -364,7 +364,7 @@ export default function HomePage() {
         {/* ══════════════════════════════════════════════════════════════════════
             COMPARISON MATRIX TABLE
         ══════════════════════════════════════════════════════════════════════ */}
-        <section className="w-full rounded-3xl p-6 sm:p-10 border border-[var(--border-card)] bg-[var(--bg-secondary)] shadow-xl overflow-hidden">
+        {/* <section className="w-full rounded-3xl p-6 sm:p-10 border border-[var(--border-card)] bg-[var(--bg-secondary)] shadow-xl overflow-hidden">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#315e9b] dark:text-[#5282c1] font-mono mb-2">
             <ShieldCheck size={14} className="text-[#315e9b] dark:text-[#5282c1]" /> Side-by-Side Comparison
           </div>
@@ -424,7 +424,7 @@ export default function HomePage() {
               </tbody>
             </table>
           </div>
-        </section>
+        </section> */}
 
         {/* ══════════════════════════════════════════════════════════════════════
             CONTRIBUTOR PLAYBOOK ROADMAP
