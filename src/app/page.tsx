@@ -59,10 +59,10 @@ const PROGRAMS: ProgramCard[] = [
     shortName: "LFX Mentorship",
     sponsor: "The Linux Foundation & CNCF",
     status: "active",
-    statusLabel: "ACTIVE • 2026 T3 LIVE",
-    statusColor: "#10b981",
+    statusLabel: "UPCOMING • 2027 T1",
+    statusColor: "#3b82f6",
     stipend: "$3,000 – $6,600 USD",
-    cohorts: "3 per year (Spring, Summer, Fall)",
+    cohorts: "3 per year (Next: 2027 Term 1)",
     commitment: "Full-time (12 wks) or Part-time (24 wks)",
     studentOnly: false,
     description:
@@ -212,11 +212,11 @@ export default function HomePage() {
               <div className="flex flex-wrap items-center gap-2.5 mb-5">
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/25">
                   <Globe2 size={13} className="text-blue-400" />
-                  OSSGrid • The Universal Open Source Guidebook
+                  OSSGrid • Open Source Guidebook
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  LFX Mentorship Hub Live
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-500/10 text-blue-400 border border-blue-500/25">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                  Upcoming: 2027 Term 1
                 </span>
               </div>
 
@@ -227,7 +227,7 @@ export default function HomePage() {
 
               {/* Subtitle */}
               <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed mb-8 max-w-2xl">
-                The unified intelligence hub and playbook for developers. Discover paid open-source fellowships, compare stipend models ($1.5k–$7k), master real Git contribution workflows, and launch your journey across the global open source ecosystem.
+                A developer guide to open-source mentorships and fellowships. Compare stipends, eligibility, and timelines across programs like LFX, GSoC, and Outreachy, with practical guidance on getting selected.
               </p>
 
               {/* Action Buttons */}
@@ -241,7 +241,7 @@ export default function HomePage() {
                   }}
                 >
                   <Compass size={18} />
-                  Explore LFX Mentorship (Live)
+                  View LFX Mentorship
                   <ArrowRight size={17} />
                 </Link>
 
@@ -265,20 +265,20 @@ export default function HomePage() {
               {/* Key Ecosystem Stats Strip */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-6 border-t border-[var(--border-card)]">
                 <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Programs Tracked</div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-[var(--text-primary)] mt-0.5">6 Premier</div>
+                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Programs</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-[var(--text-primary)] mt-0.5">6 Programs</div>
                 </div>
                 <div>
                   <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">LFX Organizations</div>
                   <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-blue-400 mt-0.5">96+ Active</div>
                 </div>
                 <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Funded Stipends</div>
+                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Stipends</div>
                   <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-emerald-400 mt-0.5">$1.5k – $7k</div>
                 </div>
                 <div>
                   <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Eligibility</div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-purple-400 mt-0.5">Open Globally</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-purple-400 mt-0.5">Worldwide</div>
                 </div>
               </div>
             </div>
@@ -290,7 +290,7 @@ export default function HomePage() {
               </div>
               <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-medium text-[var(--text-muted)] bg-[var(--bg-card)]/80 backdrop-blur-md border border-[var(--border-card)] shadow-sm -mt-2 z-20">
                 <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-                <span>Global Contributor Network</span>
+                <span>Worldwide Contributors</span>
               </div>
             </div>
           </div>
@@ -310,7 +310,7 @@ export default function HomePage() {
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-[var(--text-secondary)] max-w-md">
-              Compare requirements, stipend brackets, and application calendars. LFX Mentorship is currently live with full organization profiling.
+              Compare requirements, stipend brackets, and application calendars. 2026 Term 3 is concluded; next cycle is 2027 Term 1.
             </p>
           </div>
 

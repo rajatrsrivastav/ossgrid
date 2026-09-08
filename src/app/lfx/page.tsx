@@ -286,8 +286,8 @@ export default function LFXPortalPage() {
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                     The Linux Foundation & CNCF Mentorship Program
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    2026 Term 3 Open
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    Next: 2027 Term 1 Upcoming
                   </span>
                 </div>
 
@@ -397,86 +397,87 @@ export default function LFXPortalPage() {
               </h2>
             </div>
             <span className="text-xs font-mono text-[var(--text-muted)]">
-              Updated for 2026 Season
+              Updated for 2026–2027 Cycles
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {/* Term 1 */}
+            {/* 2026 Term 2 */}
             <div className="p-6 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-secondary)] flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[var(--bg-raised)] text-[var(--text-muted)]">
-                    Term 1
-                  </span>
-                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-500/10 text-slate-400 border border-slate-500/20">
-                    CLOSED
-                  </span>
-                </div>
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Spring Cohort</h3>
-                <p className="text-xs font-mono text-[var(--text-muted)] mb-3">March 1 – May 31</p>
-                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  Full-time (12 weeks) and part-time (24 weeks) term focused on early-year roadmap deliverables.
-                </p>
-              </div>
-              <div className="mt-4 pt-4 border-t border-[var(--border-card)] text-xs text-[var(--text-muted)]">
-                Completed
-              </div>
-            </div>
-
-            {/* Term 2 */}
-            <div className="p-6 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-secondary)] flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[var(--bg-raised)] text-[var(--text-muted)]">
-                    Term 2
+                    2026 Term 2
                   </span>
                   <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-500/10 text-slate-400 border border-slate-500/20">
                     CLOSED
                   </span>
                 </div>
                 <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Summer Cohort</h3>
-                <p className="text-xs font-mono text-[var(--text-muted)] mb-3">June 1 – August 31</p>
+                <p className="text-xs font-mono text-[var(--text-muted)] mb-3">June 1 – August 31, 2026</p>
                 <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  High-volume term running in parallel with Summer open source programs. Mentees present at KubeCon.
+                  Mid-year cycle running in parallel with Summer open source programs. Mentees present at KubeCon.
                 </p>
               </div>
               <div className="mt-4 pt-4 border-t border-[var(--border-card)] text-xs text-[var(--text-muted)]">
-                In Evaluation / Concluded
+                Concluded
               </div>
             </div>
 
-            {/* Term 3 - ACTIVE */}
+            {/* 2026 Term 3 - OVER */}
+            <div className="p-6 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-secondary)] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[var(--bg-raised)] text-[var(--text-muted)]">
+                    2026 Term 3
+                  </span>
+                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-500/10 text-slate-400 border border-slate-500/20">
+                    OVER / CLOSED
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Fall Cohort</h3>
+                <p className="text-xs font-mono text-[var(--text-muted)] mb-3">September 1 – November 30, 2026</p>
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                  This year&apos;s Term 3 is over. Applications are closed and mentees are currently completing their deliverables.
+                </p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-[var(--border-card)] text-xs text-[var(--text-muted)] flex items-center justify-between">
+                <span>Cycle Concluded</span>
+                <span className="font-mono text-[10px]">Applications Closed</span>
+              </div>
+            </div>
+
+            {/* 2027 Term 1 - UPCOMING NEXT CYCLE */}
             <div
               className="p-6 rounded-2xl border-2 flex flex-col justify-between relative overflow-hidden"
               style={{
                 borderColor: "#3b82f6",
-                background: "linear-gradient(145deg, var(--bg-secondary) 0%, rgba(59,130,246,0.06) 100%)",
+                background: "linear-gradient(145deg, var(--bg-secondary) 0%, rgba(59,130,246,0.08) 100%)",
                 boxShadow: "0 0 24px rgba(59,130,246,0.15)",
               }}
             >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute top-0 right-0 w-28 h-28 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                    Term 3 (Current)
+                    2027 Term 1 (Next)
                   </span>
-                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    OPEN NOW
+                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                    UPCOMING
                   </span>
                 </div>
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Fall Cohort</h3>
-                <p className="text-xs font-mono text-emerald-400 font-semibold mb-3">September 1 – November 30</p>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Spring Cohort 2027</h3>
+                <p className="text-xs font-mono text-blue-400 font-semibold mb-3">March 1 – May 31, 2027</p>
                 <p className="text-xs text-[var(--text-secondary)] leading-relaxed mb-4">
-                  Currently active for project submissions and mentee applications! Explore organizations participating in this cycle below.
+                  The upcoming mentorship cycle. Review participating organizations and prepare contributions before project applications open on the LFX Portal.
                 </p>
               </div>
               <button
                 onClick={scrollToGrid}
-                className="btn-primary w-full justify-center text-xs py-2.5 font-bold"
+                className="btn-primary w-full justify-center text-xs py-2.5 font-bold cursor-pointer"
               >
-                Browse Term 3 Projects ↓
+                Browse Organizations for 2027 T1 ↓
               </button>
             </div>
           </div>
