@@ -3,37 +3,37 @@
 import { useEffect, useState, useRef } from "react";
 import { Eye } from "lucide-react";
 
-const COUNTER_KEY = "ossgrid_prod_visits";
-const COUNTER_API = "https://countapi.mileshilliard.com/api/v1";
-
 export default function Footer() {
   const [views, setViews] = useState<number | null>(null);
   const [hasError, setHasError] = useState(false);
   const fetchedRef = useRef(false);
 
   useEffect(() => {
+    // React Strict Mode / HMR guard — only run once per mount
     if (fetchedRef.current) return;
     fetchedRef.current = true;
 
-    const hasVisited = sessionStorage.getItem("ossgrid_visited");
-    const endpoint = hasVisited
-      ? `${COUNTER_API}/get/${COUNTER_KEY}`
-      : `${COUNTER_API}/hit/${COUNTER_KEY}`;
-
+    const SESSION_KEY = "ossgrid_visited";
+    const isNewSession = !sessionStorage.getItem(SESSION_KEY);
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
 
-    fetch(endpoint, { signal: controller.signal })
+    fetch("/api/views", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ increment: isNewSession }),
+      signal: controller.signal,
+    })
       .then((res) => {
         clearTimeout(timeout);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
+        return res.json() as Promise<{ views?: number; error?: string }>;
       })
       .then((data) => {
-        if (data && typeof data.value === "number") {
-          setViews(data.value);
-          if (!hasVisited) {
-            sessionStorage.setItem("ossgrid_visited", "true");
+        if (typeof data.views === "number") {
+          setViews(data.views);
+          if (isNewSession) {
+            sessionStorage.setItem(SESSION_KEY, "1");
           }
         } else {
           setHasError(true);
@@ -43,18 +43,14 @@ export default function Footer() {
         clearTimeout(timeout);
         setHasError(true);
       });
-
-    return () => {
-      clearTimeout(timeout);
-    };
   }, []);
 
-  let viewsDisplay = "… views";
-  if (hasError) {
-    viewsDisplay = "Views unavailable";
-  } else if (views !== null) {
-    viewsDisplay = `${views.toLocaleString()} views`;
-  }
+  const viewsDisplay =
+    views !== null
+      ? `${views.toLocaleString()} views`
+      : hasError
+      ? "Views unavailable"
+      : "… views";
 
   return (
     <footer className="w-full border-t border-[var(--border-card)] bg-[var(--bg-primary)] py-8 mt-auto relative z-10">
