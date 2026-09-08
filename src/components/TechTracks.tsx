@@ -132,7 +132,7 @@ export default function TechTracks({ onSelectTrack }: TechTracksProps) {
             </div>
 
             {/* Track Name */}
-            <h3 className="text-base font-bold text-[var(--text-primary)] mb-1.5 group-hover:text-blue-400 transition-colors">
+            <h3 className="text-base font-bold text-[var(--text-primary)] mb-1.5 group-hover:text-blue-600 dark:text-blue-400 transition-colors">
               {track.name}
             </h3>
 
@@ -159,7 +159,7 @@ export default function TechTracks({ onSelectTrack }: TechTracksProps) {
               style={{ borderColor: "var(--border-card)" }}
             >
               <span>Sample orgs: {track.keyOrgs.slice(0, 3).join(", ")}...</span>
-              <span className="text-xs font-semibold text-blue-400 group-hover:underline">Explore</span>
+              <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 group-hover:underline">Explore</span>
             </div>
           </div>
         ))}

@@ -209,7 +209,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
 
         <div className="relative max-w-[1280px] mx-auto px-6 lg:px-10 pt-6 pb-8">
           {/* Breadcrumb */}
-          <Link href="/lfx" className="inline-flex items-center gap-1.5 text-xs mb-8 transition-colors hover:text-blue-400" style={{ color: "var(--text-muted)" }}>
+          <Link href="/lfx" className="inline-flex items-center gap-1.5 text-xs mb-8 transition-colors hover:text-blue-600 dark:text-blue-400" style={{ color: "var(--text-muted)" }}>
             <ArrowLeft size={13} />
             LFX Mentorship
           </Link>
@@ -236,7 +236,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                 {latestTerm && (
                   <div className="flex items-center gap-2">
                     <TermBadge status={termStatus} term={latestTerm} />
-                    <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                       Next: 2027 T1
                     </span>
                   </div>
@@ -562,7 +562,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Term Status</p>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 font-semibold">
                       Next: 2027 T1
                     </span>
                   </div>

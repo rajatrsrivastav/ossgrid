@@ -131,7 +131,7 @@ export default function SidebarFilter({
       {isMobile ? (
         <div className="flex items-center justify-between px-2 py-3 mb-3 border-b border-[var(--border-card)]">
           <div className="flex items-center gap-2">
-            <SlidersHorizontal size={16} className="text-blue-400" />
+            <SlidersHorizontal size={16} className="text-blue-600 dark:text-blue-400" />
             <span className="text-sm font-bold tracking-tight text-[var(--text-primary)]">
               Filter Organizations
             </span>
@@ -150,12 +150,12 @@ export default function SidebarFilter({
         /* Desktop Dedicated Filter Rail Header */
         <div className="flex items-center justify-between px-2 py-2 mb-3 border-b border-[var(--border-card)]">
           <div className="flex items-center gap-2">
-            <SlidersHorizontal size={14} className="text-blue-400" />
+            <SlidersHorizontal size={14} className="text-blue-600 dark:text-blue-400" />
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
               Filters
             </span>
             {activeCount > 0 && (
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-bold">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold">
                 {activeCount}
               </span>
             )}
@@ -163,7 +163,7 @@ export default function SidebarFilter({
           {activeCount > 0 && (
             <button
               onClick={onClearAll}
-              className="flex items-center gap-1 text-[11px] font-medium text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+              className="flex items-center gap-1 text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:text-blue-600 dark:text-blue-300 transition-colors cursor-pointer"
               title="Reset all active filters"
             >
               <RotateCcw size={11} />
@@ -173,7 +173,7 @@ export default function SidebarFilter({
         </div>
       )}
 
-      {/* Quick Filter Presets Strip */}
+      {/* Quick Filter Presets Strip
       <div className="mb-4 px-1 flex flex-col gap-1">
         <button
           onClick={() => {
@@ -185,12 +185,12 @@ export default function SidebarFilter({
           }}
           className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
             activeNavItem === "saved"
-              ? "bg-blue-500/20 text-blue-400 border border-blue-500/40"
+              ? "bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/40"
               : "text-[var(--text-secondary)] hover:bg-[var(--bg-input)] border border-transparent"
           }`}
         >
           <div className="flex items-center gap-2">
-            <Bookmark size={13} className={activeNavItem === "saved" ? "fill-blue-400 text-blue-400" : "text-[var(--text-muted)]"} />
+            <Bookmark size={13} className={activeNavItem === "saved" ? "fill-blue-600 dark:fill-blue-400 text-blue-600 dark:text-blue-400" : "text-[var(--text-muted)]"} />
             <span>Saved Bookmarks</span>
           </div>
           <span className="text-[11px] font-mono text-[var(--text-muted)]">
@@ -198,6 +198,7 @@ export default function SidebarFilter({
           </span>
         </button>
       </div>
+      */}
 
       {/* Scrollable Filters Rail */}
       <div className="flex-1 overflow-y-auto pr-1 space-y-1 scrollbar-thin">
@@ -311,7 +312,7 @@ export default function SidebarFilter({
             {matchingTech.length > 10 && !techSearch && (
               <button
                 onClick={() => setShowAllTech(!showAllTech)}
-                className="w-full mt-1.5 py-1 text-xs text-left px-2 text-blue-400 hover:text-blue-300 font-medium cursor-pointer"
+                className="w-full mt-1.5 py-1 text-xs text-left px-2 text-blue-600 dark:text-blue-400 hover:text-blue-600 dark:text-blue-300 font-medium cursor-pointer"
               >
                 {showAllTech ? "Show fewer" : `Show all (${matchingTech.length})`}
               </button>
@@ -362,7 +363,7 @@ export default function SidebarFilter({
             {matchingTerms.length > 6 && !termSearch && (
               <button
                 onClick={() => setShowAllTerms(!showAllTerms)}
-                className="w-full mt-1 py-1 text-xs text-left px-2 text-blue-400 hover:text-blue-300 font-medium cursor-pointer"
+                className="w-full mt-1 py-1 text-xs text-left px-2 text-blue-600 dark:text-blue-400 hover:text-blue-600 dark:text-blue-300 font-medium cursor-pointer"
               >
                 {showAllTerms ? "Show fewer" : `Show all (${matchingTerms.length})`}
               </button>

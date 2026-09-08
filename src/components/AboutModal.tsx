@@ -69,7 +69,7 @@ export default function AboutModal({ open, onClose }: AboutModalProps) {
             className="p-3.5 rounded-xl border border-[var(--border-card)]"
             style={{ background: "var(--bg-raised)" }}
           >
-            <div className="flex items-center gap-2 mb-1.5 text-blue-400">
+            <div className="flex items-center gap-2 mb-1.5 text-blue-600 dark:text-blue-400">
               <Calendar size={15} />
               <span className="text-xs font-semibold">3 Annual Terms</span>
             </div>
@@ -83,7 +83,7 @@ export default function AboutModal({ open, onClose }: AboutModalProps) {
             className="p-3.5 rounded-xl border border-[var(--border-card)]"
             style={{ background: "var(--bg-raised)" }}
           >
-            <div className="flex items-center gap-2 mb-1.5 text-purple-400">
+            <div className="flex items-center gap-2 mb-1.5 text-purple-600 dark:text-purple-400">
               <Users size={15} />
               <span className="text-xs font-semibold">Dedicated Mentors</span>
             </div>
@@ -97,7 +97,7 @@ export default function AboutModal({ open, onClose }: AboutModalProps) {
             className="p-3.5 rounded-xl border border-[var(--border-card)]"
             style={{ background: "var(--bg-raised)" }}
           >
-            <div className="flex items-center gap-2 mb-1.5 text-emerald-400">
+            <div className="flex items-center gap-2 mb-1.5 text-emerald-600 dark:text-emerald-400">
               <Award size={15} />
               <span className="text-xs font-semibold">Global Stipends</span>
             </div>
@@ -111,7 +111,7 @@ export default function AboutModal({ open, onClose }: AboutModalProps) {
             className="p-3.5 rounded-xl border border-[var(--border-card)]"
             style={{ background: "var(--bg-raised)" }}
           >
-            <div className="flex items-center gap-2 mb-1.5 text-amber-400">
+            <div className="flex items-center gap-2 mb-1.5 text-amber-600 dark:text-amber-400">
               <Code size={15} />
               <span className="text-xs font-semibold">Production Code</span>
             </div>
