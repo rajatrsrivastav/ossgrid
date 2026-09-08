@@ -17,13 +17,8 @@ export default function ThemeToggle() {
   if (!mounted) {
     return (
       <div
-        className="p-2 rounded-xl"
-        style={{
-          background: "var(--bg-input)",
-          border: "1px solid var(--border-card)",
-          width: 34,
-          height: 34,
-        }}
+        className="w-8 h-8 rounded-lg border border-[var(--border-card)] bg-[var(--bg-raised)]/60"
+        aria-hidden="true"
       />
     );
   }
@@ -32,15 +27,12 @@ export default function ThemeToggle() {
     <button
       id="theme-toggle"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="relative p-2 rounded-xl transition-all duration-300 hover:scale-110"
-      style={{
-        background: "var(--bg-input)",
-        border: "1px solid var(--border-card)",
-        color: "var(--text-secondary)",
-      }}
+      className="w-8 h-8 rounded-lg border border-[var(--border-card)] bg-[var(--bg-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] flex items-center justify-center transition-all cursor-pointer"
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+      title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
     >
-      {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+      {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
     </button>
   );
 }
+

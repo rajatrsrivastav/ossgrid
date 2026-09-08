@@ -85,9 +85,9 @@ export default function GlobeCanvas({ className = "" }: GlobeCanvasProps) {
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      const centerX = width * 0.55;
+      const centerX = width * 0.5;
       const centerY = height * 0.5;
-      const sphereRadius = Math.min(width, height) * 0.42;
+      const sphereRadius = Math.min(width, height) * 0.40;
 
       // Smooth tilt easing
       currentTiltX += (targetTiltX - currentTiltX) * 0.05;

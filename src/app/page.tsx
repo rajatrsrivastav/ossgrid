@@ -27,6 +27,7 @@ import {
   Bookmark,
 } from "lucide-react";
 import Header from "@/components/Header";
+import GlobeCanvas from "@/components/GlobeCanvas";
 import FirstTimerGuide from "@/components/FirstTimerGuide";
 import FirstTimerFAQ from "@/components/FirstTimerFAQ";
 import AboutModal from "@/components/AboutModal";
@@ -204,78 +205,92 @@ export default function HomePage() {
             style={{ background: "radial-gradient(circle, #10b981 0%, transparent 70%)" }}
           />
 
-          <div className="relative z-10 max-w-4xl">
-            {/* Live Badge */}
-            <div className="flex flex-wrap items-center gap-2.5 mb-5">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/25">
-                <Globe2 size={13} className="text-blue-400" />
-                OSSGrid • The Universal Open Source Guidebook
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                LFX Mentorship Hub Live
-              </span>
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Left Column: Mission, Value Prop, CTAs & Key Stats */}
+            <div className="lg:col-span-7 flex flex-col justify-center">
+              {/* Live Badge */}
+              <div className="flex flex-wrap items-center gap-2.5 mb-5">
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/25">
+                  <Globe2 size={13} className="text-blue-400" />
+                  OSSGrid • The Universal Open Source Guidebook
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  LFX Mentorship Hub Live
+                </span>
+              </div>
+
+              {/* Main Typographical Authority */}
+              <h1 className="text-3xl sm:text-5xl lg:text-[3.5rem] font-black tracking-[-0.035em] leading-[1.1] mb-5 text-[var(--text-primary)]">
+                Navigate All Open Source Mentorships & Fellowships
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed mb-8 max-w-2xl">
+                The unified intelligence hub and playbook for developers. Discover paid open-source fellowships, compare stipend models ($1.5k–$7k), master real Git contribution workflows, and launch your journey across the global open source ecosystem.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3.5 mb-10">
+                <Link
+                  href="/lfx"
+                  className="inline-flex items-center gap-2.5 px-6 sm:px-7 py-3.5 rounded-xl text-sm font-bold text-white shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  style={{
+                    background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                    boxShadow: "0 4px 22px rgba(37, 99, 235, 0.4)",
+                  }}
+                >
+                  <Compass size={18} />
+                  Explore LFX Mentorship (Live)
+                  <ArrowRight size={17} />
+                </Link>
+
+                <button
+                  onClick={scrollToPrograms}
+                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl text-sm font-semibold border border-[var(--border-input)] bg-[var(--bg-input)] text-[var(--text-primary)] hover:border-blue-500/50 hover:bg-[var(--bg-card)] transition-all cursor-pointer"
+                >
+                  <Layers size={16} className="text-blue-400" />
+                  View All Programs
+                </button>
+
+                <button
+                  onClick={scrollToPlaybook}
+                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-all cursor-pointer"
+                >
+                  <BookOpen size={16} className="text-[var(--text-muted)]" />
+                  Contributor Playbook
+                </button>
+              </div>
+
+              {/* Key Ecosystem Stats Strip */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-6 border-t border-[var(--border-card)]">
+                <div>
+                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Programs Tracked</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-[var(--text-primary)] mt-0.5">6 Premier</div>
+                </div>
+                <div>
+                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">LFX Organizations</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-blue-400 mt-0.5">96+ Active</div>
+                </div>
+                <div>
+                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Funded Stipends</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-emerald-400 mt-0.5">$1.5k – $7k</div>
+                </div>
+                <div>
+                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Eligibility</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-purple-400 mt-0.5">Open Globally</div>
+                </div>
+              </div>
             </div>
 
-            {/* Main Typographical Authority */}
-            <h1 className="text-4xl sm:text-6xl lg:text-[4rem] font-black tracking-[-0.035em] leading-[1.08] mb-6 text-[var(--text-primary)]">
-              Navigate All Open Source Mentorships & Fellowships
-            </h1>
-
-            {/* Subtitle */}
-            <p className="text-base sm:text-xl text-[var(--text-secondary)] leading-relaxed mb-10 max-w-3xl">
-              The unified intelligence hub and playbook for developers. Discover paid open-source fellowships, compare stipend models ($1.5k–$7k), master real Git contribution workflows, and launch your journey across the global open source ecosystem.
-            </p>
-
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 mb-12">
-              <Link
-                href="/lfx"
-                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl text-sm font-bold text-white shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
-                style={{
-                  background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-                  boxShadow: "0 4px 22px rgba(37, 99, 235, 0.4)",
-                }}
-              >
-                <Compass size={18} />
-                Explore LFX Mentorship (Live)
-                <ArrowRight size={17} />
-              </Link>
-
-              <button
-                onClick={scrollToPrograms}
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl text-sm font-semibold border border-[var(--border-input)] bg-[var(--bg-input)] text-[var(--text-primary)] hover:border-blue-500/50 hover:bg-[var(--bg-card)] transition-all cursor-pointer"
-              >
-                <Layers size={16} className="text-blue-400" />
-                View All Programs
-              </button>
-
-              <button
-                onClick={scrollToPlaybook}
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-all cursor-pointer"
-              >
-                <BookOpen size={16} className="text-[var(--text-muted)]" />
-                Contributor Playbook
-              </button>
-            </div>
-
-            {/* Key Ecosystem Stats Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-[var(--border-card)]">
-              <div>
-                <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Programs Tracked</div>
-                <div className="text-2xl sm:text-3xl font-black font-mono text-[var(--text-primary)] mt-0.5">6 Premier</div>
+            {/* Right Column: Rotating 3D Globe with telemetry badges */}
+            <div className="lg:col-span-5 flex flex-col items-center justify-center relative mt-6 lg:mt-0">
+              <div className="w-full h-[340px] sm:h-[400px] lg:h-[440px] relative flex items-center justify-center">
+                <GlobeCanvas />
               </div>
-              <div>
-                <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">LFX Organizations</div>
-                <div className="text-2xl sm:text-3xl font-black font-mono text-blue-400 mt-0.5">96+ Active</div>
-              </div>
-              <div>
-                <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Funded Stipends</div>
-                <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-400 mt-0.5">$1.5k – $7k</div>
-              </div>
-              <div>
-                <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Eligibility</div>
-                <div className="text-2xl sm:text-3xl font-black font-mono text-purple-400 mt-0.5">Open Globally</div>
+              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-medium text-[var(--text-muted)] bg-[var(--bg-card)]/80 backdrop-blur-md border border-[var(--border-card)] shadow-sm -mt-2 z-20">
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                <span>Global Contributor Network</span>
               </div>
             </div>
           </div>
