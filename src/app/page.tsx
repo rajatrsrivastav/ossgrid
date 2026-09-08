@@ -320,11 +320,10 @@ export default function HomePage() {
               return (
                 <div
                   key={prog.id}
-                  className={`flex flex-col justify-between rounded-3xl p-6 sm:p-7 border transition-all relative overflow-hidden ${
-                    isLfx
-                      ? "border-blue-500/60 bg-[var(--bg-secondary)] shadow-xl shadow-blue-500/10 ring-1 ring-blue-500/30"
-                      : "border-[var(--border-card)] bg-[var(--bg-secondary)] hover:border-[var(--border-hover)]"
-                  }`}
+                  className={`flex flex-col justify-between rounded-3xl p-6 sm:p-7 border transition-all relative overflow-hidden ${isLfx
+                    ? "border-blue-500/60 bg-[var(--bg-secondary)] shadow-xl shadow-blue-500/10 ring-1 ring-blue-500/30"
+                    : "border-[var(--border-card)] bg-[var(--bg-secondary)] hover:border-[var(--border-hover)]"
+                    }`}
                 >
                   {isLfx && (
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />

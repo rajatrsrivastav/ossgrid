@@ -52,7 +52,7 @@ export default function Header({
             className="flex items-center gap-2.5 group select-none flex-shrink-0"
             aria-label="OSSGrid Home"
           >
-            <div className="w-8 h-8 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 flex items-center justify-center shadow-xs border border-zinc-800 dark:border-zinc-200 group-hover:border-blue-500/50 transition-all">
+            <div className="w-8 h-8 rounded-lg bg-white text-zinc-950 flex items-center justify-center shadow-xs border border-black/10 dark:border-white/20 group-hover:border-blue-500/50 transition-all">
               <LogoMark size={16} />
             </div>
             <span className="text-[15px] font-bold tracking-tight text-[var(--text-primary)] group-hover:text-blue-400 transition-colors">
