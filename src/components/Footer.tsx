@@ -1,70 +1,91 @@
+"use client";
 
-interface FooterProps {
-  lastUpdated?: string;
-}
+import { useEffect, useState, useRef } from "react";
+import { Eye } from "lucide-react";
 
-export default function Footer({ lastUpdated }: FooterProps) {
+const COUNTER_KEY = "ossgrid_prod_visits";
+const COUNTER_API = "https://countapi.mileshilliard.com/api/v1";
+
+export default function Footer() {
+  const [views, setViews] = useState<number | null>(null);
+  const [hasError, setHasError] = useState(false);
+  const fetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
+    const hasVisited = sessionStorage.getItem("ossgrid_visited");
+    const endpoint = hasVisited
+      ? `${COUNTER_API}/get/${COUNTER_KEY}`
+      : `${COUNTER_API}/hit/${COUNTER_KEY}`;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    fetch(endpoint, { signal: controller.signal })
+      .then((res) => {
+        clearTimeout(timeout);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (data && typeof data.value === "number") {
+          setViews(data.value);
+          if (!hasVisited) {
+            sessionStorage.setItem("ossgrid_visited", "true");
+          }
+        } else {
+          setHasError(true);
+        }
+      })
+      .catch(() => {
+        clearTimeout(timeout);
+        setHasError(true);
+      });
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  let viewsDisplay = "… views";
+  if (hasError) {
+    viewsDisplay = "Views unavailable";
+  } else if (views !== null) {
+    viewsDisplay = `${views.toLocaleString()} views`;
+  }
+
   return (
-    <footer
-      className="w-full py-6 px-4 lg:px-8 mt-auto"
-      style={{
-        borderTop: "1px solid var(--border-card)",
-        background: "var(--bg-secondary)",
-      }}
-    >
-      <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs"
-        style={{ color: "var(--text-muted)" }}
-      >
-        {/* Left — attribution */}
-        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1">
-          <span>
-            Data from{" "}
-            <a
-              href="https://github.com/cncf/mentoring"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-2 transition-colors hover:text-[var(--text-secondary)]"
-              style={{ color: "var(--color-accent-raw)" }}
-            >
-              cncf/mentoring
-            </a>
+    <footer className="w-full border-t border-[var(--border-card)] bg-[var(--bg-primary)] py-8 mt-auto relative z-10">
+      <div className="max-w-[1280px] mx-auto px-6 lg:px-10 flex flex-col items-center justify-center gap-2">
+        <p className="text-sm font-medium text-[var(--text-secondary)] flex flex-wrap items-center justify-center gap-1.5 text-center">
+          Made with <span className="text-red-500 mx-0.5 text-xs">❤️</span> by{" "}
+          <a
+            href="https://x.com/rajatrsrivastav"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[var(--text-primary)] hover:underline decoration-1 underline-offset-4 transition-colors"
+          >
+            Rajat Srivastav
+          </a>{" "}
+          &amp;{" "}
+          <a
+            href="https://x.com/Anandmishra639"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[var(--text-primary)] hover:underline decoration-1 underline-offset-4 transition-colors"
+          >
+            Anand Mishra
+          </a>
+          <span className="hidden sm:inline-block mx-1.5 text-[var(--border-hover)]">
+            &middot;
           </span>
-          <span className="hidden sm:inline opacity-40">·</span>
-          <span>
-            <a
-              href="https://mentorship.lfx.linuxfoundation.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-2 transition-colors hover:text-[var(--text-secondary)]"
-              style={{ color: "var(--text-muted)" }}
-            >
-              LFX Mentorship
-            </a>
-            {" "}by the Linux Foundation
+          <span className="flex items-center gap-1.5 text-[var(--text-muted)] text-xs sm:text-sm mt-1 sm:mt-0 font-mono">
+            <Eye size={13} className="opacity-70" />
+            {viewsDisplay}
           </span>
-          {lastUpdated && (
-            <>
-              <span className="hidden sm:inline opacity-40">·</span>
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem" }}>
-                Updated {lastUpdated}
-              </span>
-            </>
-          )}
-        </div>
-
-        {/* Right — repo link */}
-        <a
-          href="https://github.com/rajatrsrivastav/ossgrid"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5 transition-colors hover:text-[var(--text-secondary)]"
-          aria-label="OSSGrid on GitHub"
-        >
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true">
-            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-          </svg>
-          Contribute on GitHub
-        </a>
+        </p>
       </div>
     </footer>
   );

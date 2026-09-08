@@ -35,7 +35,6 @@ import OrganizationCard from "@/components/OrganizationCard";
 import CategoryBar, { ViewMode, SortOption } from "@/components/CategoryBar";
 import AboutModal from "@/components/AboutModal";
 import CommandPalette from "@/components/CommandPalette";
-import Footer from "@/components/Footer";
 import { AnimatePresence } from "framer-motion";
 
 /* ── Skeleton card ─────────────────────────────────────────────────────── */
@@ -632,7 +631,7 @@ export default function LFXPortalPage() {
 
       </div>
 
-      <Footer />
+
 
       <AboutModal
         open={aboutModalOpen}

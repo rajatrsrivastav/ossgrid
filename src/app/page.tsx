@@ -31,7 +31,7 @@ import GlobeCanvas from "@/components/GlobeCanvas";
 import FirstTimerGuide from "@/components/FirstTimerGuide";
 import FirstTimerFAQ from "@/components/FirstTimerFAQ";
 import AboutModal from "@/components/AboutModal";
-import Footer from "@/components/Footer";
+import CommandPalette from "@/components/CommandPalette";
 import { motion } from "framer-motion";
 
 interface ProgramCard {
@@ -195,30 +195,11 @@ export default function HomePage() {
             }}
           />
 
-          {/* Accent glow spheres */}
-          <div
-            className="absolute -top-32 right-12 w-[32rem] h-[32rem] rounded-full pointer-events-none opacity-20 blur-3xl"
-            style={{ background: "radial-gradient(circle, #3b82f6 0%, transparent 70%)" }}
-          />
-          <div
-            className="absolute -bottom-32 left-12 w-[28rem] h-[28rem] rounded-full pointer-events-none opacity-15 blur-3xl"
-            style={{ background: "radial-gradient(circle, #10b981 0%, transparent 70%)" }}
-          />
+
 
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left Column: Mission, Value Prop, CTAs & Key Stats */}
             <div className="lg:col-span-7 flex flex-col justify-center">
-              {/* Live Badge */}
-              <div className="flex flex-wrap items-center gap-2.5 mb-5">
-                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/25">
-                  <Globe2 size={13} className="text-blue-600 dark:text-blue-400" />
-                  OSSGrid • Open Source Guidebook
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/25">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                  Upcoming: 2027 Term 1
-                </span>
-              </div>
 
               {/* Main Typographical Authority */}
               <h1 className="text-3xl sm:text-5xl lg:text-[3.5rem] font-black tracking-[-0.035em] leading-[1.1] mb-5 text-[var(--text-primary)]">
@@ -234,11 +215,7 @@ export default function HomePage() {
               <div className="flex flex-wrap items-center gap-3.5 mb-10">
                 <Link
                   href="/lfx"
-                  className="inline-flex items-center gap-2.5 px-6 sm:px-7 py-3.5 rounded-xl text-sm font-bold text-white shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  style={{
-                    background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-                    boxShadow: "0 4px 22px rgba(37, 99, 235, 0.4)",
-                  }}
+                  className="inline-flex items-center gap-2.5 px-6 sm:px-7 py-3.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <Compass size={18} />
                   View LFX Mentorship
@@ -262,25 +239,7 @@ export default function HomePage() {
                 </button>
               </div>
 
-              {/* Key Ecosystem Stats Strip */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-6 border-t border-[var(--border-card)]">
-                <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Programs</div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-[var(--text-primary)] mt-0.5">6 Programs</div>
-                </div>
-                <div className="flex flex-col">
-                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Currently</div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-[#315e9b] dark:text-[#5282c1] mt-0.5">96+ Active</div>
-                </div>
-                <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Stipends</div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">$1.5k – $7k</div>
-                </div>
-                <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Eligibility</div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-purple-600 dark:text-purple-400 mt-0.5">Worldwide</div>
-                </div>
-              </div>
+
             </div>
 
             {/* Right Column: Rotating 3D Globe with telemetry badges */}
@@ -485,7 +444,7 @@ export default function HomePage() {
 
       </main>
 
-      <Footer />
+
 
       <AboutModal
         open={aboutModalOpen}

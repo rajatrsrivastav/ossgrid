@@ -11,6 +11,13 @@ import Header from "@/components/Header";
 import { sanitizeDescription } from "@/lib/utils";
 
 // ─── SVG Icons ──────────────────────────────────────────────────────────────
+import { cache } from "react";
+
+const getOrganizationsCached = cache(async (): Promise<Organization[]> => {
+  const filePath = path.join(process.cwd(), "public", "data", "organizations.json");
+  if (!fs.existsSync(filePath)) return [];
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+});
 
 function GitHubIcon({ size = 13, className = "" }: { size?: number; className?: string }) {
   return (
@@ -23,17 +30,13 @@ function GitHubIcon({ size = 13, className = "" }: { size?: number; className?: 
 // ─── SSG ─────────────────────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
-  const filePath = path.join(process.cwd(), "public", "data", "organizations.json");
-  if (!fs.existsSync(filePath)) return [];
-  const orgs: Organization[] = JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const orgs = await getOrganizationsCached();
   return orgs.map((org) => ({ slug: org.id }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const filePath = path.join(process.cwd(), "public", "data", "organizations.json");
-  if (!fs.existsSync(filePath)) return { title: "Organization Not Found" };
-  const orgs: Organization[] = JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const orgs = await getOrganizationsCached();
   const org = orgs.find((o) => o.id === slug);
   if (!org) return { title: "Organization Not Found" };
   const desc = `${org.name} has ${org.projectCount} LFX Mentorship projects across ${org.years.length} terms. View projects, mentors, and participation history.`;
@@ -48,16 +51,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 // ─── Data helpers ─────────────────────────────────────────────────────────────
 
 async function getOrganization(slug: string): Promise<Organization | null> {
-  const filePath = path.join(process.cwd(), "public", "data", "organizations.json");
-  if (!fs.existsSync(filePath)) return null;
-  const orgs: Organization[] = JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const orgs = await getOrganizationsCached();
   return orgs.find((o) => o.id === slug) || null;
 }
 
 async function getAllOrganizations(): Promise<Organization[]> {
-  const filePath = path.join(process.cwd(), "public", "data", "organizations.json");
-  if (!fs.existsSync(filePath)) return [];
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  return getOrganizationsCached();
 }
 
 function parseTerm(term: string): { year: number; termNum: number; monthRange: string } {
