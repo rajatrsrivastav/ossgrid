@@ -73,7 +73,7 @@ export default function Footer() {
             className="hover:text-[var(--text-primary)] hover:underline decoration-1 underline-offset-4 transition-colors"
           >
             Anand Mishra
-          </a>
+          </a> for oss comutnites
           <span className="hidden sm:inline-block mx-1.5 text-[var(--border-hover)]">
             &middot;
           </span>
