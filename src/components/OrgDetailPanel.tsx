@@ -119,7 +119,7 @@ export default function OrgDetailPanel({
             href={`https://github.com/search?q=${encodeURIComponent(org.name)}&type=repositories`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 hover:text-blue-400 transition-colors"
+            className="flex items-center gap-1.5 hover:text-blue-600 dark:text-blue-400 transition-colors"
           >
             <GitHubIcon size={13} />
             <span>GitHub</span>
@@ -128,7 +128,7 @@ export default function OrgDetailPanel({
             href={`https://mentorship.lfx.linuxfoundation.org`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 hover:text-blue-400 transition-colors"
+            className="flex items-center gap-1.5 hover:text-blue-600 dark:text-blue-400 transition-colors"
           >
             <Globe size={13} />
             <span>LFX Portal</span>
@@ -145,7 +145,7 @@ export default function OrgDetailPanel({
             className="p-3 rounded-xl border border-[var(--border-card)] flex flex-col items-center justify-center text-center"
             style={{ background: "var(--bg-raised)" }}
           >
-            <Layers size={15} className="text-blue-400 mb-1" />
+            <Layers size={15} className="text-blue-600 dark:text-blue-400 mb-1" />
             <span className="text-sm font-bold font-mono text-[var(--text-primary)]">
               {org.projectCount}
             </span>
@@ -156,7 +156,7 @@ export default function OrgDetailPanel({
             className="p-3 rounded-xl border border-[var(--border-card)] flex flex-col items-center justify-center text-center"
             style={{ background: "var(--bg-raised)" }}
           >
-            <Users size={15} className="text-purple-400 mb-1" />
+            <Users size={15} className="text-purple-600 dark:text-purple-400 mb-1" />
             <span className="text-xs font-bold text-[var(--text-primary)]">
               Mentorship
             </span>
@@ -167,7 +167,7 @@ export default function OrgDetailPanel({
             className="p-3 rounded-xl border border-[var(--border-card)] flex flex-col items-center justify-center text-center"
             style={{ background: "var(--bg-raised)" }}
           >
-            <Award size={15} className="text-emerald-400 mb-1" />
+            <Award size={15} className="text-emerald-600 dark:text-emerald-400 mb-1" />
             <span className="text-xs font-bold text-[var(--text-primary)]">
               {org.years[0] || 2026}
             </span>
@@ -211,7 +211,7 @@ export default function OrgDetailPanel({
               className="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-[var(--bg-input)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
               <span className="flex items-center gap-2">
-                <Globe size={13} className="text-blue-400" />
+                <Globe size={13} className="text-blue-600 dark:text-blue-400" />
                 <span>Official LFX Program</span>
               </span>
               <ExternalLink size={12} className="text-[var(--text-muted)]" />
@@ -223,7 +223,7 @@ export default function OrgDetailPanel({
               className="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-[var(--bg-input)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
               <span className="flex items-center gap-2">
-                <GitHubIcon size={13} className="text-purple-400" />
+                <GitHubIcon size={13} className="text-purple-600 dark:text-purple-400" />
                 <span>GitHub Repository</span>
               </span>
               <ExternalLink size={12} className="text-[var(--text-muted)]" />
@@ -235,7 +235,7 @@ export default function OrgDetailPanel({
               className="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-[var(--bg-input)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
               <span className="flex items-center gap-2">
-                <Users size={13} className="text-emerald-400" />
+                <Users size={13} className="text-emerald-600 dark:text-emerald-400" />
                 <span>Community & Mentors</span>
               </span>
               <ExternalLink size={12} className="text-[var(--text-muted)]" />
@@ -256,6 +256,7 @@ export default function OrgDetailPanel({
             <ArrowRight size={14} />
           </Link>
 
+          {/*
           {onToggleSave && (
             <button
               onClick={() => onToggleSave(org.id)}
@@ -267,7 +268,7 @@ export default function OrgDetailPanel({
             >
               {isSaved ? (
                 <>
-                  <Check size={14} className="text-blue-400" />
+                  <Check size={14} className="text-blue-600 dark:text-blue-400" />
                   <span>Saved to Bookmarks</span>
                 </>
               ) : (
@@ -278,6 +279,7 @@ export default function OrgDetailPanel({
               )}
             </button>
           )}
+          */}
         </div>
       </div>
     </div>

@@ -36,12 +36,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const orgs: Organization[] = JSON.parse(fs.readFileSync(filePath, "utf8"));
   const org = orgs.find((o) => o.id === slug);
   if (!org) return { title: "Organization Not Found" };
-  const desc = `${org.name} has ${org.projectCount} LFX Mentorship projects across ${org.years.length} terms. Explore projects, mentors, and historical participation.`;
+  const desc = `${org.name} has ${org.projectCount} LFX Mentorship projects across ${org.years.length} terms. View projects, mentors, and participation history.`;
   return {
-    title: `${org.name} — LFX Organizations`,
+    title: `${org.name} — LFX Mentorship`,
     description: desc,
-    openGraph: { title: `${org.name} — LFX Organizations`, description: desc, type: "website" },
-    twitter: { card: "summary", title: `${org.name} — LFX Organizations`, description: desc },
+    openGraph: { title: `${org.name} — LFX Mentorship`, description: desc, type: "website" },
+    twitter: { card: "summary", title: `${org.name} — LFX Mentorship`, description: desc },
   };
 }
 
@@ -75,19 +75,9 @@ function sortTermsDesc(terms: string[]): string[] {
 }
 
 function getTermStatus(term: string): "open" | "closing" | "closed" {
-  const { year, termNum } = parseTerm(term);
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1;
-  if (year < currentYear) return "closed";
-  if (year > currentYear) return "open";
-  const termMonthEnd: Record<number, number> = { 1: 5, 2: 8, 3: 11 };
-  const termMonthStart: Record<number, number> = { 1: 3, 2: 6, 3: 9 };
-  const endMonth = termMonthEnd[termNum] ?? 12;
-  const startMonth = termMonthStart[termNum] ?? 1;
-  if (currentMonth > endMonth) return "closed";
-  if (currentMonth < startMonth) return "open";
-  if (endMonth - currentMonth <= 1) return "closing";
+  const { year } = parseTerm(term);
+  // 2026 Term 3 is concluded; next active cycle is 2027 Term 1
+  if (year <= 2026) return "closed";
   return "open";
 }
 
@@ -124,11 +114,14 @@ function getRelatedOrgs(org: Organization, all: Organization[]): Organization[] 
     .map((x) => x.org);
 }
 
-/** Runtime guard for project descriptions that contain URLs */
+/** Clean project descriptions: strip scraper artifacts, markdown links, and bare URLs */
 function sanitizeProjectDesc(desc: string): string {
   if (!desc) return "";
-  // Strip bare URLs from the description text
-  const clean = desc.replace(/https?:\/\/\S+/g, "").replace(/\s{2,}/g, " ").trim();
+  const clean = desc
+    .replace(/^(\s*[:\-–—]\s*|\s*description:\s*|\s*project\s+description:\s*)/i, "")
+    .replace(/https?:\/\/\S+/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
   return clean.length > 20 ? clean : "";
 }
 
@@ -187,7 +180,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
   for (let y = yearSpan.max; y >= yearSpan.min; y--) allYears.push(y);
   const allTermNums = [1, 2, 3];
 
-  const cleanDesc = sanitizeDescription(org.description, org.name);
+  const cleanDesc = sanitizeDescription(org.description, org.name, org.id);
 
   return (
     <div style={{ background: "var(--bg-primary)", minHeight: "100vh" }}>
@@ -216,9 +209,9 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
 
         <div className="relative max-w-[1280px] mx-auto px-6 lg:px-10 pt-6 pb-8">
           {/* Breadcrumb */}
-          <Link href="/lfx" className="inline-flex items-center gap-1.5 text-xs mb-8 transition-colors hover:text-blue-400" style={{ color: "var(--text-muted)" }}>
+          <Link href="/lfx" className="inline-flex items-center gap-1.5 text-xs mb-8 transition-colors hover:text-blue-600 dark:text-blue-400" style={{ color: "var(--text-muted)" }}>
             <ArrowLeft size={13} />
-            LFX Mentorship Explorer
+            LFX Mentorship
           </Link>
 
           {/* Identity: logo + name + meta */}
@@ -240,7 +233,14 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                   </span>
                 )}
                 <span className="badge" style={{ fontSize: "0.7rem" }}>{org.category}</span>
-                {latestTerm && <TermBadge status={termStatus} term={latestTerm} />}
+                {latestTerm && (
+                  <div className="flex items-center gap-2">
+                    <TermBadge status={termStatus} term={latestTerm} />
+                    <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                      Next: 2027 T1
+                    </span>
+                  </div>
+                )}
               </div>
 
               <h1 className="text-4xl lg:text-5xl font-black tracking-tight leading-none mb-3" style={{ color: "var(--text-primary)" }}>
@@ -267,10 +267,10 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                 <div className="text-xs font-medium" style={{ color: "var(--text-muted)", marginTop: 2 }}>years active</div>
               </div>
               <div className="text-right">
-                <div className="text-3xl font-black font-mono" style={{ color: "#34d399", letterSpacing: "-0.02em" }}>
+                <div className="text-3xl font-black font-mono text-zinc-400" style={{ letterSpacing: "-0.02em" }}>
                   {latestTermProjects.length}
                 </div>
-                <div className="text-xs font-medium" style={{ color: "var(--text-muted)", marginTop: 2 }}>current term</div>
+                <div className="text-xs font-medium" style={{ color: "var(--text-muted)", marginTop: 2 }}>2026 T3 (over)</div>
               </div>
             </div>
           </div>
@@ -280,7 +280,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
             {latestLfxUrl && (
               <a href={latestLfxUrl} target="_blank" rel="noopener noreferrer" className="btn-primary" id="apply-cta-main" style={{ padding: "11px 24px", fontSize: "0.9rem", fontWeight: 700, borderRadius: "var(--radius-lg)" }}>
                 <ExternalLink size={15} />
-                Apply on LFX
+                Check LFX Portal
               </a>
             )}
             <a href={`https://github.com/search?q=${encodeURIComponent(org.name)}&type=repositories`} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "11px 20px", fontSize: "0.85rem" }}>
@@ -313,11 +313,11 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
           {/* ── LEFT COLUMN: Projects ── */}
           <main className="flex-1 min-w-0 space-y-14">
 
-            {/* Section: Technology Stack */}
-            <section id="technologies" aria-label="Technology breakdown">
+            {/* Section: Technologies */}
+            <section id="technologies" aria-label="Technologies">
               <div className="flex items-center gap-3 mb-5">
                 <Code2 size={15} style={{ color: "var(--color-accent-raw)" }} />
-                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--color-accent-raw)" }}>Technology Stack</span>
+                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--color-accent-raw)" }}>Technologies</span>
                 <div style={{ flex: 1, height: 1, background: "var(--border-card)" }} />
               </div>
               <div className="flex flex-wrap gap-2">
@@ -348,7 +348,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
               </div>
               {techsSorted.length > 5 && (
                 <p style={{ marginTop: 8, fontSize: "0.72rem", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
-                  +{techsSorted.length - 5} more {techsSorted.length - 5 === 1 ? "technology" : "technologies"} across all projects
+                  +{techsSorted.length - 5} more {techsSorted.length - 5 === 1 ? "technology" : "technologies"}
                 </p>
               )}
             </section>
@@ -417,11 +417,6 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                                           <h3 className="text-sm font-semibold leading-snug" style={{ color: "var(--text-primary)" }}>
                                             {project.title}
                                           </h3>
-                                          {isCurrentTerm && project.lfxUrl && (
-                                            <span style={{ display: "inline-flex", alignItems: "center", padding: "1px 6px", borderRadius: "var(--radius-xs)", background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)", fontSize: "0.58rem", fontWeight: 700, color: "#34d399", fontFamily: "var(--font-mono)", letterSpacing: "0.06em", flexShrink: 0 }}>
-                                              APPLY
-                                            </span>
-                                          )}
                                         </div>
                                         {/* Right: mentor + links */}
                                         <div className="flex items-center gap-2 flex-shrink-0">
@@ -438,8 +433,8 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                                             </a>
                                           )}
                                           {project.lfxUrl ? (
-                                            <a href={project.lfxUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost-accent" style={{ padding: "3px 8px", fontSize: "0.7rem" }} aria-label={`Apply to ${project.title}`}>
-                                              Apply <ExternalLink size={10} />
+                                            <a href={project.lfxUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "3px 8px", fontSize: "0.7rem" }} aria-label={`View on LFX Portal: ${project.title}`}>
+                                              LFX <ExternalLink size={10} />
                                             </a>
                                           ) : (
                                             <span style={{ padding: "3px 8px", fontSize: "0.7rem", color: "var(--text-muted)", background: "var(--bg-badge)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-card)", opacity: 0.5 }}>
@@ -483,12 +478,12 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
               </div>
             </section>
 
-            {/* Section: Mentors Directory */}
+            {/* Section: Mentors */}
             {allMentors.length > 0 && (
               <section id="mentors" aria-label="Organization mentors">
                 <div className="flex items-center gap-3 mb-5">
                   <Users size={15} style={{ color: "var(--color-accent-raw)" }} />
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--color-accent-raw)" }}>Mentors Directory</span>
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--color-accent-raw)" }}>Mentors</span>
                   <span className="text-xs font-mono" style={{ color: "var(--text-muted)" }}>({allMentors.length})</span>
                   <div style={{ flex: 1, height: 1, background: "var(--border-card)" }} />
                 </div>
@@ -565,20 +560,27 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
             <div className="rounded-2xl p-5" style={{ background: "var(--bg-raised)", border: "1px solid var(--border-card)" }}>
               {latestTerm && (
                 <div className="mb-4">
-                  <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Current Term</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Term Status</p>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 font-semibold">
+                      Next: 2027 T1
+                    </span>
+                  </div>
                   <TermBadge status={termStatus} term={latestTerm} />
-                  <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>{latestTermProjects.length} project{latestTermProjects.length !== 1 ? "s" : ""} this term</p>
+                  <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>
+                    2026 Term 3 has concluded. Upcoming cycle is 2027 Term 1 (Spring, Mar–May).
+                  </p>
                 </div>
               )}
               {latestLfxUrl ? (
                 <a href={latestLfxUrl} target="_blank" rel="noopener noreferrer" className="btn-primary w-full" style={{ justifyContent: "center", padding: "12px", fontSize: "0.9rem", fontWeight: 700, borderRadius: "var(--radius-lg)" }}>
-                  <ExternalLink size={15} /> Apply on LFX
+                  <ExternalLink size={15} /> Check LFX Portal
                 </a>
               ) : (
-                <div style={{ textAlign: "center", fontSize: "0.8rem", color: "var(--text-muted)", padding: "10px 0" }}>No active application link</div>
+                <div style={{ textAlign: "center", fontSize: "0.8rem", color: "var(--text-muted)", padding: "10px 0" }}>Applications currently closed</div>
               )}
               <a href={`https://github.com/search?q=${encodeURIComponent(org.name)}&type=repositories`} target="_blank" rel="noopener noreferrer" className="btn-ghost w-full mt-2" style={{ justifyContent: "center", fontSize: "0.8rem" }}>
-                <GitHubIcon size={13} /> Find on GitHub
+                <GitHubIcon size={13} /> View on GitHub
               </a>
             </div>
 
@@ -586,18 +588,18 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
             <div className="rounded-2xl p-5" style={{ background: "var(--bg-raised)", border: "1px solid var(--border-card)" }}>
               <div className="flex items-center gap-2 mb-3">
                 <TrendingUp size={14} style={{ color: "var(--color-accent-raw)" }} />
-                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Projects per Year</p>
+                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Projects by year</p>
               </div>
               <div style={{ height: 210 }}>
                 <OrgChartWrapper projects={org.projects} />
               </div>
             </div>
 
-            {/* Participation History Matrix */}
+            {/* Participation Card */}
             <div className="rounded-2xl p-5" style={{ background: "var(--bg-raised)", border: "1px solid var(--border-card)" }}>
               <div className="flex items-center gap-2 mb-4">
                 <Calendar size={14} style={{ color: "var(--color-accent-raw)" }} />
-                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Participation History</p>
+                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Participation</p>
               </div>
               <div style={{ overflowX: "auto" }}>
                 <table style={{ borderCollapse: "separate", borderSpacing: "5px", fontFamily: "var(--font-mono)", fontSize: "0.65rem", width: "100%" }} aria-label="Participation matrix by year and term">
@@ -639,7 +641,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                 <div className="flex items-center gap-3 mt-3" style={{ fontSize: "0.62rem", color: "var(--text-muted)" }}>
                   <span className="flex items-center gap-1.5"><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: "var(--color-accent-raw)" }} /> Current</span>
                   <span className="flex items-center gap-1.5"><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: "rgba(79,142,255,0.35)" }} /> Past</span>
-                  <span className="flex items-center gap-1.5"><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: "var(--bg-primary)", border: "1px solid var(--border-card)" }} /> Absent</span>
+                  <span className="flex items-center gap-1.5"><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: "var(--bg-primary)", border: "1px solid var(--border-card)" }} /> No projects</span>
                 </div>
               </div>
             </div>
@@ -662,11 +664,11 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
             <div className="flex items-center gap-3 min-w-0">
               {latestTerm && <TermBadge status={termStatus} term={latestTerm} />}
               <span className="hidden sm:block truncate text-xs" style={{ color: "var(--text-muted)" }}>
-                {org.projectCount} projects · {org.name}
+                2026 T3 closed · Next cycle: 2027 Term 1 · {org.name}
               </span>
             </div>
             <a href={latestLfxUrl} target="_blank" rel="noopener noreferrer" className="btn-primary flex-shrink-0" id="apply-cta-sticky" style={{ padding: "8px 20px", fontSize: "0.875rem", fontWeight: 600 }}>
-              <ExternalLink size={14} /> Apply on LFX
+              <ExternalLink size={14} /> Check LFX Portal
             </a>
           </div>
         </div>

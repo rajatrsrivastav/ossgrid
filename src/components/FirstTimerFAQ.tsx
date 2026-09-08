@@ -17,7 +17,7 @@ const FAQS: FAQItem[] = [
   {
     question: "How much is the stipend, and how is it paid?",
     answer:
-      "Stipends typically range from $3,000 to $6,600 USD per mentee depending on your geographical location (calculated using Purchasing Power Parity) and whether the term is full-time (12 weeks, 40 hrs/wk) or part-time (24 weeks, 20 hrs/wk). It is disbursed in milestone payments based on mentor approval.",
+      "Stipends typically range from $1,000 to $6,600 USD per mentee depending on your geographical location (calculated using Purchasing Power Parity) and whether the term is full-time (12 weeks, 40 hrs/wk) or part-time (24 weeks, 20 hrs/wk). It is disbursed in milestone payments based on mentor approval.",
   },
   {
     question: "Do I have to be a university or CS student to apply?",
@@ -47,7 +47,7 @@ export default function FirstTimerFAQ() {
   return (
     <section className="w-full mb-12 rounded-3xl p-6 sm:p-10 border border-[var(--border-card)] bg-[var(--bg-secondary)] shadow-lg">
       <div className="flex items-center gap-2.5 mb-2">
-        <HelpCircle size={20} className="text-blue-400" />
+        <HelpCircle size={20} className="text-blue-600 dark:text-blue-400" />
         <h2 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">
           Frequently Asked Questions for Newcomers
         </h2>
@@ -68,14 +68,14 @@ export default function FirstTimerFAQ() {
                 onClick={() => setOpenIndex(isOpen ? null : idx)}
                 className={`w-full flex items-center justify-between p-4 sm:p-5 text-left text-sm sm:text-base font-semibold transition-colors ${
                   isOpen
-                    ? "text-blue-400"
+                    ? "text-blue-600 dark:text-blue-400"
                     : "text-[var(--text-primary)] hover:text-[var(--text-secondary)]"
                 }`}
                 aria-expanded={isOpen}
               >
                 <span>{faq.question}</span>
                 {isOpen ? (
-                  <ChevronUp size={18} className="text-blue-400 flex-shrink-0 ml-4" />
+                  <ChevronUp size={18} className="text-blue-600 dark:text-blue-400 flex-shrink-0 ml-4" />
                 ) : (
                   <ChevronDown size={18} className="text-[var(--text-muted)] flex-shrink-0 ml-4" />
                 )}

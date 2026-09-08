@@ -56,6 +56,24 @@
   --color-text-secondary:   var(--text-secondary);
   --color-text-muted:       var(--text-muted);
   --color-accent:           var(--color-accent-raw);
+
+  /* ── Dynamic Colors for Readability in Light/Dark ───────────────────── */
+  --color-blue-400: var(--theme-blue-400, #60a5fa);
+  --color-blue-600: var(--theme-blue-600, #2563eb);
+  --color-emerald-400: var(--theme-emerald-400, #34d399);
+  --color-emerald-600: var(--theme-emerald-600, #059669);
+  --color-purple-400: var(--theme-purple-400, #c084fc);
+  --color-purple-600: var(--theme-purple-600, #9333ea);
+  --color-amber-400: var(--theme-amber-400, #fbbf24);
+  --color-amber-600: var(--theme-amber-600, #d97706);
+  --color-orange-400: var(--theme-orange-400, #fb923c);
+  --color-orange-600: var(--theme-orange-600, #ea580c);
+  --color-pink-400: var(--theme-pink-400, #f472b6);
+  --color-pink-600: var(--theme-pink-600, #db2777);
+  --color-slate-400: var(--theme-slate-400, #94a3b8);
+  --color-slate-600: var(--theme-slate-600, #475569);
+  --color-zinc-400: var(--theme-zinc-400, #a1a1aa);
+  --color-zinc-600: var(--theme-zinc-600, #52525b);
 }
 
 /* ---------------------------------------------------------------------------
@@ -147,14 +165,32 @@
   --border-input:  #cbd5e1;
   --border-hover:  #2563eb;
 
-  --text-primary:   #0f172a;
-  --text-secondary: #334155;   /* ≥4.5:1 on white */
-  --text-muted:     #64748b;
-  --text-badge:     #0f172a;
+  --text-primary:   #020617;   /* Very dark navy/near-black */
+  --text-secondary: #334155;   /* Medium-dark gray */
+  --text-muted:     #475569;   /* Readable muted gray */
+  --text-badge:     #020617;
 
   --color-accent-raw:  #2563eb;
   --color-accent-dim:  rgba(37, 99, 235, 0.1);
   --color-accent-glow: rgba(37, 99, 235, 0.2);
+
+  /* Increase contrast for colored text in light mode */
+  --theme-blue-400: #1d4ed8;   /* blue-700 */
+  --theme-blue-600: #1d4ed8;   /* blue-700 */
+  --theme-emerald-400: #047857; /* emerald-700 */
+  --theme-emerald-600: #047857; /* emerald-700 */
+  --theme-purple-400: #7e22ce;  /* purple-700 */
+  --theme-purple-600: #7e22ce;  /* purple-700 */
+  --theme-amber-400: #b45309;   /* amber-700 */
+  --theme-amber-600: #b45309;   /* amber-700 */
+  --theme-orange-400: #c2410c;  /* orange-700 */
+  --theme-orange-600: #c2410c;  /* orange-700 */
+  --theme-pink-400: #be185d;    /* pink-700 */
+  --theme-pink-600: #be185d;    /* pink-700 */
+  --theme-slate-400: #475569;   /* slate-600 */
+  --theme-slate-600: #334155;   /* slate-700 */
+  --theme-zinc-400: #52525b;    /* zinc-600 */
+  --theme-zinc-600: #3f3f46;    /* zinc-700 */
 
   --shadow-card:       0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 14px rgba(0, 0, 0, 0.04);
   --shadow-card-hover: 0 6px 20px rgba(0, 0, 0, 0.08);

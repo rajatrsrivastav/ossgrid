@@ -79,7 +79,7 @@ export default function LandingHero({
           {/* Subtitle & Value Proposition */}
           <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-2xl mb-8">
             Discover funded open-source mentorships across {orgCount}+ organizations and {projectCount}+ projects.
-            Earn a <strong className="text-[var(--text-primary)] font-semibold">$3,000 to $6,600 USD stipend</strong> while
+            Earn a <strong className="text-[var(--text-primary)] font-semibold">$1,000 to $6,600 USD stipend</strong> while
             contributing to Kubernetes, Linux, GraphQL, and OpenSSF under 1-on-1 guidance from core maintainers.
           </p>
 
@@ -117,7 +117,7 @@ export default function LandingHero({
                 onClick={() => onFilterPreset?.("active")}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-blue-500/40 transition-all cursor-pointer"
               >
-                <Flame size={13} className="text-amber-400" />
+                <Flame size={13} className="text-amber-600 dark:text-amber-400" />
                 <span>Active 2026/2025</span>
               </button>
 
@@ -125,7 +125,7 @@ export default function LandingHero({
                 onClick={() => onFilterPreset?.("beginner")}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-emerald-500/40 transition-all cursor-pointer"
               >
-                <Sparkles size={13} className="text-emerald-400" />
+                <Sparkles size={13} className="text-emerald-600 dark:text-emerald-400" />
                 <span>Beginner Friendly</span>
               </button>
 
@@ -133,7 +133,7 @@ export default function LandingHero({
                 onClick={() => onFilterPreset?.("cloud")}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-blue-500/40 transition-all cursor-pointer"
               >
-                <Cloud size={13} className="text-blue-400" />
+                <Cloud size={13} className="text-blue-600 dark:text-blue-400" />
                 <span>Cloud Native / Go</span>
               </button>
 
@@ -141,7 +141,7 @@ export default function LandingHero({
                 onClick={() => onFilterPreset?.("systems")}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-orange-500/40 transition-all cursor-pointer"
               >
-                <Cpu size={13} className="text-orange-400" />
+                <Cpu size={13} className="text-orange-600 dark:text-orange-400" />
                 <span>Rust &amp; Systems</span>
               </button>
 
@@ -149,16 +149,16 @@ export default function LandingHero({
                 onClick={() => onFilterPreset?.("ai")}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-purple-500/40 transition-all cursor-pointer"
               >
-                <Terminal size={13} className="text-purple-400" />
+                <Terminal size={13} className="text-purple-600 dark:text-purple-400" />
                 <span>Python &amp; AI</span>
               </button>
 
               {savedCount > 0 && (
                 <button
                   onClick={() => onFilterPreset?.("saved")}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-all cursor-pointer"
                 >
-                  <Bookmark size={13} className="fill-blue-400" />
+                  <Bookmark size={13} className="fill-blue-600 dark:fill-blue-400" />
                   <span>Saved ({savedCount})</span>
                 </button>
               )}

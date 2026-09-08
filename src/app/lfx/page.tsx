@@ -78,33 +78,17 @@ export default function LFXPortalPage() {
   const [sortBy, setSortBy] = useState<SortOption>("relevance");
   const [activeNavItem, setActiveNavItem] = useState<NavItem>("home");
   const [selectedSizes, setSelectedSizes] = useState<("large" | "medium" | "small")[]>([]);
-
-  const [savedOrgIds, setSavedOrgIds] = useState<string[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const stored = localStorage.getItem("ossgrid_saved_orgs");
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
+  // Bookmark logic temporarily disabled until authentication is added
+  // const [savedOrgIds, setSavedOrgIds] = useState<string[]>(() => { ... });
+  const savedOrgIds: string[] = [];
 
   const gridRef = useRef<HTMLDivElement | null>(null);
   const cohortsRef = useRef<HTMLDivElement | null>(null);
 
   const { filters, setFilters, clearFilters, initialized } = useFilterState();
 
-  const toggleSaveOrg = (orgId: string) => {
-    setSavedOrgIds((prev) => {
-      const updated = prev.includes(orgId)
-        ? prev.filter((id) => id !== orgId)
-        : [...prev, orgId];
-      try {
-        localStorage.setItem("ossgrid_saved_orgs", JSON.stringify(updated));
-      } catch {}
-      return updated;
-    });
-  };
+  // const toggleSaveOrg = (orgId: string) => { ... };
+  const toggleSaveOrg = (orgId: string) => {};
 
   // ⌘K shortcut
   useEffect(() => {
@@ -139,9 +123,11 @@ export default function LFXPortalPage() {
 
     let result = organizations;
 
+    /*
     if (activeNavItem === "saved") {
       result = result.filter((org) => savedOrgIds.includes(org.id));
     }
+    */
 
     if (filters.search && searchIndex) {
       result = searchOrganizations(searchIndex, filters.search);
@@ -272,7 +258,7 @@ export default function LFXPortalPage() {
             {/* Top Breadcrumb link back to OSSGrid home */}
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-blue-400 transition-colors mb-6"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-blue-600 dark:text-blue-400 transition-colors mb-6"
             >
               <ArrowLeft size={13} />
               Back to OSSGrid Programs Guidebook
@@ -282,12 +268,12 @@ export default function LFXPortalPage() {
               <div className="lg:col-span-8">
                 {/* Badge */}
                 <div className="flex flex-wrap items-center gap-2 mb-4">
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                     The Linux Foundation & CNCF Mentorship Program
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    2026 Term 3 Open
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                    Next: 2027 Term 1 Upcoming
                   </span>
                 </div>
 
@@ -297,7 +283,7 @@ export default function LFXPortalPage() {
 
                 <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-3xl mb-8">
                   The flagship mentorship program of <strong>The Linux Foundation</strong> and <strong>Cloud Native Computing Foundation (CNCF)</strong>.
-                  Connect directly with core maintainers across {organizations.length || 96}+ organizations, work on critical infrastructure projects, and earn a <strong className="text-[var(--text-primary)]">$3,000 to $6,600 USD stipend</strong> through 12-week or 24-week terms.
+                  Connect directly with core maintainers across {organizations.length || 96}+ organizations, work on critical infrastructure projects, and earn a <strong className="text-[var(--text-primary)]">$1,000 to $6,600 USD stipend</strong> through 12-week or 24-week terms.
                 </p>
 
                 {/* Primary Actions */}
@@ -319,7 +305,7 @@ export default function LFXPortalPage() {
                     onClick={scrollToCohorts}
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold border border-[var(--border-input)] bg-[var(--bg-input)] text-[var(--text-primary)] hover:border-blue-500/50 hover:bg-[var(--bg-card)] transition-all cursor-pointer"
                   >
-                    <Calendar size={16} className="text-blue-400" />
+                    <Calendar size={16} className="text-blue-600 dark:text-blue-400" />
                     Cohort Schedule & Terms
                   </button>
 
@@ -346,35 +332,35 @@ export default function LFXPortalPage() {
                   </div>
                   <div>
                     <div className="text-xs font-mono uppercase text-[var(--text-muted)]">Stipend Range</div>
-                    <div className="text-2xl font-black font-mono text-emerald-400">$3k - $6.6k</div>
+                    <div className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">$1k - $6.6k</div>
                   </div>
                   <div>
                     <div className="text-xs font-mono uppercase text-[var(--text-muted)]">Annual Cohorts</div>
-                    <div className="text-2xl font-black font-mono text-purple-400">3 Terms</div>
+                    <div className="text-2xl font-black font-mono text-purple-600 dark:text-purple-400">3 Terms</div>
                   </div>
                 </div>
               </div>
 
               {/* Right decorative stats card */}
               <div className="lg:col-span-4 hidden lg:flex flex-col gap-3.5 p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)]">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-400 font-mono">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono">
                   <ShieldCheck size={16} /> Why LFX Mentorship?
                 </div>
                 <ul className="space-y-3 text-xs text-[var(--text-secondary)] leading-relaxed">
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 size={15} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 size={15} className="text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                     <span><strong>1-on-1 Mentorship</strong> with core maintainers of CNCF & LF projects.</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 size={15} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 size={15} className="text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                     <span><strong>No University Required</strong>: Open to anyone 18+ worldwide.</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 size={15} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 size={15} className="text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                     <span><strong>Production Code</strong>: Real pull requests deployed to billions of devices.</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 size={15} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 size={15} className="text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                     <span><strong>Up to 3 Applications</strong> allowed per applicant each term.</span>
                   </li>
                 </ul>
@@ -389,7 +375,7 @@ export default function LFXPortalPage() {
         <section id="cohorts" ref={cohortsRef} className="w-full mb-14 scroll-mt-20">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-3">
             <div>
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-400 font-mono mb-1">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 font-mono mb-1">
                 <Calendar size={14} /> Cohort Schedule & Active Terms
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] tracking-tight">
@@ -397,86 +383,87 @@ export default function LFXPortalPage() {
               </h2>
             </div>
             <span className="text-xs font-mono text-[var(--text-muted)]">
-              Updated for 2026 Season
+              Updated for 2026–2027 Cycles
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {/* Term 1 */}
+            {/* 2026 Term 2 */}
             <div className="p-6 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-secondary)] flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[var(--bg-raised)] text-[var(--text-muted)]">
-                    Term 1
-                  </span>
-                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-500/10 text-slate-400 border border-slate-500/20">
-                    CLOSED
-                  </span>
-                </div>
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Spring Cohort</h3>
-                <p className="text-xs font-mono text-[var(--text-muted)] mb-3">March 1 – May 31</p>
-                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  Full-time (12 weeks) and part-time (24 weeks) term focused on early-year roadmap deliverables.
-                </p>
-              </div>
-              <div className="mt-4 pt-4 border-t border-[var(--border-card)] text-xs text-[var(--text-muted)]">
-                Completed
-              </div>
-            </div>
-
-            {/* Term 2 */}
-            <div className="p-6 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-secondary)] flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[var(--bg-raised)] text-[var(--text-muted)]">
-                    Term 2
+                    2026 Term 2
                   </span>
                   <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-500/10 text-slate-400 border border-slate-500/20">
                     CLOSED
                   </span>
                 </div>
                 <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Summer Cohort</h3>
-                <p className="text-xs font-mono text-[var(--text-muted)] mb-3">June 1 – August 31</p>
+                <p className="text-xs font-mono text-[var(--text-muted)] mb-3">June 1 – August 31, 2026</p>
                 <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  High-volume term running in parallel with Summer open source programs. Mentees present at KubeCon.
+                  Mid-year cycle running in parallel with Summer open source programs. Mentees present at KubeCon.
                 </p>
               </div>
               <div className="mt-4 pt-4 border-t border-[var(--border-card)] text-xs text-[var(--text-muted)]">
-                In Evaluation / Concluded
+                Concluded
               </div>
             </div>
 
-            {/* Term 3 - ACTIVE */}
+            {/* 2026 Term 3 - OVER */}
+            <div className="p-6 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-secondary)] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[var(--bg-raised)] text-[var(--text-muted)]">
+                    2026 Term 3
+                  </span>
+                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-500/10 text-slate-400 border border-slate-500/20">
+                    OVER / CLOSED
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Fall Cohort</h3>
+                <p className="text-xs font-mono text-[var(--text-muted)] mb-3">September 1 – November 30, 2026</p>
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                  This year&apos;s Term 3 is over. Applications are closed and mentees are currently completing their deliverables.
+                </p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-[var(--border-card)] text-xs text-[var(--text-muted)] flex items-center justify-between">
+                <span>Cycle Concluded</span>
+                <span className="font-mono text-[10px]">Applications Closed</span>
+              </div>
+            </div>
+
+            {/* 2027 Term 1 - UPCOMING NEXT CYCLE */}
             <div
               className="p-6 rounded-2xl border-2 flex flex-col justify-between relative overflow-hidden"
               style={{
                 borderColor: "#3b82f6",
-                background: "linear-gradient(145deg, var(--bg-secondary) 0%, rgba(59,130,246,0.06) 100%)",
+                background: "linear-gradient(145deg, var(--bg-secondary) 0%, rgba(59,130,246,0.08) 100%)",
                 boxShadow: "0 0 24px rgba(59,130,246,0.15)",
               }}
             >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute top-0 right-0 w-28 h-28 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                    Term 3 (Current)
+                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30">
+                    2027 Term 1 (Next)
                   </span>
-                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    OPEN NOW
+                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                    UPCOMING
                   </span>
                 </div>
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Fall Cohort</h3>
-                <p className="text-xs font-mono text-emerald-400 font-semibold mb-3">September 1 – November 30</p>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Spring Cohort 2027</h3>
+                <p className="text-xs font-mono text-blue-600 dark:text-blue-400 font-semibold mb-3">March 1 – May 31, 2027</p>
                 <p className="text-xs text-[var(--text-secondary)] leading-relaxed mb-4">
-                  Currently active for project submissions and mentee applications! Explore organizations participating in this cycle below.
+                  The upcoming mentorship cycle. Review participating organizations and prepare contributions before project applications open on the LFX Portal.
                 </p>
               </div>
               <button
                 onClick={scrollToGrid}
-                className="btn-primary w-full justify-center text-xs py-2.5 font-bold"
+                className="btn-primary w-full justify-center text-xs py-2.5 font-bold cursor-pointer"
               >
-                Browse Term 3 Projects ↓
+                Browse Organizations for 2027 T1 ↓
               </button>
             </div>
           </div>
@@ -487,7 +474,7 @@ export default function LFXPortalPage() {
         ══════════════════════════════════════════════════════════════════════ */}
         <section id="grid" ref={gridRef} className="pt-2 scroll-mt-20">
           <div className="mb-4">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-400 font-mono mb-1">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 font-mono mb-1">
               <Layers size={14} /> The All Organizations Grid
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] tracking-tight">
@@ -605,7 +592,7 @@ export default function LFXPortalPage() {
                             <Link
                               href={`/organization/${org.id}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="p-1.5 rounded-lg hover:bg-[var(--bg-input)] text-[var(--text-muted)] hover:text-blue-400 transition-colors"
+                              className="p-1.5 rounded-lg hover:bg-[var(--bg-input)] text-[var(--text-muted)] hover:text-blue-600 dark:text-blue-400 transition-colors"
                             >
                               <ArrowUpRight size={15} />
                             </Link>

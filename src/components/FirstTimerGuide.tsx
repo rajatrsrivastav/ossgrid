@@ -24,7 +24,7 @@ export default function FirstTimerGuide({ onFindProjectsClick }: FirstTimerGuide
       step: "01",
       title: "Target & Evaluate",
       icon: Search,
-      color: "text-blue-400",
+      color: "text-blue-600 dark:text-blue-400",
       accentBg: "bg-blue-500/10 border-blue-500/20",
       description:
         "Filter OSSGrid by your primary languages (Go, Python, TypeScript, Rust, C++). Inspect historical term frequency, mentor rosters, and issue trackers before shortlisting 2–3 target projects.",
@@ -35,7 +35,7 @@ export default function FirstTimerGuide({ onFindProjectsClick }: FirstTimerGuide
       step: "02",
       title: "Engage & Pre-Contribute",
       icon: GitPullRequest,
-      color: "text-emerald-400",
+      color: "text-emerald-600 dark:text-emerald-400",
       accentBg: "bg-emerald-500/10 border-emerald-500/20",
       description:
         "The #1 selection factor: Never submit a cold application! Join the project's Slack or Discord, introduce yourself to mentors, and merge 1–2 small documentation fixes or good-first-issues.",
@@ -46,7 +46,7 @@ export default function FirstTimerGuide({ onFindProjectsClick }: FirstTimerGuide
       step: "03",
       title: "Milestone Proposal",
       icon: Send,
-      color: "text-amber-400",
+      color: "text-amber-600 dark:text-amber-400",
       accentBg: "bg-amber-500/10 border-amber-500/20",
       description:
         "Submit on mentorship.lfx.linuxfoundation.org. Include a clear 12-week schedule with measurable weekly milestones, your merged PR links, and your resume. Quality beats quantity.",
@@ -98,7 +98,7 @@ export default function FirstTimerGuide({ onFindProjectsClick }: FirstTimerGuide
               </div>
 
               {/* Title */}
-              <h3 className="text-base font-bold text-[var(--text-primary)] mb-2.5 tracking-tight group-hover:text-blue-400 transition-colors">
+              <h3 className="text-base font-bold text-[var(--text-primary)] mb-2.5 tracking-tight group-hover:text-blue-600 dark:text-blue-400 transition-colors">
                 {item.title}
               </h3>
 
@@ -120,7 +120,7 @@ export default function FirstTimerGuide({ onFindProjectsClick }: FirstTimerGuide
       {/* Program Core Facts Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-5 rounded-2xl bg-[var(--bg-raised)] border border-[var(--border-card)] relative z-10">
         <div className="flex items-start gap-3">
-          <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 flex-shrink-0">
+          <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex-shrink-0">
             <Users size={16} />
           </div>
           <div>
@@ -132,19 +132,19 @@ export default function FirstTimerGuide({ onFindProjectsClick }: FirstTimerGuide
         </div>
 
         <div className="flex items-start gap-3">
-          <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex-shrink-0">
+          <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex-shrink-0">
             <DollarSign size={16} />
           </div>
           <div>
             <div className="text-xs font-bold text-[var(--text-primary)]">Funded Stipends</div>
             <div className="text-[11px] text-[var(--text-muted)] leading-relaxed mt-0.5">
-              $3,000 to $6,600 USD per mentee, adjusted for purchasing power parity.
+              $1,000 to $6,600 USD per mentee, adjusted for purchasing power parity.
             </div>
           </div>
         </div>
 
         <div className="flex items-start gap-3">
-          <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex-shrink-0">
+          <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex-shrink-0">
             <Calendar size={16} />
           </div>
           <div>
@@ -156,7 +156,7 @@ export default function FirstTimerGuide({ onFindProjectsClick }: FirstTimerGuide
         </div>
 
         <div className="flex items-start gap-3">
-          <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 flex-shrink-0">
+          <div className="p-2 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 flex-shrink-0">
             <Award size={16} />
           </div>
           <div>

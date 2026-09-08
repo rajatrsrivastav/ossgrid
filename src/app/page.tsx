@@ -59,10 +59,10 @@ const PROGRAMS: ProgramCard[] = [
     shortName: "LFX Mentorship",
     sponsor: "The Linux Foundation & CNCF",
     status: "active",
-    statusLabel: "ACTIVE • 2026 T3 LIVE",
-    statusColor: "#10b981",
-    stipend: "$3,000 – $6,600 USD",
-    cohorts: "3 per year (Spring, Summer, Fall)",
+    statusLabel: "UPCOMING • 2027 T1",
+    statusColor: "#3b82f6",
+    stipend: "$1,000 – $6,600 USD",
+    cohorts: "3 per year (Next: 2027 Term 1)",
     commitment: "Full-time (12 wks) or Part-time (24 wks)",
     studentOnly: false,
     description:
@@ -86,7 +86,7 @@ const PROGRAMS: ProgramCard[] = [
     description:
       "The world's largest open-source initiative bringing new contributors into software organizations like Debian, Apache, Mozilla, GNU, and Python.",
     highlights: ["200+ Mentoring Orgs", "Medium & Large project scopes", "Proposal preparation guide", "Global community network"],
-    actionLabel: "Guidebook Available",
+    actionLabel: "Coming Soon",
   },
   {
     id: "gssoc",
@@ -210,13 +210,13 @@ export default function HomePage() {
             <div className="lg:col-span-7 flex flex-col justify-center">
               {/* Live Badge */}
               <div className="flex flex-wrap items-center gap-2.5 mb-5">
-                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/25">
-                  <Globe2 size={13} className="text-blue-400" />
-                  OSSGrid • The Universal Open Source Guidebook
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/25">
+                  <Globe2 size={13} className="text-blue-600 dark:text-blue-400" />
+                  OSSGrid • Open Source Guidebook
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  LFX Mentorship Hub Live
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/25">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                  Upcoming: 2027 Term 1
                 </span>
               </div>
 
@@ -227,7 +227,7 @@ export default function HomePage() {
 
               {/* Subtitle */}
               <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed mb-8 max-w-2xl">
-                The unified intelligence hub and playbook for developers. Discover paid open-source fellowships, compare stipend models ($1.5k–$7k), master real Git contribution workflows, and launch your journey across the global open source ecosystem.
+                A developer guide to open-source mentorships and fellowships. Compare stipends, eligibility, and timelines across programs like LFX, GSoC, and Outreachy, with practical guidance on getting selected.
               </p>
 
               {/* Action Buttons */}
@@ -241,7 +241,7 @@ export default function HomePage() {
                   }}
                 >
                   <Compass size={18} />
-                  Explore LFX Mentorship (Live)
+                  View LFX Mentorship
                   <ArrowRight size={17} />
                 </Link>
 
@@ -249,7 +249,7 @@ export default function HomePage() {
                   onClick={scrollToPrograms}
                   className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl text-sm font-semibold border border-[var(--border-input)] bg-[var(--bg-input)] text-[var(--text-primary)] hover:border-blue-500/50 hover:bg-[var(--bg-card)] transition-all cursor-pointer"
                 >
-                  <Layers size={16} className="text-blue-400" />
+                  <Layers size={16} className="text-blue-600 dark:text-blue-400" />
                   View All Programs
                 </button>
 
@@ -265,20 +265,20 @@ export default function HomePage() {
               {/* Key Ecosystem Stats Strip */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-6 border-t border-[var(--border-card)]">
                 <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Programs Tracked</div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-[var(--text-primary)] mt-0.5">6 Premier</div>
+                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Programs</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-[var(--text-primary)] mt-0.5">6 Programs</div>
+                </div>
+                <div className="flex flex-col">
+                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Currently</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-[#315e9b] dark:text-[#5282c1] mt-0.5">96+ Active</div>
                 </div>
                 <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">LFX Organizations</div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-blue-400 mt-0.5">96+ Active</div>
-                </div>
-                <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Funded Stipends</div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-emerald-400 mt-0.5">$1.5k – $7k</div>
+                  <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Stipends</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">$1.5k – $7k</div>
                 </div>
                 <div>
                   <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Eligibility</div>
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-purple-400 mt-0.5">Open Globally</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-purple-600 dark:text-purple-400 mt-0.5">Worldwide</div>
                 </div>
               </div>
             </div>
@@ -287,10 +287,6 @@ export default function HomePage() {
             <div className="lg:col-span-5 flex flex-col items-center justify-center relative mt-6 lg:mt-0">
               <div className="w-full h-[340px] sm:h-[400px] lg:h-[440px] relative flex items-center justify-center">
                 <GlobeCanvas />
-              </div>
-              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-medium text-[var(--text-muted)] bg-[var(--bg-card)]/80 backdrop-blur-md border border-[var(--border-card)] shadow-sm -mt-2 z-20">
-                <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-                <span>Global Contributor Network</span>
               </div>
             </div>
           </div>
@@ -302,15 +298,15 @@ export default function HomePage() {
         <section id="programs" ref={programsRef} className="scroll-mt-20">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-400 font-mono mb-1.5">
-                <Layers size={14} /> Open Source Mentorship Directory
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#315e9b] dark:text-[#5282c1] font-mono mb-1.5">
+                <Compass size={14} className="text-[#315e9b] dark:text-[#5282c1]" /> Programs
               </div>
-              <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] tracking-tight">
                 Programs & Fellowships Across Open Source
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-[var(--text-secondary)] max-w-md">
-              Compare requirements, stipend brackets, and application calendars. LFX Mentorship is currently live with full organization profiling.
+              Compare requirements, stipend brackets, and application calendars. 2026 Term 3 is concluded; next cycle is 2027 Term 1.
             </p>
           </div>
 
@@ -320,11 +316,10 @@ export default function HomePage() {
               return (
                 <div
                   key={prog.id}
-                  className={`flex flex-col justify-between rounded-3xl p-6 sm:p-7 border transition-all relative overflow-hidden ${
-                    isLfx
-                      ? "border-blue-500/60 bg-[var(--bg-secondary)] shadow-xl shadow-blue-500/10 ring-1 ring-blue-500/30"
-                      : "border-[var(--border-card)] bg-[var(--bg-secondary)] hover:border-[var(--border-hover)]"
-                  }`}
+                  className={`flex flex-col justify-between rounded-3xl p-6 sm:p-7 border transition-all relative overflow-hidden ${isLfx
+                    ? "border-blue-500/60 bg-[var(--bg-secondary)] shadow-xl shadow-blue-500/10 ring-1 ring-blue-500/30"
+                    : "border-[var(--border-card)] bg-[var(--bg-secondary)] hover:border-[var(--border-hover)]"
+                    }`}
                 >
                   {isLfx && (
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
@@ -363,7 +358,7 @@ export default function HomePage() {
                     <div className="space-y-2 mb-6 p-3.5 rounded-xl bg-[var(--bg-raised)] border border-[var(--border-card)] text-xs font-mono">
                       <div className="flex items-center justify-between">
                         <span className="text-[var(--text-muted)]">Stipend</span>
-                        <span className="font-bold text-emerald-400">{prog.stipend}</span>
+                        <span className="font-bold text-emerald-600 dark:text-emerald-400">{prog.stipend}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-[var(--text-muted)]">Schedule</span>
@@ -379,7 +374,7 @@ export default function HomePage() {
                     <div className="space-y-1.5 mb-6">
                       {prog.highlights.map((h, i) => (
                         <div key={i} className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                          <CheckCircle2 size={13} className="text-blue-400 flex-shrink-0" />
+                          <CheckCircle2 size={13} className="text-blue-600 dark:text-blue-400 flex-shrink-0" />
                           <span>{h}</span>
                         </div>
                       ))}
@@ -396,7 +391,7 @@ export default function HomePage() {
                         {prog.actionLabel}
                       </Link>
                     ) : (
-                      <div className="w-full py-2.5 px-3 rounded-xl border border-[var(--border-card)] bg-[var(--bg-input)] text-center text-xs font-mono text-[var(--text-muted)]">
+                      <div className="w-full py-2.5 px-3 rounded-xl border border-[var(--border-card)] bg-[var(--bg-input)] text-center text-xs font-mono text-[var(--text-muted)] opacity-60">
                         {prog.actionLabel}
                       </div>
                     )}
@@ -411,8 +406,8 @@ export default function HomePage() {
             COMPARISON MATRIX TABLE
         ══════════════════════════════════════════════════════════════════════ */}
         <section className="w-full rounded-3xl p-6 sm:p-10 border border-[var(--border-card)] bg-[var(--bg-secondary)] shadow-xl overflow-hidden">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-400 font-mono mb-2">
-            <ShieldCheck size={14} /> Side-by-Side Comparison
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#315e9b] dark:text-[#5282c1] font-mono mb-2">
+            <ShieldCheck size={14} className="text-[#315e9b] dark:text-[#5282c1]" /> Side-by-Side Comparison
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] tracking-tight mb-2">
             Open Source Mentorship Program Matrix
@@ -442,7 +437,7 @@ export default function HomePage() {
                     <td className="py-4 px-4 text-[var(--text-secondary)]">
                       {prog.sponsor}
                     </td>
-                    <td className="py-4 px-4 font-mono font-semibold text-emerald-400">
+                    <td className="py-4 px-4 font-mono font-semibold text-emerald-600 dark:text-emerald-400">
                       {prog.stipend}
                     </td>
                     <td className="py-4 px-4 text-[var(--text-secondary)]">
@@ -455,9 +450,9 @@ export default function HomePage() {
                       {prog.link ? (
                         <Link
                           href={prog.link}
-                          className="inline-flex items-center gap-1 text-xs font-bold text-blue-400 hover:underline"
+                          className="inline-flex items-center gap-1 text-xs font-bold text-[#315e9b] dark:text-[#5282c1] hover:underline"
                         >
-                          Explore Hub <ArrowRight size={12} />
+                          Explore Hub <ArrowRight size={12} className="text-[#315e9b] dark:text-[#5282c1]" />
                         </Link>
                       ) : (
                         <span className="text-[11px] font-mono text-[var(--text-muted)]">
