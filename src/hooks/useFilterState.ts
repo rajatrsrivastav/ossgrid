@@ -51,9 +51,12 @@ export function useFilterState() {
 
   // Initialize from URL on mount
   useEffect(() => {
-    const urlFilters = parseUrlFilters();
-    setFiltersInternal({ ...defaultFilterState, ...urlFilters });
-    setInitialized(true);
+    const timer = setTimeout(() => {
+      const urlFilters = parseUrlFilters();
+      setFiltersInternal({ ...defaultFilterState, ...urlFilters });
+      setInitialized(true);
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const setFilters = useCallback((newFilters: FilterState) => {

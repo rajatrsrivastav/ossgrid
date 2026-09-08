@@ -15,18 +15,25 @@ export default function SearchBar({ value, onChange }: SearchBarProps) {
         background: "var(--bg-input)",
         border: "1px solid var(--border-card)",
       }}
+      data-focus-within
     >
-      <Search size={16} style={{ color: "var(--text-muted)" }} />
+      <Search size={16} style={{ color: "var(--text-muted)", flexShrink: 0 }} />
       <input
         type="text"
-        placeholder="Search organizations, projects, technologies..."
+        placeholder="Search organizations, projects, technologies…"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        aria-label="Search organizations, projects, and technologies"
         className="text-sm flex-1 bg-transparent outline-none"
         style={{ color: "var(--text-primary)" }}
       />
       {value && (
-        <button onClick={() => onChange("")} style={{ color: "var(--text-muted)" }}>
+        <button
+          onClick={() => onChange("")}
+          style={{ color: "var(--text-muted)" }}
+          aria-label="Clear search"
+          className="rounded-sm transition-colors hover:text-text-primary"
+        >
           <X size={14} />
         </button>
       )}

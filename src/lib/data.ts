@@ -9,30 +9,69 @@ export async function loadOrganizations(): Promise<Organization[]> {
   return cachedOrgs!;
 }
 
-export function getFilterOptions(orgs: Organization[]): FilterOptions {
+export function getFilterOptions(
+  allOrgs: Organization[],
+  filteredOrgs?: Organization[]
+): FilterOptions {
+  // If filteredOrgs is provided, count matches within filteredOrgs (live counts),
+  // while preserving all known options from allOrgs so active filters can always be deselected.
+  const orgsForCounts = filteredOrgs ?? allOrgs;
+
   const termCount = new Map<string, number>();
   const categoryCount = new Map<string, number>();
   const techCount = new Map<string, number>();
   const yearCount = new Map<number, number>();
 
-  for (const org of orgs) {
+  for (const org of orgsForCounts) {
     for (const t of org.terms) termCount.set(t, (termCount.get(t) || 0) + 1);
     categoryCount.set(org.category, (categoryCount.get(org.category) || 0) + 1);
     for (const tech of org.technologies) techCount.set(tech, (techCount.get(tech) || 0) + 1);
     for (const y of org.years) yearCount.set(y, (yearCount.get(y) || 0) + 1);
   }
 
-  const sortByCount = <T>(map: Map<T, number>) =>
-    Array.from(map.entries())
-      .sort((a, b) => b[1] - a[1])
+  // Ensure all known values from allOrgs exist with 0 if no match
+  for (const org of allOrgs) {
+    for (const t of org.terms) {
+      if (!termCount.has(t)) termCount.set(t, 0);
+    }
+    if (!categoryCount.has(org.category)) categoryCount.set(org.category, 0);
+    for (const tech of org.technologies) {
+      if (!techCount.has(tech)) techCount.set(tech, 0);
+    }
+    for (const y of org.years) {
+      if (!yearCount.has(y)) yearCount.set(y, 0);
+    }
+  }
+
+  const baseTermCount = new Map<string, number>();
+  const baseCategoryCount = new Map<string, number>();
+  const baseTechCount = new Map<string, number>();
+
+  for (const org of allOrgs) {
+    for (const t of org.terms) baseTermCount.set(t, (baseTermCount.get(t) || 0) + 1);
+    baseCategoryCount.set(org.category, (baseCategoryCount.get(org.category) || 0) + 1);
+    for (const tech of org.technologies) baseTechCount.set(tech, (baseTechCount.get(tech) || 0) + 1);
+  }
+
+  // Stable sort by base dataset frequency, then alphabetically, so UI doesn't jitter on click
+  const sortByBaseCount = <T extends string>(
+    currentMap: Map<T, number>,
+    baseMap: Map<T, number>
+  ) =>
+    Array.from(currentMap.entries())
+      .sort((a, b) => {
+        const baseDiff = (baseMap.get(b[0]) || 0) - (baseMap.get(a[0]) || 0);
+        if (baseDiff !== 0) return baseDiff;
+        return String(a[0]).localeCompare(String(b[0]));
+      })
       .map(([value, count]) => ({ value, count }));
 
   return {
-    terms: sortByCount(termCount),
-    categories: sortByCount(categoryCount),
-    technologies: sortByCount(techCount),
+    terms: sortByBaseCount(termCount, baseTermCount),
+    categories: sortByBaseCount(categoryCount, baseCategoryCount),
+    technologies: sortByBaseCount(techCount, baseTechCount),
     years: Array.from(yearCount.entries())
-      .sort((a, b) => b[0] - a[0])
+      .sort((a, b) => (b[0] as number) - (a[0] as number))
       .map(([value, count]) => ({ value, count })),
   };
 }

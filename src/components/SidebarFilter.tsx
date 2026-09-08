@@ -1,8 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { X, Search, ChevronDown, ChevronRight, Sparkles, Zap, BookOpen } from "lucide-react";
+import {
+  X,
+  Search,
+  ChevronDown,
+  ChevronRight,
+  SlidersHorizontal,
+  Bookmark,
+  RotateCcw,
+} from "lucide-react";
 import { FilterState, FilterOptions } from "@/lib/types";
+
+export type NavItem = "home" | "organizations" | "projects" | "saved" | "about";
 
 interface SidebarFilterProps {
   filters: FilterState;
@@ -12,6 +22,12 @@ interface SidebarFilterProps {
   onClearAll: () => void;
   isMobile?: boolean;
   onClose?: () => void;
+  savedCount?: number;
+  activeNavItem?: NavItem;
+  onSelectNav?: (item: NavItem) => void;
+  selectedSizes?: ("large" | "medium" | "small")[];
+  onSizeChange?: (sizes: ("large" | "medium" | "small")[]) => void;
+  sizeCounts?: { large: number; medium: number; small: number };
 }
 
 function FilterSection({
@@ -29,13 +45,18 @@ function FilterSection({
     <div className="mb-4">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm font-semibold transition-colors"
-        style={{ color: "var(--text-primary)" }}
+        className="flex items-center justify-between w-full px-2 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors hover:bg-[var(--bg-input)] cursor-pointer select-none"
+        style={{ color: "var(--text-muted)" }}
+        aria-expanded={open}
       >
-        {title}
-        {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        <span>{title}</span>
+        {open ? (
+          <ChevronDown size={13} style={{ color: "var(--text-muted)" }} />
+        ) : (
+          <ChevronRight size={13} style={{ color: "var(--text-muted)" }} />
+        )}
       </button>
-      {open && <div className="mt-1 px-1">{children}</div>}
+      {open && <div className="mt-1">{children}</div>}
     </div>
   );
 }
@@ -48,9 +69,17 @@ export default function SidebarFilter({
   onClearAll,
   isMobile,
   onClose,
+  savedCount = 0,
+  activeNavItem = "home",
+  onSelectNav,
+  selectedSizes = [],
+  onSizeChange,
+  sizeCounts = { large: 20, medium: 36, small: 28 },
 }: SidebarFilterProps) {
   const [termSearch, setTermSearch] = useState("");
   const [techSearch, setTechSearch] = useState("");
+  const [showAllTech, setShowAllTech] = useState(false);
+  const [showAllTerms, setShowAllTerms] = useState(false);
 
   const toggleFilter = (
     key: keyof Pick<FilterState, "terms" | "categories" | "technologies">,
@@ -70,210 +99,274 @@ export default function SidebarFilter({
     onFilterChange({ ...filters, years: updated });
   };
 
-  const filteredTerms = options.terms.filter((t) =>
+  const toggleSize = (size: "large" | "medium" | "small") => {
+    if (!onSizeChange) return;
+    const updated = selectedSizes.includes(size)
+      ? selectedSizes.filter((s) => s !== size)
+      : [...selectedSizes, size];
+    onSizeChange(updated);
+  };
+
+  // Progressive disclosure & search filters
+  const matchingTerms = options.terms.filter((t) =>
     t.value.toLowerCase().includes(termSearch.toLowerCase())
   );
+  const visibleTerms = termSearch || showAllTerms
+    ? matchingTerms
+    : matchingTerms.slice(0, 6);
 
-  const filteredTech = options.technologies
-    .filter((t) => t.value.toLowerCase().includes(techSearch.toLowerCase()))
-    .slice(0, 30);
+  const matchingTech = options.technologies.filter((t) =>
+    t.value.toLowerCase().includes(techSearch.toLowerCase())
+  );
+  const visibleTech = techSearch || showAllTech
+    ? matchingTech.slice(0, 50)
+    : matchingTech.slice(0, 10);
 
   return (
     <div
-      className={`flex flex-col h-full ${isMobile ? "p-4" : ""}`}
+      className={`flex flex-col h-full ${isMobile ? "p-4" : "p-2"}`}
       style={{ color: "var(--text-primary)" }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid var(--border-card)" }}>
-        <span className="text-sm font-bold tracking-tight">Filters</span>
-        <div className="flex items-center gap-2">
-          {activeCount > 0 && (
+      {/* Mobile-Only Header with Dismiss */}
+      {isMobile ? (
+        <div className="flex items-center justify-between px-2 py-3 mb-3 border-b border-[var(--border-card)]">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal size={16} className="text-blue-400" />
+            <span className="text-sm font-bold tracking-tight text-[var(--text-primary)]">
+              Filter Organizations
+            </span>
+          </div>
+          {onClose && (
             <button
-              onClick={onClearAll}
-              className="text-xs font-medium px-2.5 py-1 rounded-lg transition-colors"
-              style={{
-                color: "var(--accent-start)",
-                background: "rgba(59, 130, 246, 0.1)",
-              }}
+              onClick={onClose}
+              className="p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-input)] text-[var(--text-muted)] cursor-pointer"
+              aria-label="Close filters"
             >
-              Clear all ({activeCount})
-            </button>
-          )}
-          {isMobile && onClose && (
-            <button onClick={onClose} style={{ color: "var(--text-muted)" }}>
               <X size={18} />
             </button>
           )}
         </div>
+      ) : (
+        /* Desktop Dedicated Filter Rail Header */
+        <div className="flex items-center justify-between px-2 py-2 mb-3 border-b border-[var(--border-card)]">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal size={14} className="text-blue-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+              Filters
+            </span>
+            {activeCount > 0 && (
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-bold">
+                {activeCount}
+              </span>
+            )}
+          </div>
+          {activeCount > 0 && (
+            <button
+              onClick={onClearAll}
+              className="flex items-center gap-1 text-[11px] font-medium text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+              title="Reset all active filters"
+            >
+              <RotateCcw size={11} />
+              <span>Reset</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Quick Filter Presets Strip */}
+      <div className="mb-4 px-1 flex flex-col gap-1">
+        <button
+          onClick={() => {
+            if (activeNavItem === "saved") {
+              onSelectNav?.("home");
+            } else {
+              onSelectNav?.("saved");
+            }
+          }}
+          className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+            activeNavItem === "saved"
+              ? "bg-blue-500/20 text-blue-400 border border-blue-500/40"
+              : "text-[var(--text-secondary)] hover:bg-[var(--bg-input)] border border-transparent"
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <Bookmark size={13} className={activeNavItem === "saved" ? "fill-blue-400 text-blue-400" : "text-[var(--text-muted)]"} />
+            <span>Saved Bookmarks</span>
+          </div>
+          <span className="text-[11px] font-mono text-[var(--text-muted)]">
+            {savedCount}
+          </span>
+        </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
-        {/* Quick Shortcuts */}
-        <div className="mb-4">
-          <p className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
-            Quick Filters
-          </p>
-          <div className="flex flex-wrap gap-1.5 px-2 mt-1">
+      {/* Scrollable Filters Rail */}
+      <div className="flex-1 overflow-y-auto pr-1 space-y-1 scrollbar-thin">
+        {/* Year Filter */}
+        <FilterSection title="Term Year">
+          <div className="space-y-0.5">
+            {options.years.slice(0, 5).map(({ value, count }) => {
+              const checked = filters.years.includes(value);
+              return (
+                <label
+                  key={value}
+                  className="flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer transition-colors hover:bg-[var(--bg-input)] text-xs select-none"
+                  style={{
+                    color: count === 0 && !checked ? "var(--text-muted)" : "var(--text-secondary)",
+                    opacity: count === 0 && !checked ? 0.45 : 1,
+                  }}
+                >
+                  <div className="flex items-center gap-2.5 truncate">
+                    <input
+                      type="checkbox"
+                      className="filter-checkbox"
+                      checked={checked}
+                      onChange={() => toggleYear(value)}
+                    />
+                    <span className="font-mono font-medium">{value}</span>
+                  </div>
+                  <span className="text-[11px] font-mono text-[var(--text-muted)]" style={{ fontFeatureSettings: '"tnum"' }}>
+                    {count}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </FilterSection>
+
+        {/* Organization Scale / Size */}
+        <FilterSection title="Organization Size">
+          <div className="space-y-0.5">
             {[
-              { label: "Beginner Friendly", icon: <Sparkles size={12} />, value: "beginner" },
-              { label: "First-Time Orgs", icon: <BookOpen size={12} />, value: "first-time" },
-            ].map(({ label, icon, value }) => {
-              const isActive = filters.quickFilters.includes(value);
+              { id: "large" as const, label: "Large (15+ projects)", count: sizeCounts.large },
+              { id: "medium" as const, label: "Medium (5–14 projects)", count: sizeCounts.medium },
+              { id: "small" as const, label: "Focused (<5 projects)", count: sizeCounts.small },
+            ].map((sizeItem) => {
+              const checked = selectedSizes.includes(sizeItem.id);
               return (
-                <button
-                  key={value}
-                  onClick={() => {
-                    const updated = isActive
-                      ? filters.quickFilters.filter((v) => v !== value)
-                      : [...filters.quickFilters, value];
-                    onFilterChange({ ...filters, quickFilters: updated });
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all"
-                  style={{
-                    background: isActive
-                      ? "linear-gradient(135deg, var(--accent-start), var(--accent-end))"
-                      : "var(--bg-input)",
-                    color: isActive ? "white" : "var(--text-secondary)",
-                    border: `1px solid ${isActive ? "transparent" : "var(--border-card)"}`,
-                  }}
+                <label
+                  key={sizeItem.id}
+                  className="flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer transition-colors hover:bg-[var(--bg-input)] text-xs text-[var(--text-secondary)] select-none"
                 >
-                  {icon} {label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Years */}
-        <FilterSection title="Years">
-          <div className="flex flex-wrap gap-1.5 px-2">
-            {options.years.map(({ value, count }) => {
-              const isActive = filters.years.includes(value);
-              return (
-                <button
-                  key={value}
-                  onClick={() => toggleYear(value)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all"
-                  style={{
-                    background: isActive
-                      ? "linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3))"
-                      : "var(--bg-input)",
-                    color: isActive ? "var(--accent-purple)" : "var(--text-secondary)",
-                    border: `1px solid ${isActive ? "rgba(139, 92, 246, 0.3)" : "var(--border-card)"}`,
-                  }}
-                >
-                  {value}
-                </button>
+                  <div className="flex items-center gap-2.5 truncate">
+                    <input
+                      type="checkbox"
+                      className="filter-checkbox"
+                      checked={checked}
+                      onChange={() => toggleSize(sizeItem.id)}
+                    />
+                    <span>{sizeItem.label}</span>
+                  </div>
+                  <span className="text-[11px] font-mono text-[var(--text-muted)]" style={{ fontFeatureSettings: '"tnum"' }}>
+                    {sizeItem.count}
+                  </span>
+                </label>
               );
             })}
           </div>
         </FilterSection>
 
-        {/* Terms */}
-        <FilterSection title="Terms">
-          <div className="px-2 mb-2">
-            <div
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg"
-              style={{
-                background: "var(--bg-input)",
-                border: "1px solid var(--border-card)",
-              }}
-            >
-              <Search size={13} style={{ color: "var(--text-muted)" }} />
-              <input
-                type="text"
-                placeholder="Search terms..."
-                value={termSearch}
-                onChange={(e) => setTermSearch(e.target.value)}
-                className="bg-transparent text-xs flex-1 outline-none"
-                style={{ color: "var(--text-primary)" }}
-              />
-            </div>
-          </div>
-          <div className="space-y-0.5 max-h-48 overflow-y-auto px-2">
-            {filteredTerms.map(({ value, count }) => (
-              <label
-                key={value}
-                className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg cursor-pointer transition-colors text-xs"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                <input
-                  type="checkbox"
-                  className="filter-checkbox"
-                  checked={filters.terms.includes(value)}
-                  onChange={() => toggleFilter("terms", value)}
-                />
-                <span className="flex-1 truncate">{value}</span>
-                <span style={{ color: "var(--text-muted)" }}>{count}</span>
-              </label>
-            ))}
-          </div>
-        </FilterSection>
-
-        {/* Categories */}
-        <FilterSection title="Categories">
-          <div className="space-y-0.5 px-2">
-            {options.categories.map(({ value, count }) => (
-              <label
-                key={value}
-                className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg cursor-pointer transition-colors text-xs"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                <input
-                  type="checkbox"
-                  className="filter-checkbox"
-                  checked={filters.categories.includes(value)}
-                  onChange={() => toggleFilter("categories", value)}
-                />
-                <span className="flex-1 truncate">{value}</span>
-                <span style={{ color: "var(--text-muted)" }}>{count}</span>
-              </label>
-            ))}
-          </div>
-        </FilterSection>
-
-        {/* Technologies */}
+        {/* Technologies Filter with Search */}
         <FilterSection title="Technologies">
-          <div className="px-2 mb-2">
+          <div className="mb-2">
             <div
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg"
-              style={{
-                background: "var(--bg-input)",
-                border: "1px solid var(--border-card)",
-              }}
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-[var(--border-input)] bg-[var(--bg-input)]"
             >
-              <Search size={13} style={{ color: "var(--text-muted)" }} />
+              <Search size={12} className="text-[var(--text-muted)] flex-shrink-0" />
               <input
                 type="text"
                 placeholder="Search technologies..."
                 value={techSearch}
                 onChange={(e) => setTechSearch(e.target.value)}
-                className="bg-transparent text-xs flex-1 outline-none"
-                style={{ color: "var(--text-primary)" }}
+                className="bg-transparent text-xs flex-1 outline-none text-[var(--text-primary)] placeholder-[var(--text-muted)]"
               />
             </div>
           </div>
-          <div className="flex flex-wrap gap-1.5 px-2 max-h-64 overflow-y-auto">
-            {filteredTech.map(({ value, count }) => {
-              const isActive = filters.technologies.includes(value);
+          <div className="space-y-0.5 max-h-56 overflow-y-auto pr-1">
+            {visibleTech.map(({ value, count }) => {
+              const checked = filters.technologies.includes(value);
               return (
-                <button
+                <label
                   key={value}
-                  onClick={() => toggleFilter("technologies", value)}
-                  className="badge badge-tech transition-all"
+                  className="flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer transition-colors hover:bg-[var(--bg-input)] text-xs select-none"
                   style={{
-                    background: isActive
-                      ? "linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.2))"
-                      : "var(--bg-badge)",
-                    color: isActive ? "var(--accent-start)" : "var(--text-badge)",
-                    borderColor: isActive ? "rgba(59, 130, 246, 0.3)" : "var(--border-card)",
+                    color: count === 0 && !checked ? "var(--text-muted)" : "var(--text-secondary)",
+                    opacity: count === 0 && !checked ? 0.45 : 1,
                   }}
                 >
-                  {value.toLowerCase()}
-                  <span className="ml-1 opacity-50">{count}</span>
-                </button>
+                  <div className="flex items-center gap-2.5 truncate">
+                    <input
+                      type="checkbox"
+                      className="filter-checkbox"
+                      checked={checked}
+                      onChange={() => toggleFilter("technologies", value)}
+                    />
+                    <span className="truncate">{value}</span>
+                  </div>
+                  <span className="text-[11px] font-mono text-[var(--text-muted)]" style={{ fontFeatureSettings: '"tnum"' }}>
+                    {count}
+                  </span>
+                </label>
               );
             })}
+            {matchingTech.length > 10 && !techSearch && (
+              <button
+                onClick={() => setShowAllTech(!showAllTech)}
+                className="w-full mt-1.5 py-1 text-xs text-left px-2 text-blue-400 hover:text-blue-300 font-medium cursor-pointer"
+              >
+                {showAllTech ? "Show fewer" : `Show all (${matchingTech.length})`}
+              </button>
+            )}
+          </div>
+        </FilterSection>
+
+        {/* Specific Terms Filter */}
+        <FilterSection title="Historical Terms" defaultOpen={false}>
+          <div className="mb-2">
+            <div
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-[var(--border-input)] bg-[var(--bg-input)]"
+            >
+              <Search size={12} className="text-[var(--text-muted)] flex-shrink-0" />
+              <input
+                type="text"
+                placeholder="Search terms…"
+                value={termSearch}
+                onChange={(e) => setTermSearch(e.target.value)}
+                className="bg-transparent text-xs flex-1 outline-none text-[var(--text-primary)] placeholder-[var(--text-muted)]"
+              />
+            </div>
+          </div>
+          <div className="space-y-0.5 max-h-48 overflow-y-auto pr-1">
+            {visibleTerms.map(({ value, count }) => (
+              <label
+                key={value}
+                className="flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer transition-colors hover:bg-[var(--bg-input)] text-xs select-none"
+                style={{
+                  color: count === 0 && !filters.terms.includes(value) ? "var(--text-muted)" : "var(--text-secondary)",
+                  opacity: count === 0 && !filters.terms.includes(value) ? 0.45 : 1,
+                }}
+              >
+                <div className="flex items-center gap-2.5 truncate">
+                  <input
+                    type="checkbox"
+                    className="filter-checkbox"
+                    checked={filters.terms.includes(value)}
+                    onChange={() => toggleFilter("terms", value)}
+                  />
+                  <span className="truncate">{value}</span>
+                </div>
+                <span className="text-[11px] font-mono text-[var(--text-muted)]" style={{ fontFeatureSettings: '"tnum"' }}>
+                  {count}
+                </span>
+              </label>
+            ))}
+            {matchingTerms.length > 6 && !termSearch && (
+              <button
+                onClick={() => setShowAllTerms(!showAllTerms)}
+                className="w-full mt-1 py-1 text-xs text-left px-2 text-blue-400 hover:text-blue-300 font-medium cursor-pointer"
+              >
+                {showAllTerms ? "Show fewer" : `Show all (${matchingTerms.length})`}
+              </button>
+            )}
           </div>
         </FilterSection>
       </div>

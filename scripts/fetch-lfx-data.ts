@@ -6,6 +6,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { Project } from "../src/lib/types";
 
 // ---------------------------------------------------------------------------
 // Term Manifest — all known LFX mentorship terms
@@ -142,11 +143,22 @@ function inferCategory(skills: string[], orgName: string): string {
   return "Cloud Native";
 }
 
+/** Filter heuristic: reject sentence fragments masquerading as skill tokens */
+function isSkillFragment(s: string): boolean {
+  const wordCount = s.trim().split(/\s+/).length;
+  if (wordCount > 4) return true;
+  if (s.trim().endsWith(".") || s.trim().endsWith("!")) return true;
+  const lower = s.trim().toLowerCase();
+  if (/^(and|or|to|as|for|with|but|in|of|the|a |an )/i.test(lower)) return true;
+  return false;
+}
+
 function parseSkills(skillsStr: string): string[] {
   return skillsStr
     .split(/[,;]/)
     .map((s) => s.trim())
     .filter((s) => s.length > 0 && s.length < 50)
+    .filter((s) => !isSkillFragment(s))
     .map((s) => {
       const lower = s.toLowerCase();
       if (lower === "golang" || lower === "go programming") return "Go";
@@ -157,6 +169,44 @@ function parseSkills(skillsStr: string): string[] {
       if (lower === "python3" || lower === "python 3") return "Python";
       return s.charAt(0).toUpperCase() + s.slice(1);
     });
+}
+
+/**
+ * Truncate description to complete sentences up to maxLen chars.
+ * Appends "…" only if the original was actually truncated.
+ */
+function truncateToSentence(text: string, maxLen: number): string {
+  if (text.length <= maxLen) return text;
+  // Split on sentence-ending punctuation followed by space or end
+  const sentenceEnd = /[.!?](?:\s|$)/g;
+  let lastGoodEnd = 0;
+  let match: RegExpExecArray | null;
+  // eslint-disable-next-line no-cond-assign
+  while ((match = sentenceEnd.exec(text)) !== null) {
+    const endPos = match.index + 1; // include the punctuation
+    if (endPos > maxLen) break;
+    lastGoodEnd = endPos;
+  }
+  if (lastGoodEnd > 0) {
+    return text.slice(0, lastGoodEnd).trim() + "…";
+  }
+  // No sentence boundary found — fall back to word boundary
+  return text.slice(0, maxLen).replace(/\s+\S*$/, "") + "…";
+}
+
+/**
+ * Check if a description string is unusable:
+ * - contains a bare URL, or
+ * - has fewer than 30 non-URL chars of prose
+ */
+function isDescriptionUnusable(desc: string): boolean {
+  if (!desc || desc.trim().length === 0) return true;
+  // Contains a bare HTTP URL
+  if (/https?:\/\//i.test(desc)) return true;
+  // Strip markdown URLs and check remaining prose length
+  const prose = desc.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/https?:\/\/\S+/g, "").trim();
+  if (prose.length < 30) return true;
+  return false;
 }
 
 function parseMentors(
@@ -238,6 +288,9 @@ interface RawProject {
   mentees: { name: string; github: string }[];
   upstreamIssueUrl: string;
   lfxUrl: string;
+  _term?: string;
+  _year?: number;
+  _termIndex?: number;
 }
 
 function parseReadme(markdown: string): RawProject[] {
@@ -477,9 +530,9 @@ async function main() {
     console.log(`✅ Found ${projects.length} projects`);
 
     for (const p of projects) {
-      (p as any)._term = termDef.label;
-      (p as any)._year = termDef.year;
-      (p as any)._termIndex = termDef.termIndex;
+      p._term = termDef.label;
+      p._year = termDef.year;
+      p._termIndex = termDef.termIndex;
     }
 
     allProjects.push(...projects);
@@ -499,7 +552,7 @@ async function main() {
     string,
     {
       name: string;
-      projects: any[];
+      projects: Project[];
       terms: Set<string>;
       years: Set<number>;
       technologies: Set<string>;
@@ -509,9 +562,9 @@ async function main() {
 
   for (const rawProject of allProjects) {
     const orgId = slugify(rawProject.organization);
-    const term = (rawProject as any)._term;
-    const year: number = (rawProject as any)._year;
-    const termIndex: number = (rawProject as any)._termIndex;
+    const term = rawProject._term || "";
+    const year: number = rawProject._year || 0;
+    const termIndex: number = rawProject._termIndex || 0;
 
     if (!orgMap.has(orgId)) {
       orgMap.set(orgId, {
@@ -560,10 +613,16 @@ async function main() {
     return {
       id: orgId,
       name: org.name,
-      logoUrl: generateLogoSvg(org.name),
-      description:
-        cleanMarkdown(org.descriptions[0] || '').substring(0, 200) ||
-        `${org.name} participates in LFX Mentorship`,
+      logoUrl: fs.existsSync(path.join(process.cwd(), "public", "logos", `${orgId}.png`))
+        ? `/logos/${orgId}.png`
+        : generateLogoSvg(org.name),
+      description: (() => {
+        const raw = cleanMarkdown(org.descriptions[0] || '');
+        if (isDescriptionUnusable(raw)) {
+          return `${org.name} participates in LFX Mentorship`;
+        }
+        return truncateToSentence(raw, 300);
+      })(),
       foundation: "CNCF",
       category,
       terms: termsArr,
