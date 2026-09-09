@@ -139,6 +139,28 @@ const PROGRAMS: ProgramCard[] = [
     highlights: ["Sprint-based pod structure", "Portfolio-ready repositories", "Professional career guidance", "Competitive cohort model"],
     actionLabel: "Track Coming Soon",
   },
+  {
+    id: "summer-of-bitcoin",
+    name: "Summer of Bitcoin",
+    shortName: "Summer of Bitcoin",
+    sponsor: "Summer of Bitcoin",
+    status: "coming-soon",
+    statusLabel: "COMING SOON • BITCOIN",
+    statusColor: "#f7931a",
+    stipend: "$3,000 – $6,600 USD (PPP • Paid in BTC)",
+    cohorts: "Annual (May – August)",
+    commitment: "Full-time (12 weeks)",
+    studentOnly: true,
+    description:
+      "A global, online summer internship program introducing university students to Bitcoin open-source development and design under expert mentorship.",
+    highlights: [
+      "Developer & UX Designer tracks",
+      "50 contributors across 26 orgs in 2026",
+      "Stipend paid in BTC (PPP calculated)",
+      "Bitcoin & Lightning ecosystem focus",
+    ],
+    actionLabel: "Track Coming Soon",
+  },
 ];
 
 export default function HomePage() {
