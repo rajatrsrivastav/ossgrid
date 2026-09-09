@@ -139,23 +139,6 @@ const PROGRAMS: ProgramCard[] = [
     highlights: ["Sprint-based pod structure", "Portfolio-ready repositories", "Professional career guidance", "Competitive cohort model"],
     actionLabel: "Track Coming Soon",
   },
-  {
-    id: "gsod",
-    name: "Google Season of Docs (GSoD)",
-    shortName: "Season of Docs",
-    sponsor: "Google Open Source",
-    status: "coming-soon",
-    statusLabel: "COMING SOON • DOCS",
-    statusColor: "#06b6d4",
-    stipend: "$5,000 – $15,000 USD (Org Grants)",
-    cohorts: "Annual",
-    commitment: "6-month documentation projects",
-    studentOnly: false,
-    description:
-      "Connecting technical writers with open source organizations to build world-class documentation architecture, tutorials, and developer guides.",
-    highlights: ["Technical writing focus", "High-impact docs architecture", "Open to professional writers", "Direct maintainer collaboration"],
-    actionLabel: "Track Coming Soon",
-  },
 ];
 
 export default function HomePage() {
