@@ -235,9 +235,6 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                 {latestTerm && (
                   <div className="flex items-center gap-2">
                     <TermBadge status={termStatus} term={latestTerm} />
-                    <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                      Next: 2027 T1
-                    </span>
                   </div>
                 )}
               </div>
