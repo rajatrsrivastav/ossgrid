@@ -312,46 +312,6 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
           {/* ── LEFT COLUMN: Projects ── */}
           <main className="flex-1 min-w-0 space-y-14">
 
-            {/* Section: Technologies */}
-            <section id="technologies" aria-label="Technologies">
-              <div className="flex items-center gap-3 mb-5">
-                <Code2 size={15} style={{ color: "var(--color-accent-raw)" }} />
-                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--color-accent-raw)" }}>Technologies</span>
-                <div style={{ flex: 1, height: 1, background: "var(--border-card)" }} />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {techsSorted.slice(0, 5).map(([tech, count]) => {
-                  const weight = count / maxFreq;
-                  return (
-                    <Link
-                      key={tech}
-                      href={`/?tech=${encodeURIComponent(tech)}`}
-                      style={{
-                        display: "inline-flex", alignItems: "center", gap: 6,
-                        padding: `${4 + weight * 4}px ${8 + weight * 6}px`,
-                        borderRadius: "var(--radius-sm)",
-                        background: weight > 0.6 ? "rgba(79,142,255,0.12)" : weight > 0.3 ? "rgba(79,142,255,0.07)" : "var(--bg-badge)",
-                        border: `1px solid ${weight > 0.6 ? "rgba(79,142,255,0.3)" : weight > 0.3 ? "rgba(79,142,255,0.18)" : "var(--border-card)"}`,
-                        fontFamily: "var(--font-mono)", fontSize: `${0.65 + weight * 0.15}rem`,
-                        fontWeight: weight > 0.5 ? 600 : 500,
-                        color: weight > 0.6 ? "var(--color-accent-raw)" : weight > 0.3 ? "var(--text-secondary)" : "var(--text-muted)",
-                        textDecoration: "none", transition: "all 0.15s ease", letterSpacing: "0.03em",
-                      }}
-                      title={`${count} project${count !== 1 ? "s" : ""} use ${tech}`}
-                    >
-                      {tech}
-                      {count > 1 && <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", opacity: 0.65 }}>×{count}</span>}
-                    </Link>
-                  );
-                })}
-              </div>
-              {techsSorted.length > 5 && (
-                <p style={{ marginTop: 8, fontSize: "0.72rem", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
-                  +{techsSorted.length - 5} more {techsSorted.length - 5 === 1 ? "technology" : "technologies"}
-                </p>
-              )}
-            </section>
-
             {/* Section: Projects */}
             <section id="projects" aria-label="Project list">
               <div className="flex items-center gap-3 mb-6">
