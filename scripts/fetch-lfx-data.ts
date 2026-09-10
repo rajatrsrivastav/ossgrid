@@ -1,15 +1,15 @@
 // =============================================================================
 // LFX Organizations — Data Pipeline
-// Fetches and normalizes LFX mentorship data from cncf/mentoring repo
+// Fetches, normalizes, and audits LFX mentorship data from cncf/mentoring repo
 // Usage: npx tsx scripts/fetch-lfx-data.ts
 // =============================================================================
 
 import * as fs from "fs";
 import * as path from "path";
-import { Project } from "../src/lib/types";
+import { Project, Organization } from "../src/lib/types";
 
 // ---------------------------------------------------------------------------
-// Term Manifest — all known LFX mentorship terms
+// Term Manifest — all known LFX mentorship terms with verified GitHub paths
 // ---------------------------------------------------------------------------
 const TERMS = [
   { year: 2027, term: "01-Mar-May", label: "2027 Term 1 (Mar-May)", termIndex: 1 },
@@ -26,27 +26,58 @@ const TERMS = [
   { year: 2023, term: "02-Jun-Aug", label: "2023 Term 2 (Jun-Aug)", termIndex: 2 },
   { year: 2023, term: "01-Mar-May", label: "2023 Term 1 (Mar-May)", termIndex: 1 },
   { year: 2022, term: "03-Sept-Nov", label: "2022 Term 3 (Sep-Nov)", termIndex: 3 },
-  { year: 2022, term: "02-Jun-Aug", label: "2022 Term 2 (Jun-Aug)", termIndex: 2 },
-  { year: 2022, term: "01-Mar-May", label: "2022 Term 1 (Mar-May)", termIndex: 1 },
-  { year: 2021, term: "03-Sept-Nov", label: "2021 Term 3 (Sep-Nov)", termIndex: 3 },
-  { year: 2021, term: "02-Jun-Aug", label: "2021 Term 2 (Jun-Aug)", termIndex: 2 },
-  { year: 2021, term: "01-Mar-May", label: "2021 Term 1 (Mar-May)", termIndex: 1 },
+  { year: 2022, term: "02-Summer", label: "2022 Term 2 (Jun-Aug)", termIndex: 2 },
+  { year: 2022, term: "01-Spring", label: "2022 Term 1 (Mar-May)", termIndex: 1 },
+  { year: 2021, term: "03-Fall", label: "2021 Term 3 (Sep-Nov)", termIndex: 3 },
+  { year: 2021, term: "02-Summer", label: "2021 Term 2 (Jun-Aug)", termIndex: 2 },
+  { year: 2021, term: "01-Spring", label: "2021 Term 1 (Mar-May)", termIndex: 1 },
 ];
+
+// ---------------------------------------------------------------------------
+// Canonical Organization Aliases
+// Normalizes fragmented headings or sub-projects into authoritative CNCF orgs
+// ---------------------------------------------------------------------------
+const ORG_ALIASES: Record<string, string> = {
+  "add-guac-support": "in-toto",
+  "headlamp-a-kubernetes-ui": "Headlamp",
+  "the-update-framework-tuf": "The Update Framework (TUF)",
+  "tuf": "The Update Framework (TUF)",
+  "wasmedge-runtime": "WasmEdge",
+  "volcano-agentcube": "Volcano",
+  "volcano-kthena": "Volcano",
+  "knative-functions": "Knative",
+  "cilium-tetragon": "Cilium",
+  "konveyor-ai": "Konveyor",
+  "krkn-chaos": "Krkn",
+  "cncf-tag-network-and-observability": "CNCF TAG Network",
+  "cncf-tag-contributor-strategy-ii": "CNCF TAG Contributor Strategy",
+  "cluster-api-provider-gcp": "Kubernetes",
+  "buildpacks": "Cloud Native Buildpacks",
+  "support-remote-terraform-hcl-git-repo-or-configmap-in-terraform-controller": "KubeVela",
+  "elekto-and-kubernetes-sig-contribex": "Kubernetes",
+  "kubernetes-policy-working-group-wg": "Kubernetes",
+  "opentelemetry-php": "OpenTelemetry",
+};
 
 // ---------------------------------------------------------------------------
 // Headings that are NOT organization names — expanded blocklist
 // ---------------------------------------------------------------------------
 const BLOCKED_HEADINGS = new Set([
   "projects",
+  "projects ideas",
+  "project ideas",
   "accepted projects",
   "selected projects",
   "proposed project ideas",
-  "project ideas",
+  "participating projects",
+  "participating-projects",
   "table of contents",
   "timeline",
   "project instructions",
   "application instructions",
   "template",
+  "sample",
+  "prometheus (sample)",
   "cncf project name",
   "upcoming term",
   "guidelines",
@@ -77,6 +108,10 @@ const BLOCKED_HEADINGS = new Set([
   "spring",
   "summer",
   "fall",
+  "q1",
+  "q2",
+  "q3",
+  "q4",
 ]);
 
 function isBlockedHeading(text: string): boolean {
@@ -85,8 +120,12 @@ function isBlockedHeading(text: string): boolean {
   // Block generic patterns
   if (/^term\s+\d/i.test(lower)) return true;
   if (/^\d{4}\s+term/i.test(lower)) return true;
+  if (/^q[1-4]$/i.test(lower)) return true;
+  if (/^mentorship duration/i.test(lower)) return true;
+  if (/participating projects/i.test(lower)) return true;
+  if (/\(sample\)/i.test(lower)) return true;
   if (/^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i.test(lower)) return true;
-  if (/accepted|selected|proposed|instructions|guidelines|timeline|schedule|eligibility|archived|template/i.test(lower)) return true;
+  if (/^(timeline|table of contents|instructions|guidelines|schedule|eligibility|archived|template)/i.test(lower)) return true;
   return false;
 }
 
@@ -118,7 +157,23 @@ const TECH_CATEGORY_MAP: Record<string, string> = {
 // Helpers
 // ---------------------------------------------------------------------------
 function slugify(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return text
+    .toLowerCase()
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function cleanOrgName(raw: string): string {
+  const stripped = raw
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/^[#\s*]+|[#\s*]+$/g, "")
+    .trim();
+  const slug = slugify(stripped);
+  if (ORG_ALIASES[slug]) {
+    return ORG_ALIASES[slug];
+  }
+  return stripped;
 }
 
 function generateLogoSvg(name: string): string {
@@ -143,7 +198,6 @@ function inferCategory(skills: string[], orgName: string): string {
   return "Cloud Native";
 }
 
-/** Filter heuristic: reject sentence fragments masquerading as skill tokens */
 function isSkillFragment(s: string): boolean {
   const wordCount = s.trim().split(/\s+/).length;
   if (wordCount > 4) return true;
@@ -171,42 +225,20 @@ function parseSkills(skillsStr: string): string[] {
     });
 }
 
-/**
- * Truncate description to complete sentences up to maxLen chars.
- * Appends "…" only if the original was actually truncated.
- */
 function truncateToSentence(text: string, maxLen: number): string {
   if (text.length <= maxLen) return text;
-  // Split on sentence-ending punctuation followed by space or end
   const sentenceEnd = /[.!?](?:\s|$)/g;
   let lastGoodEnd = 0;
   let match: RegExpExecArray | null;
-  // eslint-disable-next-line no-cond-assign
   while ((match = sentenceEnd.exec(text)) !== null) {
-    const endPos = match.index + 1; // include the punctuation
+    const endPos = match.index + 1;
     if (endPos > maxLen) break;
     lastGoodEnd = endPos;
   }
   if (lastGoodEnd > 0) {
     return text.slice(0, lastGoodEnd).trim() + "…";
   }
-  // No sentence boundary found — fall back to word boundary
   return text.slice(0, maxLen).replace(/\s+\S*$/, "") + "…";
-}
-
-/**
- * Check if a description string is unusable:
- * - contains a bare URL, or
- * - has fewer than 30 non-URL chars of prose
- */
-function isDescriptionUnusable(desc: string): boolean {
-  if (!desc || desc.trim().length === 0) return true;
-  // Contains a bare HTTP URL
-  if (/https?:\/\//i.test(desc)) return true;
-  // Strip markdown URLs and check remaining prose length
-  const prose = desc.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/https?:\/\/\S+/g, "").trim();
-  if (prose.length < 30) return true;
-  return false;
 }
 
 function parseMentors(
@@ -214,24 +246,32 @@ function parseMentors(
 ): { name: string; github: string; email: string }[] {
   const mentors: { name: string; github: string; email: string }[] = [];
   for (const line of mentorLines) {
-    const match = line.match(
-      /^\s*-\s*(.+?)\s*\(@(\w[\w.-]*)\s*(?:,\s*([^\s)]+))?\s*\)/
+    const clean = line.replace(/^\s*-\s*/, "").trim();
+    // Discard any line that is a URL or empty or boilerplate template
+    if (
+      !clean ||
+      /^https?:\/\//i.test(clean) ||
+      clean.includes("github.com/") ||
+      clean.includes("same email address as you use on the LFX") ||
+      clean.includes("Mentor Name")
+    ) {
+      continue;
+    }
+
+    const match = clean.match(
+      /^(.+?)\s*\(@?([a-zA-Z0-9_\-]+)\s*(?:,\s*([^\s)]+))?\s*\)/
     );
     if (match) {
       mentors.push({
         name: match[1].trim(),
-        github: match[2],
+        github: match[2].replace(/^@/, ""),
         email: match[3] || "",
       });
     } else {
-      const clean = line.replace(/^\s*-\s*/, "").trim();
-      if (
-        clean &&
-        !clean.includes("same email address as you use on the LFX") &&
-        !clean.includes("Mentor Name")
-      ) {
+      const parts = clean.split("(")[0].trim();
+      if (parts && parts.length > 1 && parts.length < 60 && !parts.startsWith("http")) {
         mentors.push({
-          name: clean.split("(")[0].trim(),
+          name: parts,
           github: "",
           email: "",
         });
@@ -246,12 +286,12 @@ function parseMentees(
 ): { name: string; github: string }[] {
   const mentees: { name: string; github: string }[] = [];
   for (const line of menteeLines) {
-    const match = line.match(/^\s*-\s*(.+?)\s*\(@(\w[\w.-]*)\s*\)/);
+    const match = line.match(/^\s*-\s*(.+?)\s*\(@?([a-zA-Z0-9_\-]+)\s*\)/);
     if (match) {
-      mentees.push({ name: match[1].trim(), github: match[2] });
+      mentees.push({ name: match[1].trim(), github: match[2].replace(/^@/, "") });
     } else {
       const clean = line.replace(/^\s*-\s*/, "").trim();
-      if (clean && clean.length > 1 && clean.length < 80) {
+      if (clean && clean.length > 1 && clean.length < 80 && !clean.startsWith("http")) {
         mentees.push({ name: clean.split("(")[0].trim(), github: "" });
       }
     }
@@ -259,19 +299,16 @@ function parseMentees(
   return mentees.filter((m) => m.name.length > 0);
 }
 
-/**
- * Strip markdown syntax artifacts (blockquotes, headers, bold/italic, links)
- * so that descriptions render as clean plain text in the UI.
- */
 function cleanMarkdown(text: string): string {
   return text
-    .replace(/^>\s*##?\s*Description\s*>?\s*/gi, '') // leading "> ## Description >"
-    .replace(/^>\s*/gm, '')                           // blockquote markers
-    .replace(/#{1,6}\s*/g, '')                        // heading markers
-    .replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1')          // bold / italic
-    .replace(/_([^_]+)_/g, '$1')                      // underscore emphasis
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')          // markdown links → text only
-    .replace(/[>#]/g, '')                             // any remaining stray chars
+    .replace(/^>\s*##?\s*Description\s*>?\s*/gi, "")
+    .replace(/^>\s*/gm, "")
+    .replace(/#{1,6}\s*/g, "")
+    .replace(/\*{1,2}([^*]+)\*{1,2}/g, "$1")
+    .replace(/_([^_]+)_/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[>#]/g, "")
+    .replace(/\s{2,}/g, " ")
     .trim();
 }
 
@@ -297,6 +334,15 @@ function parseReadme(markdown: string): RawProject[] {
   const projects: RawProject[] = [];
   const lines = markdown.split("\n");
 
+  let h3Count = 0;
+  let h4Count = 0;
+  for (const l of lines) {
+    if (/^###\s+/.test(l)) h3Count++;
+    if (/^####\s+/.test(l)) h4Count++;
+  }
+  // If the document has many H4s and very few H3s, H4 is the org level (2021 & early 2022 format)
+  const isH4OrgStructure = h4Count > 10 && h3Count < 6;
+
   let currentOrg = "";
   let currentTitle = "";
   let currentField = "";
@@ -312,7 +358,8 @@ function parseReadme(markdown: string): RawProject[] {
   function flushProject() {
     if (!currentOrg || !currentTitle) return;
 
-    const descLines = projectData["description"] || [];
+    const descLines =
+      projectData["description"] || projectData["project description"] || [];
     const outcomeLines =
       projectData["expected outcome"] ||
       projectData["expected outcomes"] ||
@@ -320,9 +367,18 @@ function parseReadme(markdown: string): RawProject[] {
     const skillLines =
       projectData["recommended skills"] ||
       projectData["recommended skill"] ||
+      projectData["required skills"] ||
+      projectData["required skill"] ||
+      projectData["skills"] ||
+      projectData["skill"] ||
       [];
-    const issueLines = projectData["upstream issue"] || [];
-    const lfxLines = projectData["lfx url"] || [];
+    const issueLines =
+      projectData["upstream issue"] || projectData["upstream issues"] || [];
+    const lfxLines =
+      projectData["lfx url"] ||
+      projectData["lfx urls"] ||
+      projectData["project url"] ||
+      [];
 
     const description = cleanMarkdown(descLines.join(" ").trim());
     const expectedOutcome = cleanMarkdown(outcomeLines.join(" ").trim());
@@ -332,8 +388,8 @@ function parseReadme(markdown: string): RawProject[] {
 
     if (description || expectedOutcome) {
       projects.push({
-        organization: currentOrg,
-        title: currentTitle,
+        organization: cleanOrgName(currentOrg),
+        title: cleanMarkdown(currentTitle),
         description,
         expectedOutcome,
         skills: parseSkills(skillsStr),
@@ -356,34 +412,45 @@ function parseReadme(markdown: string): RawProject[] {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    // Detect headings (## to ####)
-    const headingMatch = line.match(/^(#{2,4})\s+(.+)/);
+    // Detect headings (## to ######)
+    const headingMatch = line.match(/^(#{2,6})\s+(.+)/);
     if (headingMatch) {
       const level = headingMatch[1].length;
       const text = headingMatch[2].trim();
 
-      // Skip blocked headings
+      // Skip blocked headings and reset org state
       if (isBlockedHeading(text)) {
+        flushProject();
+        currentOrg = "";
+        currentTitle = "";
+        inProject = false;
         continue;
       }
 
-      // Org-level heading (## or ###)
-      if (level === 2 || level === 3) {
-        if (!currentOrg || level <= currentOrgLevel) {
-          flushProject();
-          currentOrg = text;
-          currentOrgLevel = level;
-          currentTitle = "";
-          inProject = false;
-          continue;
-        }
+      const isOrg = isH4OrgStructure
+        ? level === 4
+        : level === 2 || level === 3;
+
+      if (isOrg) {
+        flushProject();
+        currentOrg = cleanOrgName(text);
+        currentOrgLevel = level;
+        currentTitle = "";
+        inProject = false;
+        continue;
       }
 
-      // Project-level heading (one level below org, or ####)
-      if (level === currentOrgLevel + 1 || level === 4) {
+      const isProj = isH4OrgStructure
+        ? level >= 5 && currentOrg !== ""
+        : (level === currentOrgLevel + 1 || level === 4) && currentOrg !== "";
+
+      if (isProj) {
         flushProject();
         currentTitle = text;
         inProject = true;
+        projectData = {};
+        fieldLines = [];
+        currentField = "";
         continue;
       }
     }
@@ -392,16 +459,14 @@ function parseReadme(markdown: string): RawProject[] {
 
     // Field line: "- Description:", "- Expected Outcome:", etc.
     const fieldMatch = line.match(
-      /^\s*-\s+(Description|Expected Outcome|Expected Outcomes|Recommended Skills?|Mentor\(s\)|Mentors?|Mentee\(s\)|Mentees?|Accepted Mentee|Upstream Issue|LFX URL)\s*:\s*(.*)/i
+      /^\s*-\s+(Description|Project Description|Expected Outcomes?|Recommended Skills?|Required Skills?|Skills?|Mentor\(s\)|Mentors?|Primary Mentor|Co-Mentors?|Mentee\(s\)|Mentees?|Accepted Mentees?|Upstream Issues?|LFX URLs?|Project URLs?)\s*:\s*(.*)/i
     );
     if (fieldMatch) {
       // Save previous field data
       if (currentField && fieldLines.length > 0) {
         if (
-          currentField !== "mentors" &&
-          currentField !== "mentor(s)" &&
-          currentField !== "mentees" &&
-          currentField !== "mentee(s)"
+          !currentField.includes("mentor") &&
+          !currentField.includes("mentee")
         ) {
           projectData[currentField] = fieldLines;
         }
@@ -476,26 +541,79 @@ function parseReadme(markdown: string): RawProject[] {
 }
 
 // ---------------------------------------------------------------------------
-// Fetchers
+// Fetcher with lfx-export.json priority & fallback
 // ---------------------------------------------------------------------------
 
-async function fetchTermMarkdown(
-  year: number,
-  term: string
-): Promise<string> {
-  const urls = [
-    `https://raw.githubusercontent.com/cncf/mentoring/main/programs/lfx-mentorship/${year}/${term}/project_ideas.md`,
-    `https://raw.githubusercontent.com/cncf/mentoring/main/programs/lfx-mentorship/${year}/${term}/README.md`,
-  ];
+interface LfxMentorExport {
+  name?: string;
+  github_handle?: string;
+  email?: string;
+}
 
-  let combined = "";
-  for (const url of urls) {
-    try {
-      const resp = await fetch(url);
-      if (resp.ok) combined += "\n" + (await resp.text());
-    } catch {}
-  }
-  return combined;
+interface LfxProgramExport {
+  cncf_project?: string;
+  cncf_project_slug?: string;
+  program_name_short?: string;
+  program_name_full?: string;
+  description?: string;
+  expected_outcomes?: string;
+  skills?: string;
+  technologies?: string;
+  mentors?: LfxMentorExport[];
+  upstream_issue_url?: string;
+  issue_url?: string;
+  lfx_url?: string;
+}
+
+async function fetchTermData(year: number, term: string): Promise<RawProject[]> {
+  // 1. Check if machine-readable lfx-export.json exists (e.g. 2026 Term 3)
+  const exportUrl = `https://raw.githubusercontent.com/cncf/mentoring/main/programs/lfx-mentorship/${year}/${term}/lfx-export.json`;
+  try {
+    const exportResp = await fetch(exportUrl);
+    if (exportResp.ok) {
+      const data = await exportResp.json();
+      if (data && Array.isArray(data.programs) && data.programs.length > 0) {
+        return (data.programs as LfxProgramExport[]).map((p) => ({
+          organization: cleanOrgName(p.cncf_project || p.cncf_project_slug || "CNCF"),
+          title: cleanMarkdown(p.program_name_short || p.program_name_full || "Mentorship Project"),
+          description: cleanMarkdown(p.description || ""),
+          expectedOutcome: cleanMarkdown(p.expected_outcomes || ""),
+          skills: p.skills ? parseSkills(p.skills) : (p.technologies ? parseSkills(p.technologies) : []),
+          mentors: (p.mentors || []).map((m) => ({
+            name: m.name || "",
+            github: (m.github_handle || "").replace(/^@/, ""),
+            email: m.email || "",
+          })),
+          mentees: [],
+          upstreamIssueUrl: p.upstream_issue_url || p.issue_url || "",
+          lfxUrl: p.lfx_url || "",
+        }));
+      }
+    }
+  } catch {}
+
+  // 2. Fetch README.md (accepted projects in older terms)
+  const readmeUrl = `https://raw.githubusercontent.com/cncf/mentoring/main/programs/lfx-mentorship/${year}/${term}/README.md`;
+  let readmeMd = "";
+  try {
+    const r = await fetch(readmeUrl);
+    if (r.ok) readmeMd = await r.text();
+  } catch {}
+
+  let projects = readmeMd ? parseReadme(readmeMd) : [];
+  if (projects.length > 0) return projects;
+
+  // 3. Fall back to project_ideas.md only if README had 0 projects
+  const ideasUrl = `https://raw.githubusercontent.com/cncf/mentoring/main/programs/lfx-mentorship/${year}/${term}/project_ideas.md`;
+  try {
+    const r = await fetch(ideasUrl);
+    if (r.ok) {
+      const ideasMd = await r.text();
+      projects = parseReadme(ideasMd);
+    }
+  } catch {}
+
+  return projects;
 }
 
 // ---------------------------------------------------------------------------
@@ -506,6 +624,27 @@ async function main() {
   console.log("🚀 LFX Organizations Data Pipeline");
   console.log("===================================\n");
 
+  // Load curated metadata registry
+  const metaPath = path.join(__dirname, "org-metadata.json");
+  let orgMetadata: Record<
+    string,
+    {
+      name?: string;
+      description?: string;
+      website?: string;
+      github?: string;
+      category?: string;
+    }
+  > = {};
+
+  if (fs.existsSync(metaPath)) {
+    try {
+      orgMetadata = JSON.parse(fs.readFileSync(metaPath, "utf8"));
+    } catch (e) {
+      console.warn("⚠️ Could not parse org-metadata.json", e);
+    }
+  }
+
   const allProjects: RawProject[] = [];
   const termLabels: Record<
     string,
@@ -515,12 +654,7 @@ async function main() {
   for (const termDef of TERMS) {
     process.stdout.write(`📥 Fetching ${termDef.label}... `);
 
-    const markdown = await fetchTermMarkdown(termDef.year, termDef.term);
-    let projects: RawProject[] = [];
-
-    if (markdown && markdown.trim().length > 0) {
-      projects = parseReadme(markdown);
-    }
+    const projects = await fetchTermData(termDef.year, termDef.term);
 
     if (projects.length === 0) {
       console.log("❌ Not found, skipping");
@@ -546,7 +680,7 @@ async function main() {
   console.log(`\n📊 Total raw projects: ${allProjects.length}`);
 
   // ---------------------------------------------------------------------------
-  // Aggregate into organizations
+  // Aggregate into organizations & generate collision-free IDs
   // ---------------------------------------------------------------------------
   const orgMap = new Map<
     string,
@@ -560,15 +694,18 @@ async function main() {
     }
   >();
 
+  const titleCounter = new Map<string, number>();
+
   for (const rawProject of allProjects) {
-    const orgId = slugify(rawProject.organization);
-    const term = rawProject._term || "";
-    const year: number = rawProject._year || 0;
-    const termIndex: number = rawProject._termIndex || 0;
+    const canonicalName = cleanOrgName(rawProject.organization);
+    const orgId = slugify(canonicalName);
+    const term = rawProject._term!;
+    const year = rawProject._year!;
+    const termIndex = rawProject._termIndex!;
 
     if (!orgMap.has(orgId)) {
       orgMap.set(orgId, {
-        name: rawProject.organization,
+        name: canonicalName,
         projects: [],
         terms: new Set(),
         years: new Set(),
@@ -585,10 +722,17 @@ async function main() {
       org.descriptions.push(rawProject.description);
     }
 
+    // Collision-free unique ID scoped with term and counter if duplicate titles
+    const baseTitleSlug = slugify(rawProject.title);
+    const titleKey = `${orgId}-${year}-t${termIndex}-${baseTitleSlug}`;
+    const count = (titleCounter.get(titleKey) || 0) + 1;
+    titleCounter.set(titleKey, count);
+    const projectId = count > 1 ? `${titleKey}-${count}` : titleKey;
+
     org.projects.push({
-      id: slugify(`${rawProject.organization}-${rawProject.title}`),
+      id: projectId,
       title: rawProject.title,
-      organization: rawProject.organization,
+      organization: canonicalName,
       organizationId: orgId,
       description: rawProject.description,
       expectedOutcome: rawProject.expectedOutcome,
@@ -604,36 +748,48 @@ async function main() {
   }
 
   // Build final organizations array
-  const organizations = Array.from(orgMap.entries()).map(([orgId, org]) => {
-    const technologies = Array.from(org.technologies);
-    const category = inferCategory(technologies, org.name);
-    const yearsArr = Array.from(org.years).sort((a, b) => b - a);
-    const termsArr = Array.from(org.terms).sort().reverse();
+  const organizations: Organization[] = Array.from(orgMap.entries()).map(
+    ([orgId, org]) => {
+      const meta = orgMetadata[orgId];
+      const technologies = Array.from(org.technologies);
+      const category = meta?.category || inferCategory(technologies, org.name);
+      const yearsArr = Array.from(org.years).sort((a, b) => b - a);
+      const termsArr = Array.from(org.terms).sort().reverse();
 
-    return {
-      id: orgId,
-      name: org.name,
-      logoUrl: fs.existsSync(path.join(process.cwd(), "public", "logos", `${orgId}.png`))
-        ? `/logos/${orgId}.png`
-        : generateLogoSvg(org.name),
-      description: (() => {
-        const raw = cleanMarkdown(org.descriptions[0] || '');
-        if (isDescriptionUnusable(raw)) {
-          return `${org.name} participates in LFX Mentorship`;
-        }
-        return truncateToSentence(raw, 300);
-      })(),
-      foundation: "CNCF",
-      category,
-      terms: termsArr,
-      years: yearsArr,
-      technologies: technologies.slice(0, 15),
-      projectCount: org.projects.length,
-      projects: org.projects,
-    };
-  });
+      // Check for custom PNG/SVG logo in public/logos/
+      const logoPngPath = path.join(process.cwd(), "public", "logos", `${orgId}.png`);
+      const logoSvgPath = path.join(process.cwd(), "public", "logos", `${orgId}.svg`);
+      let logoUrl = generateLogoSvg(org.name);
+      if (fs.existsSync(logoPngPath)) {
+        logoUrl = `/logos/${orgId}.png`;
+      } else if (fs.existsSync(logoSvgPath)) {
+        logoUrl = `/logos/${orgId}.svg`;
+      }
 
-  // Sort by most recent first, then by project count
+      // Verified description from registry or fallback
+      const description =
+        meta?.description ||
+        (org.descriptions[0]
+          ? truncateToSentence(cleanMarkdown(org.descriptions[0]), 220)
+          : `${org.name} participates in LFX Mentorship.`);
+
+      return {
+        id: orgId,
+        name: meta?.name || org.name,
+        logoUrl,
+        description,
+        foundation: "CNCF",
+        category,
+        terms: termsArr,
+        years: yearsArr,
+        technologies: technologies.slice(0, 15),
+        projectCount: org.projects.length,
+        projects: org.projects,
+      };
+    }
+  );
+
+  // Sort by most recent year, then project count
   organizations.sort((a, b) => {
     const yearDiff = (Number(b.years[0]) || 0) - (Number(a.years[0]) || 0);
     if (yearDiff !== 0) return yearDiff;

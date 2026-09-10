@@ -1,0 +1,660 @@
+{
+  "antrea": {
+    "name": "Antrea",
+    "description": "Antrea is an open-source Kubernetes networking solution based on Open vSwitch, providing pod connectivity and network security policies.",
+    "website": "https://antrea.io",
+    "github": "https://github.com/antrea-io/antrea",
+    "category": "Networking"
+  },
+  "apicurio-registry": {
+    "name": "Apicurio Registry",
+    "description": "Apicurio Registry is a datastore for sharing and managing API schemas and event-driven data specifications across microservices.",
+    "website": "https://www.apicur.io/registry",
+    "github": "https://github.com/Apicurio/apicurio-registry",
+    "category": "AI & Data"
+  },
+  "armada": {
+    "name": "Armada",
+    "description": "Armada is a multi-Kubernetes batch scheduling engine designed to manage high-throughput computing workloads across clusters.",
+    "website": "https://armadaproject.io",
+    "github": "https://github.com/armadaproject/armada",
+    "category": "Infrastructure & Cloud"
+  },
+  "cartography": {
+    "name": "Cartography",
+    "description": "Cartography is an open-source tool that maps dependencies and security relationships between assets in cloud infrastructure using graph databases.",
+    "website": "https://github.com/lyft/cartography",
+    "github": "https://github.com/lyft/cartography",
+    "category": "Security"
+  },
+  "carvel": {
+    "name": "Carvel",
+    "description": "Carvel provides a set of reliable, single-purpose, composable tools that assist with building, configuring, and deploying applications to Kubernetes.",
+    "website": "https://carvel.dev",
+    "github": "https://github.com/carvel-dev/carvel",
+    "category": "Development Tools"
+  },
+  "chaos-mesh": {
+    "name": "Chaos Mesh",
+    "description": "Chaos Mesh is a cloud-native Chaos Engineering platform that orchestrates chaos experiments on Kubernetes environments.",
+    "website": "https://chaos-mesh.org",
+    "github": "https://github.com/chaos-mesh/chaos-mesh",
+    "category": "Development Tools"
+  },
+  "cilium": {
+    "name": "Cilium",
+    "description": "Cilium is an open-source, eBPF-powered software for providing, securing, and observing network connectivity between cloud-native workloads.",
+    "website": "https://cilium.io",
+    "github": "https://github.com/cilium/cilium",
+    "category": "Networking"
+  },
+  "cloud-native-buildpacks": {
+    "name": "Cloud Native Buildpacks",
+    "description": "Cloud Native Buildpacks transform application source code into OCI-compliant container images without requiring Dockerfiles.",
+    "website": "https://buildpacks.io",
+    "github": "https://github.com/buildpacks",
+    "category": "Development Tools"
+  },
+  "cloudnativepg": {
+    "name": "CloudNativePG",
+    "description": "CloudNativePG is an open-source Kubernetes operator designed to manage the full lifecycle of PostgreSQL database clusters.",
+    "website": "https://cloudnative-pg.io",
+    "github": "https://github.com/cloudnative-pg/cloudnative-pg",
+    "category": "Storage"
+  },
+  "cncf-landscape": {
+    "name": "CNCF Landscape",
+    "description": "The CNCF Cloud Native Interactive Landscape filters and models hundreds of cloud-native projects and technologies.",
+    "website": "https://landscape.cncf.io",
+    "github": "https://github.com/cncf/landscape",
+    "category": "Development Tools"
+  },
+  "cncf-tag-contributor-strategy": {
+    "name": "CNCF TAG Contributor Strategy",
+    "description": "The CNCF Technical Advisory Group for Contributor Strategy focuses on open-source sustainability, governance, and community growth.",
+    "website": "https://tag-cs.cncf.io",
+    "github": "https://github.com/cncf/tag-contributor-strategy",
+    "category": "Development Tools"
+  },
+  "cncf-tag-network": {
+    "name": "CNCF TAG Network",
+    "description": "The CNCF Technical Advisory Group for Network explores networking architectures, protocols, and connectivity models in cloud native computing.",
+    "website": "https://github.com/cncf/tag-network",
+    "github": "https://github.com/cncf/tag-network",
+    "category": "Networking"
+  },
+  "copacetic": {
+    "name": "Copacetic",
+    "description": "Copacetic (copa) is a CLI tool for directly patching vulnerabilities in container images using reports from popular vulnerability scanners.",
+    "website": "https://project-copacetic.github.io/copacetic/website",
+    "github": "https://github.com/project-copacetic/copacetic",
+    "category": "Security"
+  },
+  "coredns": {
+    "name": "CoreDNS",
+    "description": "CoreDNS is a fast, flexible, and extensible DNS server written in Go that serves as the default cluster DNS for Kubernetes.",
+    "website": "https://coredns.io",
+    "github": "https://github.com/coredns/coredns",
+    "category": "Networking"
+  },
+  "cortex": {
+    "name": "Cortex",
+    "description": "Cortex provides horizontally scalable, highly available, multi-tenant, long-term storage for Prometheus metrics.",
+    "website": "https://cortexmetrics.io",
+    "github": "https://github.com/cortexproject/cortex",
+    "category": "Observability"
+  },
+  "cri-o": {
+    "name": "CRI-O",
+    "description": "CRI-O is a lightweight container runtime implementation designed specifically for Kubernetes using the Container Runtime Interface.",
+    "website": "https://cri-o.io",
+    "github": "https://github.com/cri-o/cri-o",
+    "category": "Infrastructure & Cloud"
+  },
+  "crossplane": {
+    "name": "Crossplane",
+    "description": "Crossplane turns Kubernetes clusters into universal control planes, enabling teams to assemble cloud infrastructure into custom APIs.",
+    "website": "https://www.crossplane.io",
+    "github": "https://github.com/crossplane/crossplane",
+    "category": "Infrastructure & Cloud"
+  },
+  "devfile": {
+    "name": "Devfile",
+    "description": "Devfile defines an open, portable schema for describing reproducible and consistent developer environments and workspaces.",
+    "website": "https://devfile.io",
+    "github": "https://github.com/devfile",
+    "category": "Development Tools"
+  },
+  "drasi": {
+    "name": "Drasi",
+    "description": "Drasi is an open-source data processing system that monitors database change logs and evaluates continuous queries in real time.",
+    "website": "https://drasi.io",
+    "github": "https://github.com/drasi-io/drasi-platform",
+    "category": "AI & Data"
+  },
+  "envoy-gateway": {
+    "name": "Envoy Gateway",
+    "description": "Envoy Gateway manages the Envoy proxy as an API Gateway in Kubernetes using the standard Gateway API specification.",
+    "website": "https://gateway.envoyproxy.io",
+    "github": "https://github.com/envoyproxy/gateway",
+    "category": "Networking"
+  },
+  "etcd": {
+    "name": "etcd",
+    "description": "etcd is a strongly consistent, distributed key-value store that provides a reliable way to store critical configuration and coordination state across clusters.",
+    "website": "https://etcd.io",
+    "github": "https://github.com/etcd-io/etcd",
+    "category": "Storage"
+  },
+  "flatcar-container-linux": {
+    "name": "Flatcar Container Linux",
+    "description": "Flatcar Container Linux is an immutable, secure, and auto-updating Linux operating system purpose-built for running container workloads.",
+    "website": "https://www.flatcar.org",
+    "github": "https://github.com/flatcar",
+    "category": "Systems & Kernel"
+  },
+  "fluid": {
+    "name": "Fluid",
+    "description": "Fluid is an elastic data abstraction and acceleration engine for data-intensive applications running on Kubernetes.",
+    "website": "https://fluid-cloudnative.github.io",
+    "github": "https://github.com/fluid-cloudnative/fluid",
+    "category": "AI & Data"
+  },
+  "flux": {
+    "name": "Flux",
+    "description": "Flux is an open and extensible continuous delivery solution for Kubernetes, powered by GitOps and the GitOps Toolkit.",
+    "website": "https://fluxcd.io",
+    "github": "https://github.com/fluxcd/flux2",
+    "category": "Development Tools"
+  },
+  "hami": {
+    "name": "HAMi",
+    "description": "HAMi is a heterogeneous AI computing virtualization engine that enables sharing, slicing, and memory management for GPUs and NPUs in Kubernetes.",
+    "website": "https://github.com/Project-HAMi/HAMi",
+    "github": "https://github.com/Project-HAMi/HAMi",
+    "category": "AI & Data"
+  },
+  "harbor": {
+    "name": "Harbor",
+    "description": "Harbor is an open-source trusted cloud native registry project that stores, signs, and scans container images and Helm charts.",
+    "website": "https://goharbor.io",
+    "github": "https://github.com/goharbor/harbor",
+    "category": "Storage"
+  },
+  "headlamp": {
+    "name": "Headlamp",
+    "description": "Headlamp is an extensible, user-friendly Kubernetes dashboard and web UI designed to be customized via plugins.",
+    "website": "https://headlamp.dev",
+    "github": "https://github.com/headlamp-k8s/headlamp",
+    "category": "Development Tools"
+  },
+  "in-toto": {
+    "name": "in-toto",
+    "description": "in-toto is a framework designed to secure software supply chains by verifying that each step from development to deployment was performed as expected.",
+    "website": "https://in-toto.io",
+    "github": "https://github.com/in-toto/in-toto",
+    "category": "Security"
+  },
+  "inspektor-gadget": {
+    "name": "Inspektor Gadget",
+    "description": "Inspektor Gadget is an eBPF-based collection of tools for debugging, inspecting, and monitoring Kubernetes applications and Linux systems.",
+    "website": "https://www.inspektor-gadget.io",
+    "github": "https://github.com/inspektor-gadget/inspektor-gadget",
+    "category": "Observability"
+  },
+  "istio": {
+    "name": "Istio",
+    "description": "Istio is an open-source service mesh that provides a transparent way to connect, secure, manage, and observe microservice communications.",
+    "website": "https://istio.io",
+    "github": "https://github.com/istio/istio",
+    "category": "Networking"
+  },
+  "jaeger": {
+    "name": "Jaeger",
+    "description": "Jaeger is an open-source, end-to-end distributed tracing platform used for monitoring and troubleshooting complex microservices architectures.",
+    "website": "https://www.jaegertracing.io",
+    "github": "https://github.com/jaegertracing/jaeger",
+    "category": "Observability"
+  },
+  "k8sgpt": {
+    "name": "K8sGPT",
+    "description": "K8sGPT is a tool for scanning Kubernetes clusters and diagnosing issues using AI and natural language explanations.",
+    "website": "https://k8sgpt.ai",
+    "github": "https://github.com/k8sgpt-ai/k8sgpt",
+    "category": "AI & Data"
+  },
+  "kagent": {
+    "name": "Kagent",
+    "description": "Kagent is an intelligent agent framework built to assist Kubernetes cluster administrators and automate operational tasks.",
+    "website": "https://github.com/kagent-io/kagent",
+    "github": "https://github.com/kagent-io/kagent",
+    "category": "AI & Data"
+  },
+  "karmada": {
+    "name": "Karmada",
+    "description": "Karmada (Kubernetes Armada) is a multi-cloud and multi-cluster management system providing centralized orchestration and cross-cluster failover.",
+    "website": "https://karmada.io",
+    "github": "https://github.com/karmada-io/karmada",
+    "category": "Infrastructure & Cloud"
+  },
+  "kcl": {
+    "name": "KCL",
+    "description": "KCL is an open-source, constraint-based record and functional language used for cloud-native configuration and automation.",
+    "website": "https://kcl-lang.io",
+    "github": "https://github.com/kcl-lang/kcl",
+    "category": "Development Tools"
+  },
+  "kgateway": {
+    "name": "kgateway",
+    "description": "kgateway is an open-source, cloud-native API gateway built on Envoy proxy implementing the Kubernetes Gateway API.",
+    "website": "https://kgateway.dev",
+    "github": "https://github.com/kgateway-dev/kgateway",
+    "category": "Networking"
+  },
+  "kmesh": {
+    "name": "Kmesh",
+    "description": "Kmesh is a high-performance, kernel-native service mesh data plane that uses eBPF to route traffic with ultra-low latency.",
+    "website": "https://kmesh.net",
+    "github": "https://github.com/kmesh-net/kmesh",
+    "category": "Networking"
+  },
+  "knative": {
+    "name": "Knative",
+    "description": "Knative provides serverless capabilities for Kubernetes, enabling developers to build, deploy, and manage event-driven, serverless applications.",
+    "website": "https://knative.dev",
+    "github": "https://github.com/knative",
+    "category": "Infrastructure & Cloud"
+  },
+  "konveyor": {
+    "name": "Konveyor",
+    "description": "Konveyor helps organizations modernize and migrate legacy applications to Kubernetes by providing automated analysis and transformation tools.",
+    "website": "https://www.konveyor.io",
+    "github": "https://github.com/konveyor",
+    "category": "Development Tools"
+  },
+  "koordinator": {
+    "name": "Koordinator",
+    "description": "Koordinator is a QoS-based scheduling system for Kubernetes that optimizes workload co-location and resource utilization across clusters.",
+    "website": "https://koordinator.sh",
+    "github": "https://github.com/koordinator-sh/koordinator",
+    "category": "Infrastructure & Cloud"
+  },
+  "krkn": {
+    "name": "Krkn",
+    "description": "Krkn (formerly Kraken) is a chaos testing tool designed to validate the resiliency and reliability of Kubernetes and OpenShift clusters.",
+    "website": "https://krkn-chaos.github.io/krkn",
+    "github": "https://github.com/krkn-chaos/krkn",
+    "category": "Development Tools"
+  },
+  "kuadrant": {
+    "name": "Kuadrant",
+    "description": "Kuadrant provides cloud-native traffic management, rate limiting, and authorization policies across multiple Kubernetes clusters.",
+    "website": "https://kuadrant.io",
+    "github": "https://github.com/Kuadrant",
+    "category": "Security"
+  },
+  "kube-burner": {
+    "name": "kube-burner",
+    "description": "kube-burner is an open-source performance orchestration tool designed to stress-test and benchmark Kubernetes clusters at scale.",
+    "website": "https://kube-burner.github.io/kube-burner",
+    "github": "https://github.com/kube-burner/kube-burner",
+    "category": "Development Tools"
+  },
+  "kube-state-metrics": {
+    "name": "Kube State Metrics",
+    "description": "kube-state-metrics is a service that listens to the Kubernetes API server and generates metrics about the health and state of cluster objects.",
+    "website": "https://github.com/kubernetes/kube-state-metrics",
+    "github": "https://github.com/kubernetes/kube-state-metrics",
+    "category": "Observability"
+  },
+  "kubearmor": {
+    "name": "KubeArmor",
+    "description": "KubeArmor is a cloud-native runtime security enforcement system that leverages eBPF and Linux Security Modules (LSM) to protect containers.",
+    "website": "https://kubearmor.io",
+    "github": "https://github.com/kubearmor/KubeArmor",
+    "category": "Security"
+  },
+  "kubeedge": {
+    "name": "KubeEdge",
+    "description": "KubeEdge extends native Kubernetes containerized application orchestration capabilities to edge hosts and IoT devices.",
+    "website": "https://kubeedge.io",
+    "github": "https://github.com/kubeedge/kubeedge",
+    "category": "Infrastructure & Cloud"
+  },
+  "kubeflow": {
+    "name": "Kubeflow",
+    "description": "Kubeflow is an end-to-end Machine Learning toolkit for Kubernetes, providing components for data prep, training, and model serving.",
+    "website": "https://www.kubeflow.org",
+    "github": "https://github.com/kubeflow/kubeflow",
+    "category": "AI & Data"
+  },
+  "kubernetes": {
+    "name": "Kubernetes",
+    "description": "Kubernetes is the leading open-source system for automating deployment, scaling, and management of containerized applications.",
+    "website": "https://kubernetes.io",
+    "github": "https://github.com/kubernetes/kubernetes",
+    "category": "Infrastructure & Cloud"
+  },
+  "kubescape": {
+    "name": "Kubescape",
+    "description": "Kubescape is an open-source Kubernetes security platform providing risk analysis, security compliance, and RBAC visualizer tools.",
+    "website": "https://kubescape.io",
+    "github": "https://github.com/kubescape/kubescape",
+    "category": "Security"
+  },
+  "kubeslice": {
+    "name": "KubeSlice",
+    "description": "KubeSlice connects multiple Kubernetes clusters into unified multi-tenant virtual networks across clouds and edges.",
+    "website": "https://kubeslice.io",
+    "github": "https://github.com/kubeslice",
+    "category": "Networking"
+  },
+  "kubespray": {
+    "name": "Kubespray",
+    "description": "Kubespray provides Ansible playbooks and configuration scripts for deploying production-ready Kubernetes clusters across bare metal and cloud.",
+    "website": "https://kubespray.io",
+    "github": "https://github.com/kubernetes-sigs/kubespray",
+    "category": "Infrastructure & Cloud"
+  },
+  "kubestellar": {
+    "name": "KubeStellar",
+    "description": "KubeStellar is a multi-cluster workload configuration management solution for edge, multi-cloud, and hybrid Kubernetes environments.",
+    "website": "https://kubestellar.io",
+    "github": "https://github.com/kubestellar/kubestellar",
+    "category": "Infrastructure & Cloud"
+  },
+  "kubevela": {
+    "name": "KubeVela",
+    "description": "KubeVela is a modern application delivery engine built on the Open Application Model (OAM) to make deploying microservices simpler across multi-cloud.",
+    "website": "https://kubevela.io",
+    "github": "https://github.com/kubevela/kubevela",
+    "category": "Infrastructure & Cloud"
+  },
+  "kubewarden": {
+    "name": "Kubewarden",
+    "description": "Kubewarden is a Kubernetes policy engine that uses WebAssembly binaries to validate, mutate, and evaluate cluster requests.",
+    "website": "https://www.kubewarden.io",
+    "github": "https://github.com/kubewarden",
+    "category": "Security"
+  },
+  "kwok": {
+    "name": "KWOK",
+    "description": "KWOK (Kubernetes WithOut Kubelet) enables simulated clusters of thousands of nodes with near-zero resource consumption for testing.",
+    "website": "https://kwok.sigs.k8s.io",
+    "github": "https://github.com/kubernetes-sigs/kwok",
+    "category": "Development Tools"
+  },
+  "kyverno": {
+    "name": "Kyverno",
+    "description": "Kyverno is a Kubernetes-native policy management engine that validates, mutates, generates, and cleans up configurations without requiring custom languages.",
+    "website": "https://kyverno.io",
+    "github": "https://github.com/kyverno/kyverno",
+    "category": "Security"
+  },
+  "lima": {
+    "name": "Lima",
+    "description": "Lima launches Linux virtual machines on macOS with automatic file sharing, port forwarding, and containerd support.",
+    "website": "https://lima-vm.io",
+    "github": "https://github.com/lima-vm/lima",
+    "category": "Development Tools"
+  },
+  "linkerd": {
+    "name": "Linkerd",
+    "description": "Linkerd is an ultra-light, security-first service mesh for Kubernetes that provides observability, reliability, and security without configuration complexity.",
+    "website": "https://linkerd.io",
+    "github": "https://github.com/linkerd/linkerd2",
+    "category": "Networking"
+  },
+  "litmuschaos": {
+    "name": "LitmusChaos",
+    "description": "LitmusChaos is an open-source Chaos Engineering platform designed to help cloud-native developers and SREs find weaknesses in Kubernetes deployments.",
+    "website": "https://litmuschaos.io",
+    "github": "https://github.com/litmuschaos/litmus",
+    "category": "Development Tools"
+  },
+  "meshery": {
+    "name": "Meshery",
+    "description": "Meshery is the cloud-native management plane providing collaborative infrastructure design, lifecycle management, and multi-mesh orchestration.",
+    "website": "https://meshery.io",
+    "github": "https://github.com/meshery/meshery",
+    "category": "Infrastructure & Cloud"
+  },
+  "microcks": {
+    "name": "Microcks",
+    "description": "Microcks is an open-source cloud-native tool for API mocking and contract testing, supporting REST, GraphQL, gRPC, and asynchronous event streams.",
+    "website": "https://microcks.io",
+    "github": "https://github.com/microcks/microcks",
+    "category": "Development Tools"
+  },
+  "nats": {
+    "name": "NATS",
+    "description": "NATS is a connective technology for adaptive edge and distributed systems, providing ultra-fast publish-subscribe and request-reply messaging.",
+    "website": "https://nats.io",
+    "github": "https://github.com/nats-io/nats-server",
+    "category": "Networking"
+  },
+  "notary": {
+    "name": "Notary",
+    "description": "Notary provides cryptographic trust and verification for digital content based on The Update Framework (TUF).",
+    "website": "https://notaryproject.dev",
+    "github": "https://github.com/notaryproject/notary",
+    "category": "Security"
+  },
+  "opencost": {
+    "name": "OpenCost",
+    "description": "OpenCost is a vendor-neutral open-source tool for measuring and allocating infrastructure and container costs in Kubernetes.",
+    "website": "https://www.opencost.io",
+    "github": "https://github.com/opencost/opencost",
+    "category": "Observability"
+  },
+  "openelb": {
+    "name": "OpenELB",
+    "description": "OpenELB is an open-source load balancer implementation designed for Kubernetes clusters running on bare metal infrastructure.",
+    "website": "https://openelb.io",
+    "github": "https://github.com/openelb/openelb",
+    "category": "Networking"
+  },
+  "openeverest": {
+    "name": "OpenEverest",
+    "description": "OpenEverest is an open-source Database-as-a-Service (DBaaS) platform designed for running cloud native databases on Kubernetes.",
+    "website": "https://github.com/percona/everest",
+    "github": "https://github.com/percona/everest",
+    "category": "Storage"
+  },
+  "openfunction": {
+    "name": "OpenFunction",
+    "description": "OpenFunction is a cloud-native open-source serverless platform that lets developers focus on their business logic without managing container runtimes.",
+    "website": "https://openfunction.dev",
+    "github": "https://github.com/OpenFunction/OpenFunction",
+    "category": "Infrastructure & Cloud"
+  },
+  "openkruise": {
+    "name": "OpenKruise",
+    "description": "OpenKruise is an extended suite of workload controllers for Kubernetes, providing automated canary rollouts, sidecar management, and in-place updates.",
+    "website": "https://openkruise.io",
+    "github": "https://github.com/openkruise/kruise",
+    "category": "Infrastructure & Cloud"
+  },
+  "opentelemetry": {
+    "name": "OpenTelemetry",
+    "description": "OpenTelemetry is a vendor-neutral collection of APIs, SDKs, and tools to generate, collect, and export telemetry data (traces, metrics, logs).",
+    "website": "https://opentelemetry.io",
+    "github": "https://github.com/open-telemetry",
+    "category": "Observability"
+  },
+  "openyurt": {
+    "name": "OpenYurt",
+    "description": "OpenYurt extends standard Kubernetes capabilities to edge computing scenarios without modifying Kubernetes core components.",
+    "website": "https://openyurt.io",
+    "github": "https://github.com/openyurtio/openyurt",
+    "category": "Infrastructure & Cloud"
+  },
+  "oras": {
+    "name": "ORAS",
+    "description": "ORAS (OCI Registry As Storage) enables moving arbitrary files and artifacts across OCI-compliant registries like Docker and Harbor.",
+    "website": "https://oras.land",
+    "github": "https://github.com/oras-project/oras",
+    "category": "Storage"
+  },
+  "pipecd": {
+    "name": "PipeCD",
+    "description": "PipeCD is a continuous delivery tool that provides a unified deployment workflow for Kubernetes, serverless, and cloud infrastructures.",
+    "website": "https://pipecd.dev",
+    "github": "https://github.com/pipe-cd/pipecd",
+    "category": "Development Tools"
+  },
+  "podman-container-tools": {
+    "name": "Podman Container Tools",
+    "description": "Podman is a daemonless container engine for developing, managing, and running OCI containers on Linux, macOS, and Windows systems.",
+    "website": "https://podman.io",
+    "github": "https://github.com/containers/podman",
+    "category": "Development Tools"
+  },
+  "prometheus": {
+    "name": "Prometheus",
+    "description": "Prometheus is the premier open-source systems monitoring and alerting toolkit designed for reliability and dynamic cloud environments.",
+    "website": "https://prometheus.io",
+    "github": "https://github.com/prometheus/prometheus",
+    "category": "Observability"
+  },
+  "service-mesh-performance": {
+    "name": "Service Mesh Performance",
+    "description": "Service Mesh Performance defines standard specifications and benchmarks for measuring service mesh capacity and performance overhead.",
+    "website": "https://smp-spec.io",
+    "github": "https://github.com/service-mesh-performance/service-mesh-performance",
+    "category": "Networking"
+  },
+  "strimzi": {
+    "name": "Strimzi",
+    "description": "Strimzi provides container images and Kubernetes Operators for running Apache Kafka clusters on Kubernetes in a robust and cloud-native way.",
+    "website": "https://strimzi.io",
+    "github": "https://github.com/strimzi/strimzi-kafka-operator",
+    "category": "Storage"
+  },
+  "testgrid": {
+    "name": "TestGrid",
+    "description": "TestGrid is a testing dashboard that visualizes continuous integration test results across multiple releases, repositories, and jobs.",
+    "website": "https://testgrid.k8s.io",
+    "github": "https://github.com/GoogleCloudPlatform/testgrid",
+    "category": "Development Tools"
+  },
+  "thanos": {
+    "name": "Thanos",
+    "description": "Thanos provides high-availability metric collection and unlimited retention for Prometheus setups with seamless cross-cluster querying.",
+    "website": "https://thanos.io",
+    "github": "https://github.com/thanos-io/thanos",
+    "category": "Observability"
+  },
+  "the-update-framework-tuf": {
+    "name": "The Update Framework (TUF)",
+    "description": "The Update Framework (TUF) is a flexible framework that secures software update systems against compromises of keys and repository infrastructure.",
+    "website": "https://theupdateframework.io",
+    "github": "https://github.com/theupdateframework/python-tuf",
+    "category": "Security"
+  },
+  "tremor": {
+    "name": "Tremor",
+    "description": "Tremor is an event processing engine designed for high-throughput, latency-sensitive logging and metrics pipelining.",
+    "website": "https://www.tremor.rs",
+    "github": "https://github.com/tremor-rs/tremor-runtime",
+    "category": "Observability"
+  },
+  "urunc": {
+    "name": "urunc",
+    "description": "urunc is an open-source container runtime for executing unikernels and microVMs inside standard Kubernetes clusters with minimal overhead.",
+    "website": "https://github.com/nubificus/urunc",
+    "github": "https://github.com/nubificus/urunc",
+    "category": "Systems & Kernel"
+  },
+  "velero": {
+    "name": "Velero",
+    "description": "Velero provides enterprise tools for backup, disaster recovery, and cluster migration of Kubernetes cluster resources and persistent volumes.",
+    "website": "https://velero.io",
+    "github": "https://github.com/vmware-tanzu/velero",
+    "category": "Storage"
+  },
+  "vitess": {
+    "name": "Vitess",
+    "description": "Vitess is a database clustering system for horizontal scaling of MySQL through generalized sharding while appearing as a single database server.",
+    "website": "https://vitess.io",
+    "github": "https://github.com/vitessio/vitess",
+    "category": "Storage"
+  },
+  "volcano": {
+    "name": "Volcano",
+    "description": "Volcano is a batch scheduling system for Kubernetes tailored for high-performance computing, deep learning, AI, and big data workloads.",
+    "website": "https://volcano.sh",
+    "github": "https://github.com/volcano-sh/volcano",
+    "category": "AI & Data"
+  },
+  "wasmedge": {
+    "name": "WasmEdge",
+    "description": "WasmEdge is a lightweight, high-performance, and extensible WebAssembly runtime optimized for cloud-native, edge, and AI inference applications.",
+    "website": "https://wasmedge.org",
+    "github": "https://github.com/WasmEdge/WasmEdge",
+    "category": "Systems & Kernel"
+  },
+  "kuma": {
+    "name": "Kuma",
+    "description": "Kuma is an open-source multi-zone service mesh and control plane designed for enterprise container, Kubernetes, and VM environments.",
+    "website": "https://kuma.io",
+    "github": "https://github.com/kumahq/kuma",
+    "category": "Networking"
+  },
+  "service-mesh-interface": {
+    "name": "Service Mesh Interface",
+    "description": "Service Mesh Interface (SMI) defines standard specifications for service meshes on Kubernetes to provide vendor neutrality and ecosystem interoperability.",
+    "website": "https://smi-spec.io",
+    "github": "https://github.com/servicemeshinterface/smi-spec",
+    "category": "Networking"
+  },
+  "pixie": {
+    "name": "Pixie",
+    "description": "Pixie is an open-source observability platform for Kubernetes applications that uses eBPF to automatically capture distributed telemetry data without code changes.",
+    "website": "https://px.dev",
+    "github": "https://github.com/pixie-io/pixie",
+    "category": "Observability"
+  },
+  "openebs": {
+    "name": "OpenEBS",
+    "description": "OpenEBS is a container-attached storage platform providing persistent, highly resilient, and distributed block storage solutions for Kubernetes workloads.",
+    "website": "https://openebs.io",
+    "github": "https://github.com/openebs/openebs",
+    "category": "Storage"
+  },
+  "keptn": {
+    "name": "Keptn",
+    "description": "Keptn is a cloud-native application lifecycle orchestrator that automates application delivery, SLO-based evaluation, and operational remediations on Kubernetes.",
+    "website": "https://keptn.sh",
+    "github": "https://github.com/keptn/keptn",
+    "category": "Development Tools"
+  },
+  "tikv": {
+    "name": "TiKV",
+    "description": "TiKV is an open-source distributed transactional Key-Value database that provides ACID transactions with horizontal scalability and Raft consensus.",
+    "website": "https://tikv.org",
+    "github": "https://github.com/tikv/tikv",
+    "category": "Storage"
+  },
+  "racklet": {
+    "name": "Racklet",
+    "description": "Racklet is an open-source project exploring cloud-native hardware and rack-scale server architecture built with single-board computers.",
+    "website": "https://racklet.io",
+    "github": "https://github.com/racklet/racklet",
+    "category": "Infrastructure & Cloud"
+  },
+  "project-rekor": {
+    "name": "Project Rekor",
+    "description": "Rekor provides a secure, tamper-resistant supply chain transparency log ledger for storing signed metadata and software artifacts.",
+    "website": "https://docs.sigstore.dev/rekor/overview",
+    "github": "https://github.com/sigstore/rekor",
+    "category": "Security"
+  },
+  "spiffe-spire": {
+    "name": "SPIFFE/SPIRE",
+    "description": "SPIFFE provides a standard framework for workload cryptographic identity, and SPIRE is its production-ready reference implementation.",
+    "website": "https://spiffe.io",
+    "github": "https://github.com/spiffe/spire",
+    "category": "Security"
+  }
+}

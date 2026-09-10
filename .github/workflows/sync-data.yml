@@ -28,6 +28,9 @@ jobs:
       - name: Run Data Pipeline
         run: npx tsx scripts/fetch-lfx-data.ts
 
+      - name: Verify Data Health & Integrity
+        run: npx tsx scripts/audit-data.ts
+
       - name: Check for Changes
         id: changes
         run: |
