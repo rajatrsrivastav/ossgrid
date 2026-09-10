@@ -1,0 +1,63 @@
+name: QA Verification Pipeline
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  qa-check:
+    name: Run QA Quality Gates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: 1. Data Integrity & Health Audit
+        run: npx tsx scripts/audit-data.ts
+
+      - name: 2. TypeScript Typecheck
+        run: npx tsc --noEmit
+
+      - name: 3. ESLint Code Quality
+        run: npm run lint
+
+      - name: 4. Production Build Verification
+        run: npm run build
+
+      - name: Post QA Status Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { outcome } = steps;
+            const isSuccess = job.status === 'success';
+            const body = `###  Automated QA Gate Status
+            - **Data Integrity Audit**: \`${{ job.status }}\`
+            - **TypeScript Check**: Completed
+            - **ESLint**: Completed
+            - **Next.js Production Build**: Completed
+            
+            ${isSuccess ? '**All QA Quality Gates Passed!** Ready for human/Copilot review.' : ' **QA Failures Detected.** Please review the workflow logs.'}`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
