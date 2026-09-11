@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:data": "node --import tsx --test scripts/tests/*.test.ts",
+    "sync:data": "node --import tsx scripts/fetch-lfx-data.ts",
+    "audit:data": "node --import tsx scripts/audit-data.ts",
+    "check:data": "node --import tsx scripts/fetch-lfx-data.ts --check"
   },
   "dependencies": {
     "d3-force": "^3.0.0",

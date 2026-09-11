@@ -279,10 +279,15 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                 Check LFX Portal
               </a>
             )}
-            <a href={`https://github.com/search?q=${encodeURIComponent(org.name)}&type=repositories`} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "11px 20px", fontSize: "0.85rem" }}>
+            <a href={org.github || org.sources[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "11px 20px", fontSize: "0.85rem" }}>
               <GitHubIcon size={14} />
-              GitHub
+              {org.github ? "GitHub" : "Project source"}
             </a>
+            {org.website && (
+              <a href={org.website} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "11px 20px", fontSize: "0.85rem" }}>
+                <ExternalLink size={14} /> Website
+              </a>
+            )}
             {/* Tech pills — top 3 inline in hero */}
             <div className="flex items-center gap-2 ml-2">
               {techsSorted.slice(0, 3).map(([tech]) => (
@@ -383,6 +388,9 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                                               <span className="hidden sm:block text-xs font-mono" style={{ color: "var(--text-muted)" }}>@{primaryMentor.github}</span>
                                             </a>
                                           )}
+                                          <a href={project.sources[0].url} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "3px 8px", fontSize: "0.7rem" }} aria-label={`Official source for ${project.title}`}>
+                                            Source <ExternalLink size={10} />
+                                          </a>
                                           {project.upstreamIssueUrl && (
                                             <a href={project.upstreamIssueUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "3px 8px", fontSize: "0.7rem" }} aria-label={`GitHub issue for ${project.title}`}>
                                               <GitHubIcon size={11} /> Issue
@@ -390,16 +398,19 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                                           )}
                                           {project.lfxUrl ? (
                                             <a href={project.lfxUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "3px 8px", fontSize: "0.7rem" }} aria-label={`View on LFX Portal: ${project.title}`}>
-                                              LFX <ExternalLink size={10} />
+                                              {project.program === "CommunityBridge" ? "CommunityBridge" : "LFX"} <ExternalLink size={10} />
                                             </a>
                                           ) : (
                                             <span style={{ padding: "3px 8px", fontSize: "0.7rem", color: "var(--text-muted)", background: "var(--bg-badge)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-card)", opacity: 0.5 }}>
-                                              Closed
+                                              Link unavailable
                                             </span>
                                           )}
                                         </div>
                                       </div>
 
+                                      <p className="text-xs mb-2" style={{ color: "var(--text-muted)" }}>
+                                        {project.program} · {project.status === "proposed" ? "Proposal — acceptance not recorded" : "Listed in the official cohort"}
+                                      </p>
                                       {/* Description */}
                                       {cleanProjectDesc && (
                                         <p className="text-xs leading-relaxed mb-2 line-clamp-2" style={{ color: "var(--text-secondary)" }}>
@@ -535,8 +546,8 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
               ) : (
                 <div style={{ textAlign: "center", fontSize: "0.8rem", color: "var(--text-muted)", padding: "10px 0" }}>Applications currently closed</div>
               )}
-              <a href={`https://github.com/search?q=${encodeURIComponent(org.name)}&type=repositories`} target="_blank" rel="noopener noreferrer" className="btn-ghost w-full mt-2" style={{ justifyContent: "center", fontSize: "0.8rem" }}>
-                <GitHubIcon size={13} /> View on GitHub
+              <a href={org.github || org.sources[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost w-full mt-2" style={{ justifyContent: "center", fontSize: "0.8rem" }}>
+                <GitHubIcon size={13} /> {org.github ? "View on GitHub" : "Project source"}
               </a>
             </div>
 

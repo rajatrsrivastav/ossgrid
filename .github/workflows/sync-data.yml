@@ -26,15 +26,20 @@ jobs:
         run: npm ci
 
       - name: Run Data Pipeline
-        run: npx tsx scripts/fetch-lfx-data.ts
+        run: npm run sync:data -- --refresh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Verify Data Health & Integrity
-        run: npx tsx scripts/audit-data.ts
+        run: npm run audit:data
+
+      - name: Test source format regressions
+        run: npm run test:data
 
       - name: Check for Changes
         id: changes
         run: |
-          if git diff --quiet public/data/; then
+          if git diff --quiet public/data/ scripts/lfx-source.json; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT

@@ -116,13 +116,13 @@ export default function OrgDetailPanel({
         {/* Quick links row */}
         <div className="flex items-center gap-4 text-xs text-[var(--text-secondary)] border-y border-[var(--border-card)] py-2.5">
           <a
-            href={`https://github.com/search?q=${encodeURIComponent(org.name)}&type=repositories`}
+            href={org.github || org.sources[0]}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 hover:text-blue-600 dark:text-blue-400 transition-colors"
           >
             <GitHubIcon size={13} />
-            <span>GitHub</span>
+            <span>{org.github ? "GitHub" : "Project source"}</span>
           </a>
           <a
             href={`https://mentorship.lfx.linuxfoundation.org`}
