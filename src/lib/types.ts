@@ -4,9 +4,21 @@
 
 /** Mentor associated with a mentorship project */
 export interface Mentor {
+  /** True when the source supplies only a handle, not a personal name. */
+  nameIsHandle?: boolean;
   name: string;
   github: string;
   email: string;
+}
+
+/** Immutable reference to an official source record. */
+export interface ProjectSource {
+  url: string;
+  path: string;
+  revision: string;
+  line: number;
+  contentHash: string;
+  status: "accepted" | "proposed";
 }
 
 /** Individual mentorship project within an organization */
@@ -21,6 +33,13 @@ export interface Project {
   mentors: Mentor[];
   mentees: { name: string; github: string }[];
   upstreamIssueUrl: string;
+  upstreamIssueUrls: string[];
+  links: string[];
+  technologies: string[];
+  program: "LFX Mentorship" | "CommunityBridge";
+  status: "accepted" | "proposed";
+  sources: ProjectSource[];
+  missingFields: string[];
   lfxUrl: string;
   term: string;
   year: number;
@@ -34,6 +53,9 @@ export interface Organization {
   logoUrl: string;
   description: string;
   foundation: string;
+  website: string;
+  github: string;
+  sources: string[];
   category: string;
   terms: string[];
   years: number[];
