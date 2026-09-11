@@ -18,9 +18,9 @@ This is a fast, public, no-login-required dashboard for exploring the open-sourc
 
 ## 📊 Data
 
-Currently tracking programs like **LFX Mentorship** and **CNCF Google Summer of Code**, featuring:
-- **80+ organizations** across historical and upcoming terms
-- **560+ projects** with full details, mentees, mentors, and application links
+Currently tracking programs like **LFX Mentorship**, featuring:
+- **102 organizations** across historical and upcoming terms (2019–2026)
+- **953 projects** with verified source provenance, mentors, skills, and issue links
 - Technologies spanning Go, Rust, C++, Kubernetes, eBPF, Python, and more
 
 ## 🛠 Tech Stack
@@ -36,68 +36,34 @@ Currently tracking programs like **LFX Mentorship** and **CNCF Google Summer of 
 
 ```bash
 # Clone the repository
-git clone [https://github.com/rajatrsrivastav/ossgrid.git](https://github.com/rajatrsrivastav/ossgrid.git)
+git clone https://github.com/rajatrsrivastav/ossgrid.git
 cd ossgrid
 
 # Install dependencies
 npm install
 
-# Fetch latest LFX and GSoC data
-npm run sync-data
+# Run data integrity checks
+npm run test:data
+npm run audit:data
 
 # Start the dev server
 npm run dev
-
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the LFX dashboard.
-*(The GSoC dashboard is accessible at `/gsoc`)*
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-## 📦 Project Structure
+## 📦 Documentation
 
-```
-ossgrid/
-├── src/
-│   ├── app/                  # Next.js App Router pages
-│   │   ├── layout.tsx        # Root layout with next-themes
-│   │   ├── page.tsx          # Main LFX dashboard page
-│   │   ├── gsoc/             # Hidden GSoC dashboard route
-│   │   └── organization/     # Dynamic organization detail pages
-│   ├── components/           # React components (SearchBar, SidebarFilter, etc.)
-│   ├── hooks/                # Custom React hooks
-│   └── lib/                  # Utilities and data logic
-├── scripts/
-│   ├── fetch-lfx-data.ts     # LFX Data pipeline script
-│   └── fetch-gsoc-data.ts    # GSoC Data pipeline script
-├── public/data/              # Generated JSON datasets
-│   ├── organizations.json
-│   ├── projects.json
-│   ├── gsoc-organizations.json
-│   └── gsoc-projects.json
-└── .github/workflows/
-    └── sync-data.yml         # Daily data sync
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — Contributor rules, issue ownership deadlines, PR checklist, and Active Contributors list.
+- **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** — Comprehensive architecture guide, parser internals, deduplication engine, and static site design.
+- **[docs/data-verification.md](./docs/data-verification.md)** — CNCF provenance verification, historical cohort mappings, and source policies.
 
-```
+## 🔄 Data Pipeline Scripts
 
-## 🔄 Data Pipeline
+| Command | Description |
+|---|---|
+| `npm run test:data` | Run parser & data regression tests |
+| `npm run audit:data` | Verify schema integrity, links, and source coverage |
+| `npm run check:data` | Check byte-for-byte reproducibility against pinned upstream commit |
+| `npm run sync:data` | Regenerate datasets from pinned upstream source |
 
-The data pipelines (`scripts/fetch-lfx-data.ts` and `scripts/fetch-gsoc-data.ts`) automatically:
-
-1. Fetch markdown and configuration files from upstream program repositories (e.g., `cncf/mentoring`).
-2. Parse data to extract organizations, projects, mentors, mentees, and tech stacks.
-3. Normalize and aggregate data into unified JSON datasets.
-
-Run manually via package.json:
-
-```bash
-npm run sync-data
-
-```
-
-Or individually:
-
-```bash
-npx tsx scripts/fetch-lfx-data.ts
-npx tsx scripts/fetch-gsoc-data.ts
-
-```
