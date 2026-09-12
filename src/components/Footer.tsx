@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { Eye } from "lucide-react";
 
 export default function Footer() {
@@ -55,6 +56,22 @@ export default function Footer() {
   return (
     <footer className="w-full border-t border-[var(--border-card)] bg-[var(--bg-primary)] py-8 mt-auto relative z-10">
       <div className="max-w-[1280px] mx-auto px-6 lg:px-10 flex flex-col items-center justify-center gap-4">
+        <nav aria-label="Footer Navigation" className="flex flex-wrap items-center justify-center gap-6 text-xs text-[var(--text-muted)]">
+          <Link href="/" className="hover:text-[var(--text-primary)] transition-colors">
+            Home
+          </Link>
+          <Link href="/lfx" className="hover:text-[var(--text-primary)] transition-colors">
+            LFX Explorer
+          </Link>
+          <a
+            href="https://github.com/rajatrsrivastav/ossgrid"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[var(--text-primary)] transition-colors"
+          >
+            GitHub Repository
+          </a>
+        </nav>
         <p className="text-sm font-medium text-[var(--text-secondary)] flex flex-wrap items-center justify-center gap-1.5 text-center">
           Made with <span className="text-red-500 mx-0.5 text-xs">❤️</span> by{" "}
           <a
