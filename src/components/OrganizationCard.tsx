@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, Layers, Bookmark, Sparkles, Check } from "lucide-react";
+import { ArrowUpRight, Layers, Bookmark } from "lucide-react";
 import Image from "next/image";
 import { Organization } from "@/lib/types";
 import { truncate, sanitizeDescription } from "@/lib/utils";
@@ -48,10 +48,7 @@ export default function OrganizationCard({
   const maxTechBadges = 3;
   const visibleTech = org.technologies.slice(0, maxTechBadges);
 
-  const isActiveTerm = org.years.includes(2026) || org.years.includes(2025);
-  const isBeginnerFriendly = org.technologies.some((t) =>
-    ["Python", "JavaScript", "TypeScript", "Documentation", "Go"].includes(t)
-  );
+
 
   const yearlyCounts = useMemo(() => {
     const counts: Record<number, number> = { 2022: 0, 2023: 0, 2024: 0, 2025: 0, 2026: 0 };
@@ -118,8 +115,8 @@ export default function OrganizationCard({
       aria-label={`${org.name} — ${org.projectCount} projects, ${org.foundation}`}
       aria-pressed={isSelected}
     >
-      {/* Top row: Logo, Name, Badges & Bookmark */}
-      <div className="p-5 pb-3 flex items-start gap-3.5">
+      {/* Top row: Logo, Name */}
+      <div className="p-5 pb-3 flex items-center gap-3.5">
         {/* Logo with smooth fallback */}
         <div
           className="flex-shrink-0 w-11 h-11 rounded-xl overflow-hidden flex items-center justify-center border border-white/10 shadow-sm transition-transform group-hover:scale-105"
@@ -145,7 +142,7 @@ export default function OrganizationCard({
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-center justify-between gap-1.5 mb-1">
+          <div className="flex items-center justify-between gap-1.5">
             <h3 className="text-base font-bold truncate leading-tight text-[var(--text-primary)] group-hover:text-blue-600 dark:text-blue-400 transition-colors">
               {org.name}
             </h3>
@@ -164,22 +161,6 @@ export default function OrganizationCard({
               <Bookmark size={14} className={isSaved ? "fill-blue-600 dark:fill-blue-400" : ""} />
             </button>
             */}
-          </div>
-
-          {/* Quick status chips */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {isActiveTerm && (
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
-                <span className="w-1 h-1 rounded-full bg-emerald-400" />
-                Active
-              </span>
-            )}
-            {isBeginnerFriendly && (
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center gap-1">
-                <Sparkles size={9} />
-                Beginner
-              </span>
-            )}
           </div>
         </div>
       </div>
