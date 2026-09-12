@@ -52,6 +52,13 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the application.
 
+## 🤝 Contributing
+
+We welcome contributions! Please note:
+- **Base Branch**: Always open pull requests targeting the **`main`** branch (do **not** target `develop`).
+- **Issue Ownership**: Make sure an issue is assigned to you before working on it.
+- For complete contributor workflows, quality gates, and code conventions, see **[CONTRIBUTING.md](./CONTRIBUTING.md)**.
+
 ## 📦 Documentation
 
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** — Contributor rules, issue ownership deadlines, PR checklist, and Active Contributors list.

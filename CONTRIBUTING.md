@@ -196,6 +196,7 @@ When fixing ingestion, make sure an official source record is either:
 
 A good PR should contain:
 
+* **Target the `main` branch**: Always create pull requests targeting **`main`** (do **not** target `develop`).
 * a clear title
 * reference to the assigned issue
 * a short explanation of the fix
