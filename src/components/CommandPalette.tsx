@@ -170,8 +170,8 @@ export default function CommandPalette({ organizations, open, onClose }: Command
                   style={{ border: "1px solid var(--border-card)", background: "var(--bg-raised)" }}
                 >
                   <Image
-                    src={org.logoUrl || "/placeholder.png"}
-                    alt=""
+                    src={org.logoUrl || "/placeholder.svg"}
+                    alt={`${org.name} logo`}
                     width={32}
                     height={32}
                     unoptimized

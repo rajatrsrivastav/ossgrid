@@ -39,12 +39,34 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const orgs = await getOrganizationsCached();
   const org = orgs.find((o) => o.id === slug);
   if (!org) return { title: "Organization Not Found" };
-  const desc = `${org.name} has ${org.projectCount} LFX Mentorship projects across ${org.years.length} terms. View projects, mentors, and participation history.`;
+  const desc = `${org.name} has ${org.projectCount} LFX Mentorship projects across ${org.years.length} terms. View projects, mentors, technologies (${org.technologies.slice(0, 5).join(", ")}), and participation history.`;
+  const canonicalUrl = `https://www.ossgrid.tech/organization/${slug}`;
+  const ogImage = org.logoUrl || "/og-image.jpg";
   return {
-    title: `${org.name} — LFX Mentorship`,
+    title: `${org.name} — Open Source Mentorship Projects & History`,
     description: desc,
-    openGraph: { title: `${org.name} — LFX Mentorship`, description: desc, type: "website" },
-    twitter: { card: "summary", title: `${org.name} — LFX Mentorship`, description: desc },
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${org.name} — Open Source Mentorship Projects & History`,
+      description: desc,
+      url: canonicalUrl,
+      type: "website",
+      siteName: "OSSGrid",
+      images: [
+        {
+          url: ogImage,
+          alt: `${org.name} logo`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${org.name} — Open Source Mentorship Projects & History`,
+      description: desc,
+      images: [ogImage],
+    },
   };
 }
 
@@ -181,8 +203,52 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
 
   const cleanDesc = sanitizeDescription(org.description, org.name, org.id);
 
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://www.ossgrid.tech",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "LFX Mentorship Explorer",
+        item: "https://www.ossgrid.tech/lfx",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: org.name,
+        item: `https://www.ossgrid.tech/organization/${org.id}`,
+      },
+    ],
+  };
+
+  const orgLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: org.name,
+    url: org.website || `https://www.ossgrid.tech/organization/${org.id}`,
+    logo: org.logoUrl || "https://www.ossgrid.tech/placeholder.svg",
+    description: cleanDesc,
+    sameAs: [org.website, org.github].filter(Boolean),
+    knowsAbout: org.technologies,
+  };
+
   return (
     <div style={{ background: "var(--bg-primary)", minHeight: "100vh" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
+      />
       <Header variant="simple" />
 
       {/* ══════════════════════════════════════════
@@ -220,7 +286,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
               className="w-20 h-20 lg:w-24 lg:h-24 rounded-2xl flex-shrink-0 overflow-hidden flex items-center justify-center"
               style={{ border: "1px solid var(--border-card)", background: "var(--bg-raised)", boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}
             >
-              <Image src={org.logoUrl || "/placeholder.png"} alt={`${org.name} logo`} width={96} height={96} className="w-full h-full object-contain p-2" unoptimized />
+              <Image src={org.logoUrl || "/placeholder.svg"} alt={`${org.name} logo`} width={96} height={96} className="w-full h-full object-contain p-2" unoptimized />
             </div>
 
             {/* Name + badges + description */}
@@ -503,7 +569,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                       <Link key={related.id} href={`/organization/${related.id}`} style={{ display: "block", padding: "14px 16px", borderRadius: "var(--radius-lg)", background: "var(--bg-raised)", border: "1px solid var(--border-card)", textDecoration: "none", transition: "border-color 0.15s, transform 0.15s" }}>
                         <div className="flex items-center gap-3 mb-2">
                           <div style={{ width: 30, height: 30, borderRadius: 8, overflow: "hidden", flexShrink: 0, border: "1px solid var(--border-card)", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <Image src={related.logoUrl || "/placeholder.png"} alt={related.name} width={30} height={30} className="object-contain p-0.5" unoptimized />
+                            <Image src={related.logoUrl || "/placeholder.svg"} alt={related.name} width={30} height={30} className="object-contain p-0.5" unoptimized />
                           </div>
                           <span className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)" }}>{related.name}</span>
                         </div>
