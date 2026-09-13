@@ -1,0 +1,109 @@
+[
+  {
+    "id": "tremor",
+    "file": "/logos/tremor.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/projects/tremor/icon/color/tremor-icon-color.svg"
+  },
+  {
+    "id": "service-mesh-interface",
+    "file": "/logos/service-mesh-interface.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/archived/servicemeshinterface/icon/color/servicemeshinterface-icon-color.svg"
+  },
+  {
+    "id": "kuma",
+    "file": "/logos/kuma.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/projects/kuma/icon/color/kuma-icon-color.svg"
+  },
+  {
+    "id": "openelb",
+    "file": "/logos/openelb.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/archived/openelb/stacked/color/openelb-stacked-color.svg"
+  },
+  {
+    "id": "openfunction",
+    "file": "/logos/openfunction.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/projects/openfunction/icon/color/openfunction-icon-color.svg"
+  },
+  {
+    "id": "pixie",
+    "file": "/logos/pixie.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/projects/pixie/icon/color/pixie-icon-color.svg"
+  },
+  {
+    "id": "openebs",
+    "file": "/logos/openebs.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/projects/openebs/icon/color/openebs-icon-color.svg"
+  },
+  {
+    "id": "tikv",
+    "file": "/logos/tikv.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/projects/tikv/icon/color/tikv-icon-color.svg"
+  },
+  {
+    "id": "keptn",
+    "file": "/logos/keptn.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/archived/keptn/icon/color/keptn-icon-color.svg"
+  },
+  {
+    "id": "envoy",
+    "file": "/logos/envoy.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/projects/envoy/icon/color/envoy-icon-color.svg"
+  },
+  {
+    "id": "open-service-mesh",
+    "file": "/logos/open-service-mesh.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/archived/openservicemesh/icon/color/openservicemesh-icon-color.svg"
+  },
+  {
+    "id": "project-rekor",
+    "file": "/logos/project-rekor.png",
+    "source": "https://github.com/sigstore.png?size=128"
+  },
+  {
+    "id": "racklet",
+    "file": "/logos/racklet.png",
+    "source": "https://github.com/racklet.png?size=128"
+  },
+  {
+    "id": "spiffe-spire",
+    "file": "/logos/spiffe-spire.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/projects/spiffe/icon/color/spiffe-icon-color.svg"
+  },
+  {
+    "id": "argo",
+    "file": "/logos/argo.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/projects/argo/icon/color/argo-icon-color.svg"
+  },
+  {
+    "id": "fluentd",
+    "file": "/logos/fluentd.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/projects/fluentd/icon/color/fluentd-icon-color.svg"
+  },
+  {
+    "id": "kubevirt",
+    "file": "/logos/kubevirt.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/projects/kubevirt/icon/color/kubevirt-icon-color.svg"
+  },
+  {
+    "id": "opa",
+    "file": "/logos/opa.svg",
+    "source": "https://raw.githubusercontent.com/cncf/artwork/6b497fdc3ab16cefaffa16b537c736ef5cf78f0b/projects/open-policy-agent/icon/color/opa-icon-color.svg"
+  },
+  {
+    "id": "open-service-mesh-kuma-and-service-mesh-interface",
+    "file": "/logos/open-service-mesh-kuma-and-service-mesh-interface.svg",
+    "components": [
+      "open-service-mesh.svg",
+      "kuma.svg",
+      "service-mesh-interface.svg"
+    ]
+  },
+  {
+    "id": "jaeger-linkerd",
+    "file": "/logos/jaeger-linkerd.svg",
+    "components": [
+      "jaeger.png",
+      "linkerd.png"
+    ]
+  }
+]

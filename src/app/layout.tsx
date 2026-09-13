@@ -130,16 +130,15 @@ export default function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: safeJsonLd(globalJsonLd) }}
-        />
-      </head>
       <body
         className="min-h-full flex flex-col"
         style={{ fontFamily: "var(--font-inter, 'Inter', sans-serif)" }}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(globalJsonLd) }}
+          suppressHydrationWarning
+        />
         <ThemeProvider>
           {children}
           <Footer />

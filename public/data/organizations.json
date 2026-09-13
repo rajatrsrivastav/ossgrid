@@ -57311,7 +57311,7 @@
     ],
     "foundation": "CNCF",
     "category": "Observability",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3ET%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/tremor.svg",
     "projects": [
       {
         "id": "tremor-2022-t2-hygenic-error-handling-and-validation-for-pipelines",
@@ -58138,7 +58138,7 @@
     ],
     "foundation": "CNCF",
     "category": "Networking",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3ESM%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/service-mesh-interface.svg",
     "projects": [
       {
         "id": "service-mesh-interface-2022-t1-conformance-program",
@@ -58668,7 +58668,7 @@
     ],
     "foundation": "CNCF",
     "category": "Networking",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EK%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/kuma.svg",
     "projects": [
       {
         "id": "kuma-2022-t1-active-monitoring-of-cross-zone-communication",
@@ -58833,7 +58833,7 @@
     ],
     "foundation": "CNCF",
     "category": "Networking",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EO%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/openelb.svg",
     "projects": [
       {
         "id": "openelb-2022-t2-provide-the-openelb-web-ui-for-managing-eip-and-ip-pool",
@@ -58993,7 +58993,7 @@
     ],
     "foundation": "CNCF",
     "category": "Infrastructure & Cloud",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EO%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/openfunction.svg",
     "projects": [
       {
         "id": "openfunction-2022-t2-support-and-update-the-python-functions-framework",
@@ -59086,7 +59086,7 @@
     ],
     "foundation": "CNCF",
     "category": "Observability",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EP%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/pixie.svg",
     "projects": [
       {
         "id": "pixie-2022-t1-add-support-for-new-protocols-in-protocol-tracer",
@@ -59171,7 +59171,7 @@
     ],
     "foundation": "CNCF",
     "category": "Storage",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EO%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/openebs.svg",
     "projects": [
       {
         "id": "openebs-2021-t3-a-kubernetes-operator-to-remove-stale-pvs-of-failed-statefulset-replicas",
@@ -59776,7 +59776,7 @@
     ],
     "foundation": "CNCF",
     "category": "Storage",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3ET%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/tikv.svg",
     "projects": [
       {
         "id": "tikv-2021-t2-implement-node-client",
@@ -60249,7 +60249,7 @@
     ],
     "foundation": "CNCF",
     "category": "Development Tools",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EK%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/keptn.svg",
     "projects": [
       {
         "id": "keptn-2021-t2-provide-a-hub-for-keptn-integrations",
@@ -60656,7 +60656,7 @@
     ],
     "foundation": "CNCF",
     "category": "Cloud Native",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EE%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/envoy.svg",
     "projects": [
       {
         "id": "envoy-2021-t1-adaptive-load-control-and-distributed-load-testing-of-envoy-data-planes",
@@ -60806,7 +60806,7 @@
     ],
     "foundation": "CNCF",
     "category": "Cloud Native",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EOS%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/open-service-mesh.svg",
     "projects": [
       {
         "id": "open-service-mesh-2021-t1-support-for-webassembly-filters",
@@ -60959,7 +60959,7 @@
     ],
     "foundation": "CNCF",
     "category": "Security",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EPR%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/project-rekor.png",
     "projects": [
       {
         "id": "project-rekor-2021-t1-cncf-release-signing-security",
@@ -61055,7 +61055,7 @@
     ],
     "foundation": "CNCF",
     "category": "Infrastructure & Cloud",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3ER%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/racklet.png",
     "projects": [
       {
         "id": "racklet-2021-t2-open-source-scale-model-of-data-centers-using-commodity-compute-like-raspberry-pis",
@@ -61161,7 +61161,7 @@
     ],
     "foundation": "CNCF",
     "category": "Security",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/spiffe-spire.svg",
     "projects": [
       {
         "id": "spiffe-spire-2021-t1-design-and-implement-a-health-status-subsystem-in-spire",
@@ -61249,7 +61249,7 @@
     ],
     "foundation": "CNCF",
     "category": "Cloud Native",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/argo.svg",
     "projects": [
       {
         "id": "argo-2020-t2-enhancing-developer-experience-with-open-application-model-delpoyment-using-argo-cd",
@@ -61385,7 +61385,7 @@
     ],
     "foundation": "CNCF",
     "category": "Cloud Native",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/fluentd.svg",
     "projects": [
       {
         "id": "fluentd-2020-t2-fluent-bit-monitoring-web-ui",
@@ -61554,7 +61554,7 @@
     ],
     "foundation": "CNCF",
     "category": "Cloud Native",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EK%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/kubevirt.svg",
     "projects": [
       {
         "id": "kubevirt-2020-t2-improve-observability",
@@ -61718,7 +61718,7 @@
     ],
     "foundation": "CNCF",
     "category": "Cloud Native",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EO%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/opa.svg",
     "projects": [
       {
         "id": "opa-2020-t2-opa-go-apis",
@@ -61861,7 +61861,7 @@
     ],
     "foundation": "CNCF",
     "category": "Cloud Native",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EOS%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/open-service-mesh-kuma-and-service-mesh-interface.svg",
     "projects": [
       {
         "id": "open-service-mesh-kuma-and-service-mesh-interface-2020-t3-standards-validation-for-osm-and-kuma",
@@ -61953,7 +61953,7 @@
     ],
     "foundation": "CNCF",
     "category": "Cloud Native",
-    "logoUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20rx%3D%2216%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2226%22%3EJ%3C%2Ftext%3E%3C%2Fsvg%3E",
+    "logoUrl": "/logos/jaeger-linkerd.svg",
     "projects": [
       {
         "id": "jaeger-linkerd-2019-t0-distributed-tracing-support-for-linkerd",
