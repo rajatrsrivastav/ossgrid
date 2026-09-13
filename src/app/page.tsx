@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import HomePageClient from "@/components/home/HomePageClient";
+import { safeJsonLd, DEFAULT_OG_IMAGE } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "OSSGrid — Discover Open Source Mentorships & Ecosystems (LFX, GSoC & More)",
@@ -9,10 +10,20 @@ export const metadata: Metadata = {
     canonical: "https://www.ossgrid.tech",
   },
   openGraph: {
+    type: "website",
+    siteName: "OSSGrid",
     title: "OSSGrid — Discover Open Source Mentorships & Ecosystems (LFX, GSoC & More)",
     description:
       "A developer guide and explorer for open-source mentorships and fellowships. Compare stipends, eligibility, and timelines across programs like LFX, GSoC, and Outreachy.",
     url: "https://www.ossgrid.tech",
+    images: [DEFAULT_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OSSGrid — Discover Open Source Mentorships & Ecosystems (LFX, GSoC & More)",
+    description:
+      "A developer guide and explorer for open-source mentorships and fellowships. Compare stipends, eligibility, and timelines across programs like LFX, GSoC, and Outreachy.",
+    images: ["/og-image.jpg"],
   },
 };
 
@@ -51,7 +62,7 @@ export default function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(homeJsonLd) }}
       />
       <HomePageClient />
     </>

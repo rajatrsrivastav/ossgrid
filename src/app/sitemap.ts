@@ -7,6 +7,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.ossgrid.tech";
   const now = new Date();
 
+  const filePath = path.join(process.cwd(), "public", "data", "organizations.json");
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Sitemap generation failed: ${filePath} does not exist.`);
+  }
+
+  const organizations: Organization[] = JSON.parse(fs.readFileSync(filePath, "utf8"));
+
   const routes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
@@ -20,24 +27,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 0.9,
     },
+    ...organizations.map((org) => ({
+      url: `${baseUrl}/organization/${org.id}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    })),
   ];
-
-  try {
-    const filePath = path.join(process.cwd(), "public", "data", "organizations.json");
-    if (fs.existsSync(filePath)) {
-      const orgs: Organization[] = JSON.parse(fs.readFileSync(filePath, "utf8"));
-      for (const org of orgs) {
-        routes.push({
-          url: `${baseUrl}/organization/${org.id}`,
-          lastModified: now,
-          changeFrequency: "weekly",
-          priority: 0.8,
-        });
-      }
-    }
-  } catch (error) {
-    console.error("Error reading organizations for sitemap:", error);
-  }
 
   return routes;
 }

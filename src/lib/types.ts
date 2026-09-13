@@ -64,6 +64,30 @@ export interface Organization {
   projects: Project[];
 }
 
+/** Lightweight project summary for explorer cards and search */
+export interface LfxProjectSummary {
+  title: string;
+  year: number;
+  mentors?: { name: string }[];
+}
+
+/** Lightweight organization DTO passed to the LFX explorer client to reduce payload size */
+export interface LfxOrganizationDto {
+  id: string;
+  name: string;
+  logoUrl: string;
+  description: string;
+  foundation: string;
+  website: string;
+  github: string;
+  category: string;
+  terms: string[];
+  years: number[];
+  technologies: string[];
+  projectCount: number;
+  projects: LfxProjectSummary[];
+}
+
 /** Current state of all active filters */
 export interface FilterState {
   search: string;

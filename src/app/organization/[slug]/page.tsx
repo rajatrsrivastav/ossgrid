@@ -9,6 +9,7 @@ import { Organization, Project } from "@/lib/types";
 import OrgChartWrapper from "@/components/OrgChartWrapper";
 import Header from "@/components/Header";
 import { sanitizeDescription } from "@/lib/utils";
+import { safeJsonLd } from "@/lib/seo";
 
 // ─── SVG Icons ──────────────────────────────────────────────────────────────
 import { cache } from "react";
@@ -243,11 +244,11 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
     <div style={{ background: "var(--bg-primary)", minHeight: "100vh" }}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(orgLd) }}
       />
       <Header variant="simple" />
 

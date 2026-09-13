@@ -21,7 +21,7 @@ import {
   ShieldCheck,
   Globe2,
 } from "lucide-react";
-import { Organization, FilterOptions } from "@/lib/types";
+import { LfxOrganizationDto, FilterOptions } from "@/lib/types";
 import {
   filterOrganizations,
   getFilterOptions,
@@ -68,11 +68,11 @@ function SkeletonCard() {
 }
 
 interface LfxClientProps {
-  initialOrganizations?: Organization[];
+  initialOrganizations?: LfxOrganizationDto[];
 }
 
 export default function LFXPortalPage({ initialOrganizations = [] }: LfxClientProps) {
-  const [organizations, setOrganizations] = useState<Organization[]>(initialOrganizations);
+  const [organizations, setOrganizations] = useState<LfxOrganizationDto[]>(initialOrganizations);
   const [loading, setLoading] = useState(initialOrganizations.length === 0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
@@ -110,7 +110,7 @@ export default function LFXPortalPage({ initialOrganizations = [] }: LfxClientPr
     if (initialOrganizations.length > 0) return;
     fetch("/data/organizations.json")
       .then((r) => r.json())
-      .then((data: Organization[]) => {
+      .then((data: LfxOrganizationDto[]) => {
         setOrganizations(data);
         setLoading(false);
       })
