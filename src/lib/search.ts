@@ -1,7 +1,9 @@
 import Fuse, { type IFuseOptions } from "fuse.js";
-import { Organization } from "./types";
+import { Organization, LfxOrganizationDto } from "./types";
 
-const fuseOptions: IFuseOptions<Organization> = {
+type SearchableOrg = Organization | LfxOrganizationDto;
+
+const fuseOptions: IFuseOptions<SearchableOrg> = {
   keys: [
     { name: "name", weight: 3 },
     { name: "projects.title", weight: 2 },
@@ -16,14 +18,14 @@ const fuseOptions: IFuseOptions<Organization> = {
   minMatchCharLength: 2,
 };
 
-export function createSearchIndex(orgs: Organization[]): Fuse<Organization> {
-  return new Fuse(orgs, fuseOptions);
+export function createSearchIndex<T extends SearchableOrg = SearchableOrg>(orgs: T[]): Fuse<T> {
+  return new Fuse(orgs, fuseOptions as IFuseOptions<T>);
 }
 
-export function searchOrganizations(
-  fuse: Fuse<Organization>,
+export function searchOrganizations<T extends SearchableOrg = SearchableOrg>(
+  fuse: Fuse<T>,
   query: string
-): Organization[] {
+): T[] {
   if (!query || query.trim().length < 2) return [];
   const results = fuse.search(query.trim());
   return results.map((r) => r.item);

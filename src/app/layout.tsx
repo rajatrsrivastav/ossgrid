@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import ThemeProvider from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
+import { safeJsonLd } from "@/lib/seo";
 import "./globals.css";
 
 const inter = Inter({
@@ -132,7 +133,7 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(globalJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(globalJsonLd) }}
         />
       </head>
       <body

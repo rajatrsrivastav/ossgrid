@@ -5,14 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowUpRight, Layers, Bookmark } from "lucide-react";
 import Image from "next/image";
-import { Organization } from "@/lib/types";
+import { Organization, LfxOrganizationDto } from "@/lib/types";
 import { truncate, sanitizeDescription } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 interface OrganizationCardProps {
-  org: Organization;
+  org: Organization | LfxOrganizationDto;
   isSelected?: boolean;
-  onSelect?: (org: Organization) => void;
+  onSelect?: (org: Organization | LfxOrganizationDto) => void;
   isSaved?: boolean;
   onToggleSave?: (orgId: string) => void;
 }

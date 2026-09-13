@@ -4,11 +4,13 @@ import { useEffect, useCallback, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Search, X, ArrowRight, Command } from "lucide-react";
-import { Organization } from "@/lib/types";
+import { Organization, LfxOrganizationDto } from "@/lib/types";
 import LogoMark from "./LogoMark";
 
+type CommandPaletteOrg = Organization | LfxOrganizationDto;
+
 interface CommandPaletteProps {
-  organizations: Organization[];
+  organizations: CommandPaletteOrg[];
   open: boolean;
   onClose: () => void;
 }
@@ -54,7 +56,7 @@ export default function CommandPalette({ organizations, open, onClose }: Command
   }, [selected]);
 
   const navigate = useCallback(
-    (org: Organization) => {
+    (org: CommandPaletteOrg) => {
       onClose();
       router.push(`/organization/${org.id}`);
     },

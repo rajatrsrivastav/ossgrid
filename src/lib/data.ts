@@ -1,4 +1,6 @@
-import { Organization, FilterState, FilterOptions } from "./types";
+import { Organization, LfxOrganizationDto, FilterState, FilterOptions } from "./types";
+
+type FilterableOrg = Organization | LfxOrganizationDto;
 
 let cachedOrgs: Organization[] | null = null;
 
@@ -9,9 +11,9 @@ export async function loadOrganizations(): Promise<Organization[]> {
   return cachedOrgs!;
 }
 
-export function getFilterOptions(
-  allOrgs: Organization[],
-  filteredOrgs?: Organization[]
+export function getFilterOptions<T extends FilterableOrg = FilterableOrg>(
+  allOrgs: T[],
+  filteredOrgs?: T[]
 ): FilterOptions {
   // If filteredOrgs is provided, count matches within filteredOrgs (live counts),
   // while preserving all known options from allOrgs so active filters can always be deselected.
@@ -76,10 +78,10 @@ export function getFilterOptions(
   };
 }
 
-export function filterOrganizations(
-  orgs: Organization[],
+export function filterOrganizations<T extends FilterableOrg = FilterableOrg>(
+  orgs: T[],
   filters: FilterState
-): Organization[] {
+): T[] {
   return orgs.filter((org) => {
     // Terms filter
     if (filters.terms.length > 0) {
