@@ -125,17 +125,11 @@ export default function Footer() {
                 </div>
                 Mitul Bhatia
               </a>
-              <a href="https://github.com/NSTKrishna" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[var(--text-primary)] hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center gap-2.5">
+              <a href="https://github.com/OmvedNagre" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[var(--text-primary)] hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center gap-2.5">
                 <div className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] overflow-hidden border border-[var(--border-input)]">
-                  <img src="https://github.com/NSTKrishna.png?size=48" alt="Krishna Gehlot" className="w-full h-full object-cover" />
+                  <img src="https://github.com/OmvedNagre.png?size=48" alt="Omved Nagre" className="w-full h-full object-cover" />
                 </div>
-                Krishna Gehlot
-              </a>
-              <a href="https://github.com/khuswant18" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[var(--text-primary)] hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] overflow-hidden border border-[var(--border-input)]">
-                  <img src="https://github.com/khuswant18.png?size=48" alt="Khuswant Rajpurohit" className="w-full h-full object-cover" />
-                </div>
-                Khuswant Rajpurohit
+                Omved Nagre
               </a>
             </div>
           </div>
