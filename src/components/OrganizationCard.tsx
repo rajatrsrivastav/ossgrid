@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, Layers, Bookmark } from "lucide-react";
+import { ArrowUpRight, Layers } from "lucide-react";
 import Image from "next/image";
 import { Organization, LfxOrganizationDto } from "@/lib/types";
 import { truncate, sanitizeDescription } from "@/lib/utils";
@@ -36,19 +36,51 @@ function getInitials(name: string): string {
   return clean.slice(0, 2).toUpperCase() || name.slice(0, 1).toUpperCase();
 }
 
+function getListingTechnologies(technologies: string[], maxCount = 2): { visible: string[]; extraCount: number } {
+  if (!technologies || technologies.length === 0) return { visible: [], extraCount: 0 };
+
+  // Exclude verbose requirement sentences dumped from project requirements
+  const cleanTech = technologies.filter((tech) => {
+    if (!tech || tech.length > 22) return false;
+    const lower = tech.toLowerCase();
+    if (
+      lower.includes("understanding") ||
+      lower.includes("familiarity") ||
+      lower.includes("experience") ||
+      lower.includes("knowledge") ||
+      lower.includes("ability") ||
+      lower.includes("optional") ||
+      lower.includes("concepts") ||
+      lower.includes("basic") ||
+      lower.includes("e2e") ||
+      lower.includes("pipelines") ||
+      lower.includes("http") ||
+      lower.includes(".md") ||
+      lower.startsWith("(")
+    ) {
+      return false;
+    }
+    return true;
+  });
+
+  const visible = cleanTech.slice(0, maxCount);
+  const extraCount = technologies.length - visible.length;
+  return { visible, extraCount: extraCount > 0 ? extraCount : 0 };
+}
+
 export default function OrganizationCard({
   org,
   isSelected = false,
   onSelect,
-  isSaved = false,
-  onToggleSave,
+  isSaved: _isSaved = false,
+  onToggleSave: _onToggleSave,
 }: OrganizationCardProps) {
   const [imgError, setImgError] = useState(false);
   const showFallback = !org.logoUrl || imgError;
-  const maxTechBadges = 3;
-  const visibleTech = org.technologies.slice(0, maxTechBadges);
-
-
+  const { visible: visibleTech, extraCount: extraTechCount } = useMemo(
+    () => getListingTechnologies(org.technologies, 2),
+    [org.technologies]
+  );
 
   const yearlyCounts = useMemo(() => {
     const counts: Record<number, number> = { 2022: 0, 2023: 0, 2024: 0, 2025: 0, 2026: 0 };
@@ -81,16 +113,11 @@ export default function OrganizationCard({
     router.push(`/organization/${org.id}`);
   };
 
-  const handleBookmark = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onToggleSave?.(org.id);
-  };
-
   return (
     <motion.div
       layout
       onClick={handleCardClick}
-      className={`glass-card flex flex-col h-full rounded-2xl transition-colors duration-200 cursor-pointer group select-none relative overflow-hidden ${
+      className={`glass-card flex flex-col rounded-2xl transition-colors duration-200 cursor-pointer group select-none relative overflow-hidden ${
         isSelected
           ? "ring-2 ring-blue-500 shadow-[0_0_24px_rgba(59,130,246,0.35)]"
           : "border-[var(--border-card)] shadow-sm"
@@ -116,24 +143,24 @@ export default function OrganizationCard({
       aria-pressed={isSelected}
     >
       {/* Top row: Logo, Name */}
-      <div className="p-5 pb-3 flex items-center gap-3.5">
+      <div className="p-4 pb-2 flex items-center gap-3">
         {/* Logo with smooth fallback */}
         <div
-          className="flex-shrink-0 w-11 h-11 rounded-xl overflow-hidden flex items-center justify-center border border-white/10 shadow-sm transition-transform group-hover:scale-105"
+          className="flex-shrink-0 w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center border border-white/10 shadow-sm transition-transform group-hover:scale-105"
           style={{
             background: showFallback ? getOrgColor(org.name) : "var(--bg-raised)",
           }}
         >
           {showFallback ? (
-            <span className="text-sm font-bold text-white tracking-wider font-mono select-none">
+            <span className="text-xs font-bold text-white tracking-wider font-mono select-none">
               {getInitials(org.name)}
             </span>
           ) : (
             <Image
               src={org.logoUrl}
               alt={org.name}
-              width={44}
-              height={44}
+              width={40}
+              height={40}
               className="w-full h-full object-contain p-1"
               onError={() => setImgError(true)}
               unoptimized
@@ -142,41 +169,24 @@ export default function OrganizationCard({
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-center justify-between gap-1.5">
-            <h3 className="text-base font-bold truncate leading-tight text-[var(--text-primary)] group-hover:text-blue-600 dark:text-blue-400 transition-colors">
-              {org.name}
-            </h3>
-
-            {/* Bookmark button 
-            <button
-              onClick={handleBookmark}
-              className={`p-1.5 rounded-lg border transition-all flex-shrink-0 cursor-pointer ${
-                isSaved
-                  ? "bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/40"
-                  : "bg-transparent text-[var(--text-muted)] border-transparent hover:border-[var(--border-card)] hover:text-[var(--text-primary)]"
-              }`}
-              title={isSaved ? "Remove from bookmarks" : "Save organization"}
-              aria-label={isSaved ? "Saved" : "Save"}
-            >
-              <Bookmark size={14} className={isSaved ? "fill-blue-600 dark:fill-blue-400" : ""} />
-            </button>
-            */}
-          </div>
+          <h3 className="text-sm sm:text-base font-bold truncate leading-tight text-[var(--text-primary)] group-hover:text-blue-600 dark:text-blue-400 transition-colors">
+            {org.name}
+          </h3>
         </div>
       </div>
 
-      {/* Description */}
-      <div className="px-5 pb-3 flex-1">
+      {/* Description (strictly max 2 lines, no empty flex-1 space) */}
+      <div className="px-4 pb-2.5">
         <p className="text-xs text-[var(--text-secondary)] leading-relaxed line-clamp-2">
-          {truncate(sanitizeDescription(org.description, org.name), 130)}
+          {truncate(sanitizeDescription(org.description, org.name), 120)}
         </p>
       </div>
 
-      {/* Tech Badges */}
-      <div className="px-5 pb-3 flex items-center gap-1.5 flex-wrap">
+      {/* Tech & Category Badges (compact discovery tags) */}
+      <div className="px-4 pb-2.5 flex items-center gap-1.5 flex-wrap">
         {org.category && (
           <span
-            className="text-[10px] font-medium px-2 py-0.5 rounded-md border border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400"
+            className="text-[10px] font-medium px-2 py-0.5 rounded-md border border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400 truncate max-w-[130px]"
           >
             {org.category.split("&")[0].trim()}
           </span>
@@ -184,16 +194,25 @@ export default function OrganizationCard({
         {visibleTech.map((tech) => (
           <span
             key={tech}
-            className="text-[10px] font-mono px-2 py-0.5 rounded-md border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)]"
+            className="text-[10px] font-mono px-2 py-0.5 rounded-md border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)] truncate max-w-[110px]"
+            title={tech}
           >
             {tech}
           </span>
         ))}
+        {extraTechCount > 0 && (
+          <span
+            className="text-[10px] font-mono px-1.5 py-0.5 rounded-md text-[var(--text-muted)] bg-[var(--bg-raised)]/60 border border-transparent"
+            title={`${extraTechCount} more technologies and skills`}
+          >
+            +{extraTechCount}
+          </span>
+        )}
       </div>
 
       {/* Precision Term Activity Micro-Histogram */}
-      <div className="px-5 pb-3">
-        <div className="flex items-center justify-between text-xs text-[var(--text-muted)] font-mono mb-2">
+      <div className="px-4 pb-3">
+        <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)] font-mono mb-1.5">
           <span className="tracking-wider uppercase">Activity</span>
           <span className="text-[var(--text-secondary)]" style={{ fontFeatureSettings: '"tnum"' }}>
             {org.years.length} {org.years.length === 1 ? "year" : "years"} active
@@ -201,7 +220,7 @@ export default function OrganizationCard({
         </div>
 
         {/* Micro-chart container */}
-        <div className="h-11 flex items-end gap-1.5 p-2 rounded-xl bg-slate-50/80 dark:bg-[var(--bg-raised)] border border-slate-200/80 dark:border-[var(--border-card)]">
+        <div className="h-10 flex items-end gap-1.5 p-1.5 rounded-xl bg-slate-50/80 dark:bg-[var(--bg-raised)] border border-slate-200/80 dark:border-[var(--border-card)]">
           {[2022, 2023, 2024, 2025, 2026].map((year) => {
             const count = yearlyCounts[year] || 0;
             const heightPercent = count > 0 ? Math.max(Math.round((count / maxProjects) * 100), 18) : 0;
@@ -234,7 +253,7 @@ export default function OrganizationCard({
 
                 {/* Year Label */}
                 <span
-                  className={`text-[9px] font-mono mt-1 select-none ${
+                  className={`text-[9px] font-mono mt-0.5 select-none ${
                     count > 0 ? "text-[var(--text-secondary)] font-medium" : "text-[var(--text-muted)] opacity-60"
                   }`}
                   style={{ fontFeatureSettings: '"tnum"' }}
@@ -249,7 +268,7 @@ export default function OrganizationCard({
 
       {/* Footer row */}
       <div
-        className="px-5 py-3 flex items-center justify-between mt-auto text-xs text-[var(--text-muted)] border-t border-[var(--border-card)]"
+        className="px-4 py-2.5 flex items-center justify-between text-xs text-[var(--text-muted)] border-t border-[var(--border-card)] bg-[var(--bg-raised)]/20"
       >
         <span className="flex items-center gap-1.5 font-medium text-[var(--text-secondary)]">
           <Layers size={13} className="text-blue-600 dark:text-blue-400" />

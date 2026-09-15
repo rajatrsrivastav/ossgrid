@@ -41,27 +41,27 @@ import { AnimatePresence } from "framer-motion";
 function SkeletonCard() {
   return (
     <div
-      className="glass-card flex flex-col h-full p-5 gap-3 rounded-2xl border border-[var(--border-card)]"
-      style={{ minHeight: 220, background: "var(--bg-card)" }}
+      className="glass-card flex flex-col p-4 gap-2.5 rounded-2xl border border-[var(--border-card)]"
+      style={{ background: "var(--bg-card)" }}
     >
-      <div className="flex items-start gap-3">
-        <div className="skeleton w-11 h-11 rounded-xl flex-shrink-0" />
-        <div className="flex-1 flex flex-col gap-2">
+      <div className="flex items-center gap-3">
+        <div className="skeleton w-10 h-10 rounded-xl flex-shrink-0" />
+        <div className="flex-1 flex flex-col gap-1.5">
           <div className="skeleton h-4 rounded-md w-3/4" />
-          <div className="flex gap-2">
-            <div className="skeleton h-4 rounded-full w-16" />
-            <div className="skeleton h-4 rounded-full w-20" />
-          </div>
         </div>
       </div>
-      <div className="flex flex-col gap-1.5 flex-1 mt-2">
+      <div className="flex flex-col gap-1.5 mt-1">
         <div className="skeleton h-3 rounded w-full" />
-        <div className="skeleton h-3 rounded w-5/6" />
+        <div className="skeleton h-3 rounded w-4/5" />
       </div>
-      <div className="flex gap-1.5 pt-2">
-        <div className="skeleton h-5 rounded-md w-14" />
-        <div className="skeleton h-5 rounded-md w-14" />
-        <div className="skeleton h-5 rounded-md w-14" />
+      <div className="flex gap-1.5 pt-1">
+        <div className="skeleton h-4 rounded-md w-14" />
+        <div className="skeleton h-4 rounded-md w-14" />
+      </div>
+      <div className="skeleton h-10 rounded-xl w-full mt-1" />
+      <div className="flex justify-between items-center pt-2.5 border-t border-[var(--border-card)]">
+        <div className="skeleton h-3 rounded w-16" />
+        <div className="skeleton h-3 rounded w-12" />
       </div>
     </div>
   );
@@ -541,14 +541,14 @@ export default function LFXPortalPage({ initialOrganizations = [] }: LfxClientPr
             {/* Center Content Column */}
             <div className="flex-1 w-full min-w-0">
               {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 items-start">
                   {Array.from({ length: 8 }).map((_, i) => (
                     <SkeletonCard key={i} />
                   ))}
                 </div>
               ) : filteredOrgs.length > 0 ? (
                 viewMode === "grid" ? (
-                  <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+                  <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 items-start">
                     <AnimatePresence mode="popLayout">
                       {filteredOrgs.map((org) => (
                         <OrganizationCard
