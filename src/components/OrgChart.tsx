@@ -26,6 +26,94 @@ function shortTermLabel(term: string): string {
   return match ? match[0] : term;
 }
 
+interface TooltipPayloadItem {
+  name?: string;
+  value?: number | string;
+  dataKey?: string | number;
+  color?: string;
+  fill?: string;
+  payload?: Record<string, unknown>;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayloadItem[];
+  label?: string | number;
+}
+
+export function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
+  if (!active || !payload || payload.length === 0) return null;
+
+  // Filter out any term with project count <= 0
+  const activeItems = payload.filter((item) => {
+    const val = typeof item.value === "number" ? item.value : Number(item.value);
+    return !isNaN(val) && val > 0;
+  });
+
+  if (activeItems.length === 0) return null;
+
+  return (
+    <div
+      className="pointer-events-none select-none rounded-xl"
+      style={{
+        width: 164,
+        padding: "8px 10px",
+        background: "var(--bg-overlay)",
+        border: "1px solid var(--border-card)",
+        boxShadow: "var(--shadow-card)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+      }}
+    >
+      <div
+        className="flex items-center justify-between pb-1.5 mb-1.5"
+        style={{ borderBottom: "1px solid var(--border-card)" }}
+      >
+        <span
+          className="text-xs font-bold font-mono tracking-tight"
+          style={{ color: "var(--text-primary)" }}
+        >
+          {label}
+        </span>
+      </div>
+      <div className="flex flex-col gap-1">
+        {activeItems.map((item) => {
+          const termName = String(item.name || item.dataKey || "");
+          const count = Number(item.value) || 0;
+          const dotColor = item.fill || TERM_COLORS[termName] || "var(--color-accent-raw)";
+
+          return (
+            <div
+              key={termName}
+              className="flex items-center justify-between gap-2 text-xs"
+            >
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: dotColor }}
+                  aria-hidden="true"
+                />
+                <span
+                  className="text-[11px] font-medium truncate"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  {termName}
+                </span>
+              </div>
+              <span
+                className="text-[11px] font-mono whitespace-nowrap"
+                style={{ color: "var(--text-primary)" }}
+              >
+                {count} {count === 1 ? "project" : "projects"}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 interface OrgChartProps {
   projects: Project[];
 }
@@ -77,14 +165,10 @@ export default function OrgChart({ projects }: OrgChartProps) {
           tickLine={false}
         />
         <Tooltip
-          contentStyle={{
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border-card)",
-            borderRadius: "var(--radius-lg)",
-            fontSize: "13px",
-            color: "var(--text-primary)",
-          }}
+          content={<CustomTooltip />}
           cursor={{ fill: "var(--bg-input)", opacity: 0.3 }}
+          wrapperStyle={{ outline: "none", pointerEvents: "none", zIndex: 40 }}
+          isAnimationActive={false}
         />
         <Legend
           wrapperStyle={{
