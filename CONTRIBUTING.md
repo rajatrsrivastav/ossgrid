@@ -237,6 +237,7 @@ Consistent contributors who communicate well and ship quality changes will be pr
 | Anand Mishra | [@anand-242003](https://github.com/anand-242003) | Core / Frontend | Active |
 | Mitul Bhatia | [@mitul-bhatia](https://github.com/mitul-bhatia) | Contributor / Frontend | Active |
 | Omved Nagre | [@OmvedNagre](https://github.com/OmvedNagre) | Contributor / Frontend | Active |
+| Krishna Gehlot | [@NSTKrishna](https://github.com/NSTKrishna) | Maintainer / Core | Active |
 
 ---
 
