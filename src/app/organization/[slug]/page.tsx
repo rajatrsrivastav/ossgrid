@@ -8,6 +8,7 @@ import { ExternalLink, ArrowLeft, Users, Layers, TrendingUp, Calendar, Code2 } f
 import { Organization, Project } from "@/lib/types";
 import OrgChartWrapper from "@/components/OrgChartWrapper";
 import Header from "@/components/Header";
+import OrgSectionNav from "@/components/OrgSectionNav";
 import { sanitizeDescription } from "@/lib/utils";
 import { safeJsonLd } from "@/lib/seo";
 
@@ -256,7 +257,8 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
           HERO BANNER — Full-width premium identity
       ══════════════════════════════════════════ */}
       <div
-        className="relative overflow-hidden"
+        id="overview"
+        className="relative overflow-hidden scroll-mt-28"
         style={{
           background: "linear-gradient(135deg, rgba(79,142,255,0.08) 0%, rgba(167,139,250,0.05) 50%, transparent 100%)",
           borderBottom: "1px solid var(--border-card)",
@@ -370,6 +372,13 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
         </div>
       </div>
 
+      {/* Section Navigation Tabs (Sticky) */}
+      <OrgSectionNav
+        projectCount={org.projectCount}
+        mentorCount={allMentors.length}
+        yearCount={org.years.length}
+      />
+
       {/* ══════════════════════════════════════════
           MAIN: Two-column layout
           LEFT (flex-1): Projects
@@ -382,7 +391,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
           <main className="flex-1 min-w-0 space-y-14">
 
             {/* Section: Projects */}
-            <section id="projects" aria-label="Project list">
+            <section id="projects" aria-label="Project list" className="scroll-mt-28">
               <div className="flex items-center gap-3 mb-6">
                 <Layers size={15} style={{ color: "var(--color-accent-raw)" }} />
                 <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--color-accent-raw)" }}>Projects</span>
@@ -514,7 +523,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
 
             {/* Section: Mentors */}
             {allMentors.length > 0 && (
-              <section id="mentors" aria-label="Organization mentors">
+              <section id="mentors" aria-label="Organization mentors" className="scroll-mt-28">
                 <div className="flex items-center gap-3 mb-5">
                   <Users size={15} style={{ color: "var(--color-accent-raw)" }} />
                   <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--color-accent-raw)" }}>Mentors</span>
@@ -589,7 +598,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
           </main>
 
           {/* ── RIGHT COLUMN: Sticky Analytics Sidebar ── */}
-          <aside className="w-full lg:w-[340px] xl:w-[380px] flex-shrink-0 space-y-5 lg:sticky lg:top-24">
+          <aside className="w-full lg:w-[340px] xl:w-[380px] flex-shrink-0 space-y-5 lg:sticky lg:top-28">
             {/* CTA Card */}
             <div className="rounded-2xl p-5" style={{ background: "var(--bg-raised)", border: "1px solid var(--border-card)" }}>
               {latestTerm && (
@@ -630,7 +639,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
             </div>
 
             {/* Participation Card */}
-            <div className="rounded-2xl p-5" style={{ background: "var(--bg-raised)", border: "1px solid var(--border-card)" }}>
+            <div id="participation" className="rounded-2xl p-5 scroll-mt-28" style={{ background: "var(--bg-raised)", border: "1px solid var(--border-card)" }}>
               <div className="flex items-center gap-2 mb-4">
                 <Calendar size={14} style={{ color: "var(--color-accent-raw)" }} />
                 <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Participation</p>
