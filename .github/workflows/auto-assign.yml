@@ -1,0 +1,181 @@
+name: Auto Assign Issue
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  auto-assign:
+    name: Auto Assign Contributor
+    # Fast exit: ignore pull request comments
+    if: ${{ !github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Process /assign command
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const comment = context.payload.comment;
+
+            // 1. Is this an Issue, not PR?
+            if (!issue || issue.pull_request) {
+              core.info('Skipping: Event is not on an issue.');
+              return;
+            }
+
+            // Guard against bot comments
+            if (comment.user?.type === 'Bot') {
+              core.info('Skipping: Commenter is a bot.');
+              return;
+            }
+
+            const commentBody = (comment.body || '').trim();
+            const commenter = comment.user.login;
+            const issueNumber = issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // 2. Is command exactly /assign?
+            if (!/^\/assign$/i.test(commentBody)) {
+              core.info('Skipping: Comment is not "/assign".');
+              return;
+            }
+
+            // 3. Is issue open?
+            if (issue.state !== 'open') {
+              core.info(`Skipping: Issue #${issueNumber} is closed.`);
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body: `@${commenter}, this issue is closed and cannot be assigned.`
+              });
+              return;
+            }
+
+            // 4. Is issue currently unassigned?
+            const currentAssignees = issue.assignees || [];
+            if (currentAssignees.length > 0) {
+              const isAssignedToCommenter = currentAssignees.some(
+                a => a.login.toLowerCase() === commenter.toLowerCase()
+              );
+
+              if (isAssignedToCommenter) {
+                core.info(`Commenter @${commenter} is already assigned to #${issueNumber}.`);
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `@${commenter}, you are already assigned to this issue!`
+                });
+              } else {
+                const assigneeMentions = currentAssignees.map(a => `@${a.login}`).join(', ');
+                core.info(`Issue #${issueNumber} is already assigned to ${assigneeMentions}.`);
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `@${commenter}, this issue is already assigned to ${assigneeMentions}. Please look for other unassigned issues!`
+                });
+              }
+              return;
+            }
+
+            // 5. Is commenter eligible?
+            // Enforce CONTRIBUTING.md rule 1: "Do not ask to be assigned multiple issues just to reserve them."
+            let isPrivileged = false;
+            try {
+              const { data: perm } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner,
+                repo,
+                username: commenter
+              });
+              isPrivileged = ['admin', 'write'].includes(perm.permission);
+            } catch (err) {
+              core.debug(`Permission check failed or not permitted: ${err.message}`);
+              isPrivileged = false;
+            }
+
+            if (!isPrivileged) {
+              const { data: userIssues } = await github.rest.issues.listForRepo({
+                owner,
+                repo,
+                assignee: commenter,
+                state: 'open',
+                per_page: 10
+              });
+
+              const activeAssignedIssues = userIssues.filter(
+                i => !i.pull_request && i.number !== issueNumber
+              );
+
+              if (activeAssignedIssues.length > 0) {
+                const issueLinks = activeAssignedIssues.map(i => `#${i.number}`).join(', ');
+                core.info(`Commenter @${commenter} already has active assigned issue(s): ${issueLinks}.`);
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `@${commenter}, per our [Contributing Guidelines](https://github.com/${owner}/${repo}/blob/main/CONTRIBUTING.md#1-claim-only-what-you-can-finish), contributors may only be assigned to one issue at a time.\n\nYou are currently assigned to ${issueLinks}. Please complete or unassign from that issue before claiming another!`
+                });
+                return;
+              }
+            }
+
+            // Assign commenter
+            core.info(`Assigning @${commenter} to issue #${issueNumber}...`);
+            await github.rest.issues.addAssignees({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              assignees: [commenter]
+            });
+
+            // Verify assignment succeeded
+            const { data: updatedIssue } = await github.rest.issues.get({
+              owner,
+              repo,
+              issue_number: issueNumber
+            });
+
+            const wasAssigned = (updatedIssue.assignees || []).some(
+              a => a.login.toLowerCase() === commenter.toLowerCase()
+            );
+
+            if (!wasAssigned) {
+              core.warning(`Failed to assign @${commenter} to issue #${issueNumber}.`);
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body: `@${commenter}, unable to automatically assign you to this issue. A maintainer will follow up.`
+              });
+              return;
+            }
+
+            // Bot confirmation comment
+            const confirmationMessage = [
+              `Thanks for claiming this issue, @${commenter}! 🎉`,
+              '',
+              `You have been assigned to this issue. Please make sure to review our [Contributing Guidelines](https://github.com/${owner}/${repo}/blob/main/CONTRIBUTING.md):`,
+              `- **Timeline**: Aim to make meaningful progress within the **same weekend** (or agreed timeline).`,
+              `- **Communication**: If you run into blockers, leave a comment on this issue before the deadline.`,
+              `- **One Issue → One PR**: Keep your pull request focused on this assigned issue.`,
+              '',
+              `Happy hacking! 🚀`
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              body: confirmationMessage
+            });
+
+            core.info(`Successfully assigned @${commenter} and posted confirmation comment.`);
