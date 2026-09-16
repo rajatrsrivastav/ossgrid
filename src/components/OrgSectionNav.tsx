@@ -1,25 +1,24 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Sparkles, Layers, Users, Calendar } from "lucide-react";
+import { Sparkles, Layers, Users, type LucideIcon } from "lucide-react";
 
 interface OrgSectionNavProps {
   projectCount: number;
   mentorCount: number;
-  yearCount: number;
+  yearCount?: number;
 }
 
 interface NavTab {
   id: string;
   label: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: LucideIcon;
   count?: number | string;
 }
 
 export default function OrgSectionNav({
   projectCount,
   mentorCount,
-  yearCount,
 }: OrgSectionNavProps) {
   const [activeSection, setActiveSection] = useState<string>("overview");
   const isClickScrolling = useRef(false);
@@ -41,15 +40,8 @@ export default function OrgSectionNav({
       });
     }
 
-    list.push({
-      id: "participation",
-      label: "Participation",
-      icon: Calendar,
-      count: `${yearCount} yrs`,
-    });
-
     return list;
-  }, [projectCount, mentorCount, yearCount]);
+  }, [projectCount, mentorCount]);
 
   const scrollToSection = (id: string, updateHash = true) => {
     if (id === "overview") {
@@ -191,29 +183,47 @@ export default function OrgSectionNav({
                   e.preventDefault();
                   scrollToSection(tab.id);
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
                   isActive
-                    ? "bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30 font-semibold shadow-xs"
-                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] border border-transparent"
+                    ? "shadow-xs"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] border border-transparent font-medium"
                 }`}
+                style={
+                  isActive
+                    ? {
+                        backgroundColor: "var(--nav-tab-active-bg)",
+                        borderColor: "var(--nav-tab-active-border)",
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        color: "var(--nav-tab-active-text)",
+                      }
+                    : undefined
+                }
                 aria-current={isActive ? "true" : undefined}
               >
                 <Icon
                   size={13}
-                  className={
-                    isActive
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-[var(--text-muted)]"
-                  }
+                  style={{
+                    color: isActive
+                      ? "var(--nav-tab-active-text)"
+                      : "var(--text-muted)",
+                  }}
                 />
                 <span>{tab.label}</span>
                 {tab.count !== undefined && (
                   <span
-                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono leading-none transition-colors ${
-                      isActive
-                        ? "bg-blue-500/20 text-blue-600 dark:text-blue-300"
-                        : "bg-[var(--bg-badge)] text-[var(--text-muted)]"
-                    }`}
+                    className="px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold leading-none transition-colors"
+                    style={{
+                      backgroundColor: isActive
+                        ? "var(--nav-tab-active-badge-bg)"
+                        : "var(--bg-badge)",
+                      color: isActive
+                        ? "var(--nav-tab-active-badge-text)"
+                        : "var(--text-muted)",
+                      border: isActive
+                        ? "1px solid var(--nav-tab-active-border)"
+                        : undefined,
+                    }}
                   >
                     {tab.count}
                   </span>

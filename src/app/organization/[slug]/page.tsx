@@ -376,7 +376,6 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
       <OrgSectionNav
         projectCount={org.projectCount}
         mentorCount={allMentors.length}
-        yearCount={org.years.length}
       />
 
       {/* ══════════════════════════════════════════
@@ -633,7 +632,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                 <TrendingUp size={14} style={{ color: "var(--color-accent-raw)" }} />
                 <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Projects by year</p>
               </div>
-              <div style={{ height: 210 }}>
+              <div style={{ height: 235 }}>
                 <OrgChartWrapper projects={org.projects} />
               </div>
             </div>
