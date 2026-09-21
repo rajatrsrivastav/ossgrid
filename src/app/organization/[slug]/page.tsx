@@ -383,7 +383,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
           LEFT (flex-1): Projects
           RIGHT (w-80/w-96 sticky): Analytics sidebar
       ══════════════════════════════════════════ */}
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-8 pb-28">
+      <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-8">
         <div className="flex flex-col lg:flex-row gap-8 items-start">
 
           {/* ── LEFT COLUMN: Projects ── */}
@@ -692,29 +692,6 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
         </div>
       </div>
 
-      {/* ── Sticky bottom CTA bar ── */}
-      {latestLfxUrl && (
-        <div
-          className="fixed bottom-0 left-0 right-0 z-20 backdrop-blur-md"
-          style={{
-            background: "color-mix(in srgb, var(--bg-secondary) 88%, transparent)",
-            borderTop: "1px solid var(--border-card)",
-            boxShadow: "0 -4px 24px rgba(0,0,0,0.12)",
-          }}
-        >
-          <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-3 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0">
-              {latestTerm && <TermBadge status={termStatus} term={latestTerm} />}
-              <span className="hidden sm:block truncate text-xs" style={{ color: "var(--text-muted)" }}>
-                2026 T3 closed · Next cycle: 2027 Term 1 · {org.name}
-              </span>
-            </div>
-            <a href={latestLfxUrl} target="_blank" rel="noopener noreferrer" className="btn-primary flex-shrink-0" id="apply-cta-sticky" style={{ padding: "8px 20px", fontSize: "0.875rem", fontWeight: 600 }}>
-              <ExternalLink size={14} /> Check LFX Portal
-            </a>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
