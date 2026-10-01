@@ -82,15 +82,7 @@ export default function Footer() {
           >
             Rajat Srivastav
           </a>{" "}
-          &amp;{" "}
-          <a
-            href="https://x.com/Anandmishra639"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[var(--text-primary)] hover:underline decoration-1 underline-offset-4 transition-colors"
-          >
-            Anand Mishra
-          </a> for oss communities
+          for oss communities
           <span className="hidden sm:inline-block mx-1.5 text-[var(--border-hover)]">
             &middot;
           </span>
@@ -113,11 +105,11 @@ export default function Footer() {
                 </div>
                 Rajat Srivastav
               </a>
-              <a href="https://github.com/anand-242003" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[var(--text-primary)] hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center gap-2.5">
+              <a href="https://github.com/anand24mishra" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[var(--text-primary)] hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center gap-2.5">
                 <div className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] overflow-hidden border border-[var(--border-input)]">
-                  <img src="https://github.com/anand-242003.png?size=48" alt="Anand" className="w-full h-full object-cover" />
+                  <img src="https://github.com/anand24mishra.png?size=48" alt="Anand Mishra" className="w-full h-full object-cover" />
                 </div>
-                Anand
+                Anand Mishra
               </a>
               <a href="https://github.com/mitul-bhatia" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[var(--text-primary)] hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center gap-2.5">
                 <div className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] overflow-hidden border border-[var(--border-input)]">
@@ -130,12 +122,6 @@ export default function Footer() {
                   <img src="https://github.com/OmvedNagre.png?size=48" alt="Omved Nagre" className="w-full h-full object-cover" />
                 </div>
                 Omved Nagre
-              </a>
-              <a href="https://github.com/NSTKrishna" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[var(--text-primary)] hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] overflow-hidden border border-[var(--border-input)]">
-                  <img src="https://github.com/NSTKrishna.png?size=48" alt="Krishna Gehlot" className="w-full h-full object-cover" />
-                </div>
-                Krishna Gehlot
               </a>
             </div>
           </div>
