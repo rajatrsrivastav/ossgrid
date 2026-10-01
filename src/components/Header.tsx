@@ -162,6 +162,17 @@ export default function Header({
             <ExternalLink size={12} className="opacity-70" />
           </a>
 
+          <a
+            href="https://buymeacoffee.com/rajatrsrivastav"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-raised)]/60 px-2.5 py-1.5 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:border-blue-500/40 hover:bg-blue-500/5 hover:text-blue-600 dark:hover:text-blue-400"
+            aria-label="Support OSSGrid on Buy Me a Coffee (opens in a new tab)"
+          >
+            <span aria-hidden="true">☕</span>
+            Support OSSGrid
+          </a>
+
           <div className="hidden sm:block w-px h-4 bg-[var(--border-card)]" />
 
           <button
