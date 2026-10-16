@@ -1,0 +1,69 @@
+name: Sync GSoC Data
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'      # weekly, Monday 05:00 UTC
+    - cron: '0 5 * 2-4 *'    # daily while organizations and projects are announced (Feb to Apr)
+  workflow_dispatch:
+    inputs:
+      year:
+        description: 'Only rebuild this year (optional)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Fetch GSoC data (gsocorganizations.dev + cncf/mentoring)
+        run: npm run sync:gsoc -- --refresh ${{ inputs.year && format('--year {0}', inputs.year) || '' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Audit data integrity
+        run: npm run audit:data
+
+      - name: Test parser fixtures and dataset
+        run: npm run test:data
+
+      - name: Check for Changes
+        id: changes
+        run: |
+          if git diff --quiet public/data/gsoc/ scripts/gsoc-cncf-source.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          commit-message: 'chore: sync GSoC data'
+          title: '[Automated] Sync GSoC Data'
+          body: |
+            🤖 Automated data sync from [gsocorganizations.dev](https://api.gsocorganizations.dev) and [cncf/mentoring](https://github.com/cncf/mentoring/tree/main/programs/summerofcode).
+
+            This PR updates `public/data/gsoc/` (organizations, per-year projects, source coverage, search index) and the pinned CNCF revision.
+          branch: auto/sync-gsoc-data
+          delete-branch: true
+          labels: automated,data-sync
+          add-paths: |
+            public/data/gsoc/
+            scripts/gsoc-cncf-source.json

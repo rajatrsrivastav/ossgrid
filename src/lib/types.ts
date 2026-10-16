@@ -96,3 +96,84 @@ export interface TermDefinition {
   termIndex: number;
   status?: string;
 }
+
+// =============================================================================
+// Google Summer of Code — Shipped Data Types
+// =============================================================================
+
+export type GsocProjectSize = "small" | "medium" | "large";
+
+/** Outbound links for a GSoC organization. Empty string when the source has none. */
+export interface GsocOrgLinks {
+  ideas: string;
+  guide: string;
+  chat: string;
+  mailingList: string;
+  blog: string;
+  twitter: string;
+  /** GSoC archive page for the latest year. */
+  archive: string;
+}
+
+/** Light organization DTO shipped to /gsoc. Projects live in projects-<year>.json. */
+export interface GsocOrganization {
+  slug: string;
+  name: string;
+  logoUrl: string;
+  logoBackground: string;
+  description: string;
+  website: string;
+  category: string;
+  topics: string[];
+  technologies: string[];
+  /** Years the org was accepted, ascending. */
+  years: number[];
+  /** Accepted projects per year (from the GSoC archive). */
+  projectsByYear: Record<string, number>;
+  /** GSoC archive page per year. */
+  archiveByYear: Record<string, string>;
+  projectCount: number;
+  firstYear: number;
+  latestYear: number;
+  links: GsocOrgLinks;
+}
+
+/** Mentor as shipped: never an email address. */
+export interface GsocMentor {
+  name: string;
+  github: string;
+  primary?: boolean;
+}
+
+export interface GsocProject {
+  id: string;
+  orgSlug: string;
+  year: number;
+  title: string;
+  /** One-line summary (GSoC short description or the first sentence of a CNCF idea). */
+  summary: string;
+  /** Full text, HTML stripped. */
+  description: string;
+  /** Accepted contributor, when the archive lists one. */
+  contributor: string;
+  projectUrl: string;
+  codeUrl: string;
+  /** "gsoc": accepted project from the archive. "cncf": idea from cncf/mentoring. */
+  origin: "gsoc" | "cncf";
+  status: "accepted" | "proposed";
+  /** Upstream project for umbrella organizations, e.g. "Kubernetes" under CNCF. */
+  subProject?: string;
+  skills: string[];
+  size?: GsocProjectSize;
+  difficulty?: string;
+  mentors: GsocMentor[];
+  upstreamIssueUrls: string[];
+  sources: ProjectSource[];
+  missingFields: string[];
+}
+
+/** projects-<year>.json */
+export interface GsocYearFile {
+  year: number;
+  projects: GsocProject[];
+}

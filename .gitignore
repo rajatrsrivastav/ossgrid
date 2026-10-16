@@ -44,3 +44,6 @@ next-env.d.ts
 /test-results
 /playwright-report
 /e2e/__screenshots__
+
+# data pipeline raw cache
+/scripts/.cache

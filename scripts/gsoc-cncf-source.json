@@ -1,0 +1,7 @@
+{
+  "_comment": "Pinned cncf/mentoring revision for programs/summerofcode. --refresh moves it to main; everything else reads this SHA so builds are reproducible.",
+  "revision": "97525d8f004aa477c24f6ce2f34ce4d9b51bf75c",
+  "root": "programs/summerofcode/",
+  "years": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026],
+  "hashes": {}
+}

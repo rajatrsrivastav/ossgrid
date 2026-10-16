@@ -1,0 +1,1415 @@
+{
+  "_comment": "Canonical technology/skill labels and the raw variants that map to them. Keys are display labels; values are lower-cased variants as they appear in gsocorganizations.dev and cncf/mentoring. Shared by the LFX and GSoC pipelines.",
+  "Go": [
+    "golang",
+    "go programming",
+    "go",
+    "go (golang)",
+    "go lang"
+  ],
+  "JavaScript": [
+    "js",
+    "javascript",
+    "java script",
+    "ecmascript"
+  ],
+  "TypeScript": [
+    "ts",
+    "typescript"
+  ],
+  "Kubernetes": [
+    "k8s",
+    "kubernetes"
+  ],
+  "C++": [
+    "cpp",
+    "c++",
+    "c/c++",
+    "c++11",
+    "c++14",
+    "c++17",
+    "c++20",
+    "modern c++"
+  ],
+  "C": [
+    "c"
+  ],
+  "C#": [
+    "c#",
+    "csharp"
+  ],
+  "Python": [
+    "python3",
+    "python 3",
+    "python"
+  ],
+  "Java": [
+    "java"
+  ],
+  "Rust": [
+    "rust"
+  ],
+  "Ruby": [
+    "ruby",
+    "sinatra",
+    "jekyll"
+  ],
+  "Ruby on Rails": [
+    "ruby on rails",
+    "rails"
+  ],
+  "PHP": [
+    "php",
+    "laravel",
+    "composer"
+  ],
+  "Perl": [
+    "perl",
+    "perl 5",
+    "raku",
+    "perl6"
+  ],
+  "Scala": [
+    "scala",
+    "akka",
+    "sbt"
+  ],
+  "Kotlin": [
+    "kotlin",
+    "kotlin multiplatform",
+    "jetpack compose",
+    "compose"
+  ],
+  "Swift": [
+    "swift",
+    "swiftui"
+  ],
+  "Dart": [
+    "dart"
+  ],
+  "Flutter": [
+    "flutter"
+  ],
+  "Haskell": [
+    "haskell"
+  ],
+  "Elixir": [
+    "elixir"
+  ],
+  "Erlang": [
+    "erlang"
+  ],
+  "Julia": [
+    "julia"
+  ],
+  "R": [
+    "r",
+    "r-project",
+    "r programming",
+    "r language"
+  ],
+  "MATLAB": [
+    "matlab"
+  ],
+  "Fortran": [
+    "fortran"
+  ],
+  "Lua": [
+    "lua"
+  ],
+  "OCaml": [
+    "ocaml"
+  ],
+  "Clojure": [
+    "clojure"
+  ],
+  "Lisp": [
+    "lisp",
+    "common lisp"
+  ],
+  "Shell": [
+    "shell",
+    "bash",
+    "shell scripting",
+    "bash scripting",
+    "sh",
+    "zsh",
+    "shell script"
+  ],
+  "SQL": [
+    "sql"
+  ],
+  "HTML": [
+    "html",
+    "html5",
+    "html/css"
+  ],
+  "CSS": [
+    "css",
+    "css3"
+  ],
+  "React": [
+    "react",
+    "reactjs",
+    "react.js",
+    "react js"
+  ],
+  "Vue": [
+    "vue",
+    "vuejs",
+    "vue.js"
+  ],
+  "Angular": [
+    "angular",
+    "angularjs"
+  ],
+  "Svelte": [
+    "svelte"
+  ],
+  "Next.js": [
+    "next.js",
+    "nextjs"
+  ],
+  "Node.js": [
+    "node.js",
+    "nodejs",
+    "node"
+  ],
+  "Django": [
+    "django"
+  ],
+  "Flask": [
+    "flask"
+  ],
+  "FastAPI": [
+    "fastapi"
+  ],
+  "Spring": [
+    "spring",
+    "spring boot"
+  ],
+  "Qt": [
+    "qt",
+    "qt5",
+    "qt6",
+    "qml"
+  ],
+  "GTK": [
+    "gtk",
+    "gtk+",
+    "gtk4"
+  ],
+  "Electron": [
+    "electron"
+  ],
+  "Android": [
+    "android"
+  ],
+  "iOS": [
+    "ios"
+  ],
+  "Linux": [
+    "linux"
+  ],
+  "Windows": [
+    "windows"
+  ],
+  "macOS": [
+    "macos",
+    "mac os"
+  ],
+  "Docker": [
+    "docker",
+    "containers",
+    "container"
+  ],
+  "Helm": [
+    "helm"
+  ],
+  "Terraform": [
+    "terraform"
+  ],
+  "Ansible": [
+    "ansible"
+  ],
+  "Git": [
+    "git"
+  ],
+  "GitHub Actions": [
+    "github actions"
+  ],
+  "CI/CD": [
+    "ci/cd",
+    "ci",
+    "cicd",
+    "continuous integration"
+  ],
+  "DevOps": [
+    "devops"
+  ],
+  "Cloud": [
+    "cloud",
+    "cloud computing"
+  ],
+  "AWS": [
+    "aws",
+    "amazon web services"
+  ],
+  "Azure": [
+    "azure",
+    "microsoft azure"
+  ],
+  "GCP": [
+    "gcp",
+    "google cloud",
+    "google cloud platform"
+  ],
+  "PostgreSQL": [
+    "postgresql",
+    "postgres"
+  ],
+  "MySQL": [
+    "mysql"
+  ],
+  "SQLite": [
+    "sqlite"
+  ],
+  "MongoDB": [
+    "mongodb",
+    "mongo"
+  ],
+  "Redis": [
+    "redis"
+  ],
+  "Elasticsearch": [
+    "elasticsearch"
+  ],
+  "Kafka": [
+    "kafka",
+    "apache kafka"
+  ],
+  "Spark": [
+    "spark",
+    "apache spark"
+  ],
+  "Hadoop": [
+    "hadoop"
+  ],
+  "GraphQL": [
+    "graphql"
+  ],
+  "REST": [
+    "rest",
+    "rest api",
+    "restful api",
+    "rest apis"
+  ],
+  "gRPC": [
+    "grpc"
+  ],
+  "Protocol Buffers": [
+    "protobuf",
+    "protocol buffers"
+  ],
+  "WebAssembly": [
+    "wasm",
+    "webassembly",
+    "web assembly"
+  ],
+  "eBPF": [
+    "ebpf",
+    "bpf"
+  ],
+  "OpenGL": [
+    "opengl"
+  ],
+  "Vulkan": [
+    "vulkan"
+  ],
+  "WebGL": [
+    "webgl"
+  ],
+  "CUDA": [
+    "cuda"
+  ],
+  "OpenCV": [
+    "opencv"
+  ],
+  "TensorFlow": [
+    "tensorflow"
+  ],
+  "PyTorch": [
+    "pytorch"
+  ],
+  "scikit-learn": [
+    "scikit-learn",
+    "sklearn",
+    "scikit learn"
+  ],
+  "NumPy": [
+    "numpy"
+  ],
+  "pandas": [
+    "pandas"
+  ],
+  "Jupyter": [
+    "jupyter",
+    "jupyter notebooks",
+    "jupyterlab",
+    "ipython"
+  ],
+  "Machine learning": [
+    "machine learning",
+    "ml"
+  ],
+  "Deep learning": [
+    "deep learning",
+    "dl"
+  ],
+  "AI": [
+    "ai",
+    "artificial intelligence"
+  ],
+  "LLMs": [
+    "llm",
+    "llms",
+    "large language models",
+    "generative ai",
+    "genai"
+  ],
+  "NLP": [
+    "nlp",
+    "natural language processing"
+  ],
+  "Computer vision": [
+    "computer vision"
+  ],
+  "Data science": [
+    "data science"
+  ],
+  "Databases": [
+    "database",
+    "databases"
+  ],
+  "Networking": [
+    "networking",
+    "network",
+    "network programming",
+    "tcp/ip",
+    "network protocols",
+    "sockets",
+    "socket programming",
+    "p2p",
+    "peer-to-peer",
+    "wireguard"
+  ],
+  "Security": [
+    "security",
+    "cybersecurity",
+    "infosec"
+  ],
+  "Cryptography": [
+    "cryptography",
+    "crypto"
+  ],
+  "Embedded": [
+    "embedded",
+    "embedded systems",
+    "embedded c"
+  ],
+  "Robotics": [
+    "robotics"
+  ],
+  "ROS": [
+    "ros",
+    "ros2"
+  ],
+  "Compilers": [
+    "compilers",
+    "compiler"
+  ],
+  "LLVM": [
+    "llvm"
+  ],
+  "Operating systems": [
+    "operating systems",
+    "os",
+    "kernel"
+  ],
+  "Distributed systems": [
+    "distributed systems"
+  ],
+  "Blockchain": [
+    "blockchain"
+  ],
+  "Web development": [
+    "web",
+    "web development",
+    "webdev",
+    "frontend",
+    "front-end",
+    "backend",
+    "back-end",
+    "fullstack",
+    "full stack",
+    "full-stack"
+  ],
+  "Mobile": [
+    "mobile",
+    "mobile development"
+  ],
+  "Testing": [
+    "testing",
+    "unit testing",
+    "test automation",
+    "qa"
+  ],
+  "Documentation": [
+    "documentation",
+    "technical writing",
+    "docs"
+  ],
+  "UX design": [
+    "ux",
+    "ui/ux",
+    "ux design",
+    "ui",
+    "design",
+    "user experience"
+  ],
+  "Graphics": [
+    "graphics",
+    "computer graphics",
+    "3d graphics"
+  ],
+  "Game development": [
+    "game development",
+    "gamedev",
+    "games"
+  ],
+  "Prometheus": [
+    "prometheus"
+  ],
+  "Envoy": [
+    "envoy"
+  ],
+  "Istio": [
+    "istio"
+  ],
+  "OpenTelemetry": [
+    "opentelemetry",
+    "otel"
+  ],
+  "YAML": [
+    "yaml"
+  ],
+  "JSON": [
+    "json"
+  ],
+  "XML": [
+    "xml"
+  ],
+  "CMake": [
+    "cmake"
+  ],
+  "Make": [
+    "make",
+    "makefile",
+    "gnu make"
+  ],
+  "Bazel": [
+    "bazel"
+  ],
+  "Nix": [
+    "nix"
+  ],
+  "Assembly": [
+    "assembly",
+    "asm"
+  ],
+  "VHDL": [
+    "vhdl"
+  ],
+  "Verilog": [
+    "verilog"
+  ],
+  "LaTeX": [
+    "latex"
+  ],
+  "Markdown": [
+    "markdown"
+  ],
+  "APIs": [
+    "api",
+    "apis",
+    "api design",
+    "web apis"
+  ],
+  "Build tools": [
+    "build tools",
+    "build systems",
+    "build system"
+  ],
+  "Hardware": [
+    "hardware"
+  ],
+  "Cython": [
+    "cython"
+  ],
+  "JVM": [
+    "jvm"
+  ],
+  "Grafana": [
+    "grafana"
+  ],
+  "FPGA": [
+    "fpga"
+  ],
+  "x86": [
+    "x86",
+    "x86-64"
+  ],
+  "Virtualization": [
+    "virtualization",
+    "virtualisation"
+  ],
+  "GitHub": [
+    "github"
+  ],
+  "Raspberry Pi": [
+    "raspberry pi",
+    "raspberrypi"
+  ],
+  "RISC-V": [
+    "risc-v",
+    "riscv"
+  ],
+  "D3.js": [
+    "d3",
+    "d3.js",
+    "d3js"
+  ],
+  "KVM": [
+    "kvm"
+  ],
+  "GIS": [
+    "gis",
+    "geospatial"
+  ],
+  "Parallel computing": [
+    "parallel computing",
+    "hpc",
+    "high performance computing",
+    "parallel programming"
+  ],
+  "DNS": [
+    "dns"
+  ],
+  "Arduino": [
+    "arduino"
+  ],
+  "Scripting": [
+    "scripting"
+  ],
+  "XMPP": [
+    "xmpp"
+  ],
+  "Data analysis": [
+    "data analysis",
+    "data analytics",
+    "analytics"
+  ],
+  "GPU": [
+    "gpu",
+    "gpu programming",
+    "gpgpu"
+  ],
+  "JavaFX": [
+    "javafx"
+  ],
+  "Autotools": [
+    "autotools"
+  ],
+  "Bioinformatics": [
+    "bioinformatics"
+  ],
+  "Simulation": [
+    "simulation",
+    "simulations"
+  ],
+  "Statistics": [
+    "statistics",
+    "stats"
+  ],
+  "Physics": [
+    "physics"
+  ],
+  "Chemistry": [
+    "chemistry",
+    "computational chemistry"
+  ],
+  "Astronomy": [
+    "astronomy",
+    "astrophysics"
+  ],
+  "Mathematics": [
+    "math",
+    "mathematics",
+    "maths"
+  ],
+  "Numerical methods": [
+    "numerical methods",
+    "numerical analysis",
+    "scientific computing"
+  ],
+  "Education": [
+    "education"
+  ],
+  "Accessibility": [
+    "accessibility",
+    "a11y"
+  ],
+  "Localization": [
+    "localization",
+    "l10n",
+    "i18n",
+    "internationalization",
+    "translation"
+  ],
+  "Audio": [
+    "audio",
+    "audio processing",
+    "dsp"
+  ],
+  "Video": [
+    "video",
+    "video processing"
+  ],
+  "Image processing": [
+    "image processing"
+  ],
+  "3D": [
+    "3d",
+    "3d modeling",
+    "3d printing"
+  ],
+  "Game engine": [
+    "game engine",
+    "unity",
+    "godot",
+    "unreal engine"
+  ],
+  "Blender": [
+    "blender"
+  ],
+  "Emacs": [
+    "emacs",
+    "emacs lisp",
+    "elisp"
+  ],
+  "Vim": [
+    "vim",
+    "neovim"
+  ],
+  "Web scraping": [
+    "web scraping",
+    "scraping",
+    "crawling"
+  ],
+  "Search": [
+    "search",
+    "elastic search",
+    "lucene",
+    "solr"
+  ],
+  "XSLT": [
+    "xslt",
+    "xpath",
+    "xquery"
+  ],
+  "Jenkins": [
+    "jenkins"
+  ],
+  "Debian": [
+    "debian"
+  ],
+  "Fedora": [
+    "fedora"
+  ],
+  "Ubuntu": [
+    "ubuntu"
+  ],
+  "FreeBSD": [
+    "freebsd",
+    "bsd"
+  ],
+  "Systems programming": [
+    "systems programming",
+    "system programming",
+    "low-level programming"
+  ],
+  "Microcontrollers": [
+    "microcontrollers",
+    "microcontroller",
+    "mcu"
+  ],
+  "IoT": [
+    "iot",
+    "internet of things"
+  ],
+  "Bluetooth": [
+    "bluetooth",
+    "ble"
+  ],
+  "Wi-Fi": [
+    "wifi",
+    "wi-fi",
+    "802.11"
+  ],
+  "SDR": [
+    "sdr",
+    "software defined radio",
+    "gnu radio"
+  ],
+  "MQTT": [
+    "mqtt"
+  ],
+  "OpenCL": [
+    "opencl"
+  ],
+  "Matplotlib": [
+    "matplotlib"
+  ],
+  "SciPy": [
+    "scipy"
+  ],
+  "Dask": [
+    "dask"
+  ],
+  "Keras": [
+    "keras"
+  ],
+  "JAX": [
+    "jax"
+  ],
+  "Hugging Face": [
+    "huggingface",
+    "hugging face",
+    "transformers"
+  ],
+  "Reinforcement learning": [
+    "reinforcement learning",
+    "rl"
+  ],
+  "Data visualization": [
+    "data visualization",
+    "visualization",
+    "dataviz",
+    "visualisation"
+  ],
+  "PowerShell": [
+    "powershell"
+  ],
+  "Groovy": [
+    "groovy"
+  ],
+  "Gradle": [
+    "gradle"
+  ],
+  "Maven": [
+    "maven"
+  ],
+  "npm": [
+    "npm",
+    "yarn",
+    "pnpm"
+  ],
+  "Webpack": [
+    "webpack",
+    "vite",
+    "rollup"
+  ],
+  "Tailwind CSS": [
+    "tailwind",
+    "tailwindcss",
+    "tailwind css"
+  ],
+  "Bootstrap": [
+    "bootstrap"
+  ],
+  "jQuery": [
+    "jquery"
+  ],
+  "Jest": [
+    "jest"
+  ],
+  "pytest": [
+    "pytest"
+  ],
+  "Selenium": [
+    "selenium",
+    "playwright",
+    "cypress"
+  ],
+  "OAuth": [
+    "oauth",
+    "oauth2",
+    "openid connect",
+    "oidc"
+  ],
+  "LDAP": [
+    "ldap"
+  ],
+  "TLS": [
+    "tls",
+    "ssl",
+    "pki"
+  ],
+  "Fuzzing": [
+    "fuzzing",
+    "fuzz testing"
+  ],
+  "Reverse engineering": [
+    "reverse engineering"
+  ],
+  "Malware analysis": [
+    "malware analysis",
+    "malware"
+  ],
+  "Penetration testing": [
+    "penetration testing",
+    "pentesting"
+  ],
+  "Forensics": [
+    "forensics",
+    "digital forensics"
+  ],
+  "VoIP": [
+    "voip",
+    "sip",
+    "webrtc"
+  ],
+  "HTTP": [
+    "http",
+    "http/2",
+    "http3"
+  ],
+  "NGINX": [
+    "nginx"
+  ],
+  "Apache": [
+    "apache",
+    "apache httpd"
+  ],
+  "Caching": [
+    "caching",
+    "cache",
+    "memcached"
+  ],
+  "Message queues": [
+    "message queues",
+    "rabbitmq",
+    "amqp",
+    "zeromq",
+    "nats"
+  ],
+  "Cassandra": [
+    "cassandra"
+  ],
+  "Neo4j": [
+    "neo4j",
+    "graph databases",
+    "graph database"
+  ],
+  "ClickHouse": [
+    "clickhouse"
+  ],
+  "DuckDB": [
+    "duckdb"
+  ],
+  "Arrow": [
+    "apache arrow",
+    "arrow",
+    "parquet"
+  ],
+  "Airflow": [
+    "airflow",
+    "apache airflow"
+  ],
+  "Flink": [
+    "flink",
+    "apache flink"
+  ],
+  "Beam": [
+    "beam",
+    "apache beam"
+  ],
+  "ETL": [
+    "etl",
+    "data engineering",
+    "data pipelines"
+  ],
+  "Semantic web": [
+    "semantic web",
+    "rdf",
+    "sparql",
+    "linked data",
+    "ontologies",
+    "owl"
+  ],
+  "Wikidata": [
+    "wikidata",
+    "wikibase",
+    "mediawiki"
+  ],
+  "OpenStreetMap": [
+    "openstreetmap",
+    "osm"
+  ],
+  "Leaflet": [
+    "leaflet",
+    "openlayers",
+    "mapbox"
+  ],
+  "QGIS": [
+    "qgis",
+    "gdal",
+    "postgis"
+  ],
+  "Healthcare": [
+    "healthcare",
+    "health",
+    "fhir",
+    "hl7",
+    "medical imaging",
+    "dicom"
+  ],
+  "Genomics": [
+    "genomics",
+    "genetics",
+    "sequencing"
+  ],
+  "Neuroscience": [
+    "neuroscience",
+    "neuroimaging"
+  ],
+  "Climate": [
+    "climate",
+    "climate science",
+    "weather",
+    "meteorology"
+  ],
+  "Economics": [
+    "economics",
+    "finance",
+    "fintech"
+  ],
+  "Legal": [
+    "legal",
+    "law"
+  ],
+  "Humanitarian": [
+    "humanitarian",
+    "disaster response",
+    "nonprofit"
+  ],
+  "Content management": [
+    "cms",
+    "content management",
+    "wordpress",
+    "drupal",
+    "joomla"
+  ],
+  "E-commerce": [
+    "e-commerce",
+    "ecommerce"
+  ],
+  "Chatbots": [
+    "chatbot",
+    "chatbots",
+    "conversational ai"
+  ],
+  "Speech": [
+    "speech recognition",
+    "speech",
+    "tts",
+    "asr",
+    "text to speech"
+  ],
+  "OCR": [
+    "ocr"
+  ],
+  "PDF": [
+    "pdf"
+  ],
+  "Typography": [
+    "typography",
+    "fonts",
+    "font"
+  ],
+  "SVG": [
+    "svg"
+  ],
+  "Canvas": [
+    "canvas",
+    "html5 canvas"
+  ],
+  "Three.js": [
+    "three.js",
+    "threejs"
+  ],
+  "WebGPU": [
+    "webgpu"
+  ],
+  "Shaders": [
+    "shaders",
+    "glsl",
+    "hlsl"
+  ],
+  "Ray tracing": [
+    "ray tracing",
+    "rendering",
+    "renderer"
+  ],
+  "Animation": [
+    "animation",
+    "2d animation"
+  ],
+  "Printing": [
+    "3d printer",
+    "cnc",
+    "printing"
+  ],
+  "CAD": [
+    "cad",
+    "freecad",
+    "openscad"
+  ],
+  "EDA": [
+    "eda",
+    "kicad",
+    "pcb design",
+    "pcb"
+  ],
+  "Zig": [
+    "zig"
+  ],
+  "Nim": [
+    "nim"
+  ],
+  "Crystal": [
+    "crystal"
+  ],
+  "F#": [
+    "f#",
+    "fsharp"
+  ],
+  "Visual Basic": [
+    "visual basic",
+    "vb.net"
+  ],
+  ".NET": [
+    ".net",
+    "dotnet",
+    ".net core",
+    "asp.net"
+  ],
+  "Objective-C": [
+    "objective-c",
+    "objc",
+    "objective c"
+  ],
+  "Tcl": [
+    "tcl",
+    "tcl/tk",
+    "tk"
+  ],
+  "Prolog": [
+    "prolog"
+  ],
+  "Smalltalk": [
+    "smalltalk",
+    "pharo"
+  ],
+  "Racket": [
+    "racket",
+    "scheme"
+  ],
+  "Coq": [
+    "coq",
+    "rocq",
+    "lean",
+    "isabelle",
+    "theorem proving",
+    "formal verification",
+    "formal methods"
+  ],
+  "Solidity": [
+    "solidity",
+    "ethereum",
+    "smart contracts",
+    "web3"
+  ],
+  "Bitcoin": [
+    "bitcoin",
+    "lightning network"
+  ],
+  "Cryptocurrency": [
+    "cryptocurrency",
+    "crypto currency"
+  ],
+  "Pandas": [
+    "polars"
+  ],
+  "Streamlit": [
+    "streamlit",
+    "gradio",
+    "dash"
+  ],
+  "Plotly": [
+    "plotly",
+    "bokeh",
+    "altair"
+  ],
+  "ONNX": [
+    "onnx",
+    "tensorrt",
+    "openvino"
+  ],
+  "MLOps": [
+    "mlops",
+    "mlflow",
+    "kubeflow"
+  ],
+  "Agents": [
+    "agents",
+    "ai agents",
+    "mcp",
+    "langchain",
+    "llamaindex",
+    "rag"
+  ],
+  "Prompt engineering": [
+    "prompt engineering"
+  ],
+  "Computer algebra": [
+    "computer algebra",
+    "symbolic computation",
+    "sympy",
+    "sage",
+    "sagemath"
+  ],
+  "Linux kernel": [
+    "linux kernel",
+    "kernel development",
+    "drivers",
+    "device drivers"
+  ],
+  "systemd": [
+    "systemd"
+  ],
+  "QEMU": [
+    "qemu"
+  ],
+  "Xen": [
+    "xen"
+  ],
+  "Containers": [
+    "podman",
+    "lxc",
+    "containerd",
+    "cri-o"
+  ],
+  "Nomad": [
+    "nomad",
+    "consul"
+  ],
+  "OpenStack": [
+    "openstack"
+  ],
+  "Serverless": [
+    "serverless",
+    "faas",
+    "knative"
+  ],
+  "Service mesh": [
+    "service mesh",
+    "istio",
+    "linkerd"
+  ],
+  "Observability": [
+    "observability",
+    "monitoring",
+    "logging",
+    "tracing",
+    "metrics"
+  ],
+  "Jaeger": [
+    "jaeger"
+  ],
+  "Fluentd": [
+    "fluentd",
+    "fluent bit"
+  ],
+  "Argo": [
+    "argo",
+    "argo cd",
+    "argocd",
+    "argo workflows"
+  ],
+  "Flux": [
+    "flux",
+    "fluxcd",
+    "gitops"
+  ],
+  "Crossplane": [
+    "crossplane"
+  ],
+  "Backstage": [
+    "backstage"
+  ],
+  "Operator SDK": [
+    "operators",
+    "kubernetes operators",
+    "operator sdk",
+    "controller-runtime",
+    "kubebuilder"
+  ],
+  "etcd": [
+    "etcd"
+  ],
+  "CoreDNS": [
+    "coredns"
+  ],
+  "Cilium": [
+    "cilium"
+  ],
+  "Falco": [
+    "falco"
+  ],
+  "OPA": [
+    "opa",
+    "open policy agent",
+    "rego",
+    "kyverno",
+    "policy as code"
+  ],
+  "SPIFFE": [
+    "spiffe",
+    "spire"
+  ],
+  "Sigstore": [
+    "sigstore",
+    "cosign",
+    "in-toto",
+    "slsa",
+    "supply chain security",
+    "software supply chain"
+  ],
+  "Harbor": [
+    "harbor"
+  ],
+  "Dapr": [
+    "dapr"
+  ],
+  "KEDA": [
+    "keda"
+  ],
+  "Vitess": [
+    "vitess"
+  ],
+  "TiKV": [
+    "tikv"
+  ],
+  "CockroachDB": [
+    "cockroachdb"
+  ],
+  "Thanos": [
+    "thanos",
+    "cortex",
+    "mimir"
+  ],
+  "Loki": [
+    "loki"
+  ],
+  "Tempo": [
+    "tempo"
+  ],
+  "POSIX": [
+    "posix",
+    "unix"
+  ],
+  "Gazebo": [
+    "gazebo"
+  ],
+  "OpenWrt": [
+    "openwrt"
+  ],
+  "Clang": [
+    "clang"
+  ],
+  "Symfony": [
+    "symfony"
+  ],
+  "GStreamer": [
+    "gstreamer"
+  ],
+  "ARM": [
+    "arm",
+    "arm assembly",
+    "aarch64"
+  ],
+  "ANTLR": [
+    "antlr"
+  ],
+  "React Native": [
+    "react native",
+    "react-native"
+  ],
+  "GWT": [
+    "gwt"
+  ],
+  "Wayland": [
+    "wayland"
+  ],
+  "FFmpeg": [
+    "ffmpeg"
+  ],
+  "Win32": [
+    "win32",
+    "winapi",
+    "windows api"
+  ],
+  "MPI": [
+    "mpi",
+    "openmpi",
+    "openmp"
+  ],
+  "Mercurial": [
+    "hg",
+    "mercurial"
+  ],
+  "MLIR": [
+    "mlir"
+  ],
+  "Numba": [
+    "numba"
+  ],
+  "CUPS": [
+    "cups"
+  ],
+  "X11": [
+    "x11",
+    "xorg",
+    "x.org"
+  ],
+  "Google App Engine": [
+    "google app engine",
+    "app engine",
+    "gae"
+  ],
+  "SDL": [
+    "sdl",
+    "sdl2"
+  ]
+}

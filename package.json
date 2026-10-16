@@ -9,12 +9,15 @@
     "lint": "eslint",
     "test:data": "node --import tsx --test scripts/tests/*.test.ts",
     "sync:data": "node --import tsx scripts/fetch-lfx-data.ts",
-    "audit:data": "node --import tsx scripts/audit-data.ts",
+    "audit:data": "node --import tsx scripts/audit-data.ts && node --import tsx scripts/audit-gsoc-data.ts",
     "check:data": "node --import tsx scripts/fetch-lfx-data.ts --check",
     "check:copy": "node --import tsx scripts/check-copy.ts",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
-    "test:e2e:update": "playwright test --update-snapshots"
+    "test:e2e:update": "playwright test --update-snapshots",
+    "sync:gsoc": "node --import tsx scripts/fetch-gsoc-data.ts",
+    "check:gsoc": "node --import tsx scripts/fetch-gsoc-data.ts --check",
+    "audit:gsoc": "node --import tsx scripts/audit-gsoc-data.ts"
   },
   "dependencies": {
     "d3-force": "^3.0.0",
