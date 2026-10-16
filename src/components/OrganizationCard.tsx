@@ -163,7 +163,7 @@ export default function OrganizationCard({ org, years, accentVar = "--program-lf
       {org.links && org.links.length > 0 && (
         <ul className="relative z-10 mt-3 flex flex-wrap gap-1.5" aria-label="Links">
           {org.links.map((l) => (
-            <li key={l.href}>
+            <li key={`${l.label}-${l.href}`}>
               <a href={l.href} target="_blank" rel="noopener noreferrer" className="chip h-7 hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]">
                 <span>{l.label}</span>
                 <ExternalLink size={11} className="text-[var(--text-muted)]" aria-hidden="true" />

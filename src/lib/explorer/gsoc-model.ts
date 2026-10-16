@@ -22,6 +22,9 @@ export function gsocToExplorerOrg(org: GsocOrganization, currentYear: number, pr
   if (org.links.guide) links.push({ label: "Contributor guide", href: org.links.guide });
   if (org.links.chat) links.push({ label: "Chat", href: org.links.chat });
   if (proposalCount > 0) links.push({ label: `${proposalCount} ${proposalCount === 1 ? "proposal" : "proposals"}`, href: `/proposals?orgs=${org.slug}` });
+  // Some orgs use one page for ideas, guide and chat; show each URL once.
+  const seen = new Set<string>();
+  const uniqueLinks = links.filter((l) => (seen.has(l.href) ? false : (seen.add(l.href), true)));
   const isNew = org.firstYear === currentYear;
   return {
     id: org.slug,
@@ -42,7 +45,7 @@ export function gsocToExplorerOrg(org: GsocOrganization, currentYear: number, pr
       size: [gsocOrgSize(org.projectCount)],
     },
     search: { projectTitles: [], mentorNames: [], topics: org.topics },
-    links,
+    links: uniqueLinks,
     badge: isNew ? `New in ${currentYear}` : undefined,
     currentYearProjects: org.projectsByYear[String(currentYear)] ?? 0,
     proposalCount,
