@@ -28,7 +28,11 @@ Single source of truth for how OSSGrid looks and reads. Tokens live in `src/app/
 | `--accent-soft` / `--accent-ring` | 12% / 35% accent | 8% / 30% accent | Active chip fill and border |
 | `--program-lfx` | `#22c55e` | `#166534` | LFX identity |
 | `--program-gsoc` | `#f59e0b` | `#b45309` | GSoC identity |
-| `--program-other` | `#a78bfa` | `#6d28d9` | Future programs |
+| `--program-outreachy` | `#f472b6` | `#be185d` | Outreachy identity |
+| `--program-gssoc` | `#2dd4bf` | `#0f766e` | GirlScript Summer of Code identity |
+| `--program-mlh` | `#60a5fa` | `#1d4ed8` | MLH Fellowship identity |
+| `--program-sob` | `#fb923c` | `#c2410c` | Summer of Bitcoin identity |
+| `--program-other` | `#a78bfa` | `#6d28d9` | Anything not in the registry |
 | `--success` / `--warning` / `--danger` | `#22c55e` / `#f59e0b` / `#f43f5e` | AA-safe darker | Status only |
 
 Rules: no gradients. Program colour appears in three places only: the 2 px left accent rule (`.card-selected`), the status dot, and the active facet chip. Light mode is warm paper, not grey.
@@ -65,7 +69,8 @@ Dark mode: no drop shadows on cards; depth is surface step + `--border` + `--hig
 - **Explorer**: intro (H1, one paragraph, facts strip) → term schedule → toolbar (`CategoryBar`: category pills, result count, sort, view toggle) → sidebar facets + grid. Phones get a left drawer for filters.
 - **Org card**: 40 px logo plate on white, name 16/600, meta line (category · year span), two-line description, up to 3 mono tech chips + "+N", five-year activity bars in the program colour, footer with mono counts and "View details". The whole card is one link (stretched), one focus ring.
 - **Facet section**: title 14/600, optional search field, checkbox rows with right-aligned mono counts, "Show N more".
-- **Program card**: sponsor, status pill, name, one sentence, three-fact table from `src/data/program-calendar.json`, one CTA, a "Source" link.
+- **Program card**: sponsor, status pill, name, one sentence, four-fact table from the registry (`src/data/programs.ts`) with a source link per fact, derived counts, one CTA plus "Official site". Coming-soon cards use the compact variant with "Official site" and "Follow progress"; never a disabled button.
+- **Explorer shell**: every dashboard (`/lfx`, `/gsoc`) is `ExplorerShell` driven by a `ProgramConfig`; cards, facets, toolbar and empty states come from one place. The program colour only reaches the card accent rule, the activity bars, the status dot and the active chip.
 - **Empty state**: 24 px muted icon, one sentence saying exactly what did not match, one sentence of advice, one button.
 - **Loading**: skeletons that match card geometry. No spinners.
 - **Error**: plain sentence, "Try again", link to the issue tracker.

@@ -265,3 +265,12 @@ Every pull request is reviewed by CodeRabbit against the issue it closes, then a
 - After pushing fixes, comment `@coderabbitai review` for a re-review of the new commits, `@coderabbitai full review` to re-review everything, and `@coderabbitai resolve` once comments are addressed.
 - Issues use the forms in `.github/ISSUE_TEMPLATE/` (bug, feature or task, wrong or missing data, new program dashboard). Blank issues are off.
 - A human maintainer still approves and merges. CodeRabbit never merges.
+
+---
+
+# Adding a program
+
+1. Add a registry entry in `src/data/programs.ts` with `status: "coming-soon"`, four sourced facts and a `trackingIssueUrl` (open a "new program" issue; a draft lives in `docs/roadmap/<id>.md`). A preview page appears at `/programs/<id>`.
+2. Build the pipeline under `scripts/` with a pin file, a raw cache in `scripts/.cache/`, fixtures and tests, an audit wired into `npm run audit:data`, and a scheduled workflow that opens a PR.
+3. Add a `ProgramConfig` under `src/lib/explorer/` and a route on `ExplorerShell`, with metadata, JSON-LD breadcrumb, noscript list and sitemap entries like `/gsoc`.
+4. Flip the registry entry to `live` with `dashboardPath` and `dataFile`. Header, landing, footer, sitemap and search update on their own; `npm run audit:programs` checks the route and data exist.
