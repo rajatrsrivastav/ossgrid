@@ -77,3 +77,33 @@ export function getGsocStats(): GsocSiteStats {
   gsocCached = { orgCount: orgs.length, projectCount, yearMin, yearMax, orgLabel: roundedPlus(orgs.length), projectLabel: roundedPlus(projectCount) };
   return gsocCached;
 }
+
+export interface ProgramStats {
+  id: "lfx" | "gsoc";
+  orgCount: number;
+  projectCount: number;
+  yearMin: number;
+  yearMax: number;
+  /** LFX only. */
+  termCount?: number;
+  orgLabel: string;
+  projectLabel: string;
+}
+
+/** Counts per live program, derived from the data files at build time. */
+export function getProgramStats(): ProgramStats[] {
+  const lfx = getSiteStats();
+  const gsoc = getGsocStats();
+  return [
+    { id: "gsoc", ...gsoc },
+    { id: "lfx", orgCount: lfx.orgCount, projectCount: lfx.projectCount, yearMin: lfx.yearMin, yearMax: lfx.yearMax, termCount: lfx.termCount, orgLabel: lfx.orgLabel, projectLabel: lfx.projectLabel },
+  ];
+}
+
+/** Totals across live programs, for the hero line. */
+export function getCombinedStats() {
+  const all = getProgramStats();
+  const orgCount = all.reduce((n, s) => n + s.orgCount, 0);
+  const projectCount = all.reduce((n, s) => n + s.projectCount, 0);
+  return { orgCount, projectCount, orgLabel: roundedPlus(orgCount), projectLabel: roundedPlus(projectCount), liveCount: all.length, yearMin: Math.min(...all.map((s) => s.yearMin)), yearMax: Math.max(...all.map((s) => s.yearMax)) };
+}

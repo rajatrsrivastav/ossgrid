@@ -12,6 +12,8 @@ interface AnimatedCounterProps {
  * Uses requestAnimationFrame for smooth easing.
  * Respects prefers-reduced-motion (snaps instantly).
  */
+const nf = new Intl.NumberFormat("en-US");
+
 export default function AnimatedCounter({ value, className = "" }: AnimatedCounterProps) {
   const displayRef = useRef<HTMLSpanElement>(null);
   const prevRef = useRef<number>(value);
@@ -24,7 +26,7 @@ export default function AnimatedCounter({ value, className = "" }: AnimatedCount
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (prefersReduced) {
-      el.textContent = String(value);
+      el.textContent = nf.format(value);
       prevRef.current = value;
       return;
     }
@@ -42,7 +44,7 @@ export default function AnimatedCounter({ value, className = "" }: AnimatedCount
       // ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       const current = Math.round(from + (to - from) * eased);
-      if (el) el.textContent = String(current);
+      if (el) el.textContent = nf.format(current);
       if (progress < 1) {
         rafRef.current = requestAnimationFrame(tick);
       } else {
@@ -60,7 +62,7 @@ export default function AnimatedCounter({ value, className = "" }: AnimatedCount
       className={className}
       style={{ fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-mono)" }}
     >
-      {value}
+      {nf.format(value)}
     </span>
   );
 }

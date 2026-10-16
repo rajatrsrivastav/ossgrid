@@ -29,7 +29,7 @@ const instrumentSans = Instrument_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.ossgrid.tech"),
   title: {
-    default: "OSSGrid — Open Source Mentorship & Ecosystem Explorer",
+    default: "OSSGrid: GSoC, LFX and open-source mentorship orgs in one place",
     template: "%s | OSSGrid",
   },
   description:
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://www.ossgrid.tech",
     siteName: "OSSGrid",
-    title: "OSSGrid — Open Source Mentorship & Ecosystem Explorer",
+    title: "OSSGrid: GSoC, LFX and open-source mentorship orgs in one place",
     description:
       "A free index of open-source mentorship programs. Browse LFX Mentorship and Google Summer of Code organizations by technology, year and project history.",
     images: [
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "OSSGrid — Open Source Mentorship & Ecosystem Explorer",
+    title: "OSSGrid: GSoC, LFX and open-source mentorship orgs in one place",
     description:
       "A free index of open-source mentorship programs. Browse LFX Mentorship and Google Summer of Code organizations by technology, year and project history.",
     images: ["/og-image.jpg"],

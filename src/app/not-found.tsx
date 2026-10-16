@@ -17,7 +17,7 @@ export default function NotFound() {
       <p className="mt-3 max-w-md text-base text-[var(--text-secondary)]">
         That organization or page does not exist. The slug may have changed when the data was refreshed.
       </p>
-      <Link href="/lfx" className="btn btn-primary mt-8">Browse LFX organizations</Link>
+      <Link href="/#programs" className="btn btn-primary mt-8">Browse programs</Link>
       <p className="mt-10 text-xs text-[var(--text-muted)]">
         Data from{" "}
         <a href="https://github.com/cncf/mentoring" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[var(--text-primary)]">

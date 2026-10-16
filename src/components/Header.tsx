@@ -7,12 +7,9 @@ import { cn } from "@/lib/utils";
 import LogoMark from "./LogoMark";
 import ThemeToggle from "./ThemeToggle";
 import SearchBar from "./SearchBar";
+import { headerLinks } from "@/data/site";
 
-const links = [
-  { label: "Programs", href: "/#programs" },
-  { label: "Playbook", href: "/#playbook" },
-  { label: "FAQ", href: "/#faq" },
-];
+const links = headerLinks();
 
 interface HeaderProps {
   /** "simple" = marketing pages; "full" = explorer with search */
@@ -99,8 +96,8 @@ export default function Header({
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
             {!isExplorer && (
-              <Link href="/lfx" className="btn btn-primary btn-sm hidden sm:inline-flex">
-                Browse LFX orgs
+              <Link href="/#programs" className="btn btn-primary btn-sm hidden sm:inline-flex">
+                Browse programs
               </Link>
             )}
             {isExplorer ? (
@@ -155,8 +152,8 @@ export default function Header({
                 </li>
               ))}
               <li className="pt-2">
-                <Link href="/lfx" className="btn btn-primary w-full" onClick={() => setNavOpen(false)}>
-                  <Search size={15} /> Browse LFX orgs
+                <Link href="/#programs" className="btn btn-primary w-full" onClick={() => setNavOpen(false)}>
+                  <Search size={15} /> Browse programs
                 </Link>
               </li>
             </ul>

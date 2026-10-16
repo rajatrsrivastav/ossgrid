@@ -1,42 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { Search, SlidersHorizontal, FileSearch, Send, ArrowRight } from "lucide-react";
+import { Scale, SlidersHorizontal, FileSearch, Send, ArrowRight } from "lucide-react";
 import { Section } from "./Section";
 import { SectionHeading } from "./SectionHeading";
 import { ScrollReveal } from "./ScrollReveal";
-import type { SiteStats } from "@/lib/stats";
+import { livePrograms } from "@/data/programs";
+import type { CombinedStats } from "@/components/home/HomePageClient";
 
-export function HowItWorks({ stats }: { stats: SiteStats }) {
+export function HowItWorks({ combined }: { combined: CombinedStats }) {
+  const live = livePrograms();
   const steps = [
-    {
-      icon: Search,
-      title: "Search everything at once",
-      body: `One search box covers ${stats.orgLabel} organizations and ${stats.projectLabel} projects, including mentor names and skills.`,
-    },
-    {
-      icon: SlidersHorizontal,
-      title: "Filter by what you already know",
-      body: "Narrow by language, category, year and organization size. Filters live in the URL, so you can share a view.",
-    },
-    {
-      icon: FileSearch,
-      title: "Read the org page before you apply",
-      body: "Each page shows past projects by term, mentors with GitHub handles, and the skills that come up most.",
-    },
-    {
-      icon: Send,
-      title: "Apply on the official portal",
-      body: "OSSGrid never takes applications. Every project links to its official listing and source file.",
-    },
+    { icon: Scale, title: "Pick a program", body: "Compare stipend, length and eligibility side by side, with a source link on every fact." },
+    { icon: SlidersHorizontal, title: "Search and filter", body: `One search box covers ${combined.orgLabel} organizations and ${combined.projectLabel} projects. Narrow by language, category, year and org size. Filters live in the URL, so you can share a view.` },
+    { icon: FileSearch, title: "Read the org page", body: "Past projects by year, mentors' GitHub handles, ideas lists and public proposals, before you write a line." },
+    { icon: Send, title: "Apply on the official site", body: "OSSGrid never takes applications. Every organization links to its official listing." },
   ];
 
   return (
-    <Section id="how-it-works" className="border-y border-[var(--border)] bg-[var(--bg-raised)]">
-      <SectionHeading eyebrow="How it works" title="From a long list to a short one." description="The data comes from the official project files. OSSGrid makes it searchable.">
-        <Link href="/lfx" className="btn btn-secondary mt-2">
-          Open the LFX index <ArrowRight size={15} aria-hidden="true" />
-        </Link>
+    <Section id="how-it-works" className="border-b border-[var(--border)] bg-[var(--bg-raised)]">
+      <SectionHeading eyebrow="How it works" title="From a long list to a short one." description="The data comes from official program sources. OSSGrid makes it searchable.">
+        <div className="mt-2 flex flex-wrap gap-2">
+          {live.map((p) => (
+            <Link key={p.id} href={p.dashboardPath!} className="btn btn-secondary">
+              Open the {p.shortName} index <ArrowRight size={15} aria-hidden="true" />
+            </Link>
+          ))}
+        </div>
       </SectionHeading>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">

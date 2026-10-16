@@ -4,6 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Eye } from "lucide-react";
+import { PROGRAMS, livePrograms } from "@/data/programs";
+import { footerLinks, trademarkLine } from "@/data/site";
 
 const contributors = [
   { handle: "rajatrsrivastav", name: "Rajat Srivastav" },
@@ -74,30 +76,34 @@ export default function Footer() {
             A free, community-built index of open-source mentorship programs. No login, no tracking of you, just the data.
           </p>
           <p className="mt-4 text-xs text-[var(--text-muted)]">
-            LFX data from{" "}
-            <a
-              href="https://github.com/cncf/mentoring"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-4 hover:text-[var(--text-primary)]"
-            >
-              cncf/mentoring on GitHub
-            </a>
-            . LFX, Linux Foundation, CNCF, GSoC and Google are trademarks of their owners. OSSGrid is not affiliated with them.
+            {livePrograms().map((p) => (
+              <span key={p.id}>
+                {p.shortName} data from{" "}
+                {p.dataSources.map((s, i) => (
+                  <span key={s.url}>
+                    {i > 0 && (i === p.dataSources.length - 1 ? " and " : ", ")}
+                    <a href={s.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[var(--text-primary)]">{s.label}</a>
+                  </span>
+                ))}
+                .{" "}
+              </span>
+            ))}
+            {trademarkLine(PROGRAMS)}
           </p>
         </div>
 
         <nav aria-label="Footer" className="text-sm">
           <p className="eyebrow mb-3">Site</p>
           <ul className="flex flex-col gap-2">
-            <li><Link href="/" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Home</Link></li>
-            <li><Link href="/lfx" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">LFX organizations</Link></li>
-            <li><Link href="/#playbook" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Contributor playbook</Link></li>
-            <li>
-              <a href="https://github.com/rajatrsrivastav/ossgrid" target="_blank" rel="noopener noreferrer" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
-                Source on GitHub
-              </a>
-            </li>
+            {footerLinks().map((l) => (
+              <li key={l.href}>
+                {l.external ? (
+                  <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">{l.label}</a>
+                ) : (
+                  <Link href={l.href} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">{l.label}</Link>
+                )}
+              </li>
+            ))}
           </ul>
         </nav>
 
