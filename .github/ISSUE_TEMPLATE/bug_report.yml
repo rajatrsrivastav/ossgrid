@@ -1,0 +1,51 @@
+name: Bug report
+description: Something on the site is broken or looks wrong.
+title: "fix: "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where
+      options:
+        - Landing page
+        - LFX dashboard (/lfx)
+        - GSoC dashboard (/gsoc)
+        - Proposals (/proposals)
+        - Playbook (/guide)
+        - Organization page
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Page URL
+      placeholder: https://www.ossgrid.tech/gsoc?tech=Rust
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open /gsoc
+        2. Filter by year 2024
+        3. ...
+  - type: input
+    id: env
+    attributes:
+      label: Browser, OS, theme
+      placeholder: Chrome 141, macOS, dark
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: How will we know it's fixed? CodeRabbit checks the PR against this.
+      placeholder: "- Filter count matches visible cards"
+    validations:
+      required: true

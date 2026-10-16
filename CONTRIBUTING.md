@@ -253,3 +253,15 @@ Silence is the problem, not needing extra time.
 ---
 
 **Build carefully. Verify against the source. Leave the codebase better than you found it. ❤️**
+
+---
+
+# Reviews
+
+Every pull request is reviewed by CodeRabbit against the issue it closes, then approved and merged by a human maintainer.
+
+- Every PR description needs a closing keyword: `Closes #N` (or `Fixes #N` / `Resolves #N`). The `Require linked issue` workflow fails PRs without one; automated `auto/*` data-sync branches are exempt.
+- CodeRabbit reviews the PR automatically against that issue's tasks and acceptance criteria, applies labels, and runs five pre-merge checks: linked issue and scope, hero and landing lock, multi-program data-driven copy, design tokens and copy, data provenance and privacy. The configuration lives in `.coderabbit.yaml`; the CodeRabbit GitHub App must be installed on the repository for it to take effect.
+- After pushing fixes, comment `@coderabbitai review` for a re-review of the new commits, `@coderabbitai full review` to re-review everything, and `@coderabbitai resolve` once comments are addressed.
+- Issues use the forms in `.github/ISSUE_TEMPLATE/` (bug, feature or task, wrong or missing data, new program dashboard). Blank issues are off.
+- A human maintainer still approves and merges. CodeRabbit never merges.

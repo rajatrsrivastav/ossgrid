@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Apply to a program
+    url: https://summerofcode.withgoogle.com/
+    about: OSSGrid does not take applications. Apply on each program's official site.
