@@ -88,16 +88,6 @@ export interface LfxOrganizationDto {
   projects: LfxProjectSummary[];
 }
 
-/** Current state of all active filters */
-export interface FilterState {
-  search: string;
-  terms: string[];
-  categories: string[];
-  technologies: string[];
-  years: number[];
-  quickFilters: string[];
-}
-
 /** Term definition for the data pipeline */
 export interface TermDefinition {
   year: number;
@@ -105,12 +95,4 @@ export interface TermDefinition {
   label: string;
   termIndex: number;
   status?: string;
-}
-
-/** Available filter options derived from the dataset */
-export interface FilterOptions {
-  terms: { value: string; count: number }[];
-  categories: { value: string; count: number }[];
-  technologies: { value: string; count: number }[];
-  years: { value: number; count: number }[];
 }

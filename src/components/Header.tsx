@@ -1,192 +1,168 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Search, Command, ExternalLink, Bookmark, Compass, HelpCircle } from "lucide-react";
-import ThemeToggle from "./ThemeToggle";
+import { Menu, X, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
 import LogoMark from "./LogoMark";
+import ThemeToggle from "./ThemeToggle";
+import SearchBar from "./SearchBar";
+
+const links = [
+  { label: "Programs", href: "/#programs" },
+  { label: "Playbook", href: "/#playbook" },
+  { label: "FAQ", href: "/#faq" },
+];
 
 interface HeaderProps {
+  /** "simple" = marketing pages; "full" = explorer with search */
   variant?: "full" | "simple";
-  searchQuery?: string;
-  onSearchChange?: (query: string) => void;
   onMenuToggle?: () => void;
   isMobileMenuOpen?: boolean;
-  onCommandPaletteOpen?: () => void;
   onOpenAbout?: () => void;
-  savedCount?: number;
-  onNavigateSection?: (section: "overview" | "explorer" | "guide" | "saved" | "faq") => void;
-  activeSection?: string;
+  searchQuery?: string;
+  onSearchChange?: (q: string) => void;
+  onCommandPaletteOpen?: () => void;
+  searchPlaceholder?: string;
+  searchAriaLabel?: string;
 }
 
 export default function Header({
-  variant = "full",
-  searchQuery = "",
-  onSearchChange,
+  variant = "simple",
   onMenuToggle,
   isMobileMenuOpen,
+  searchQuery = "",
+  onSearchChange,
   onCommandPaletteOpen,
-  onOpenAbout,
-  savedCount = 0,
-  onNavigateSection,
-  activeSection = "overview",
+  searchPlaceholder,
+  searchAriaLabel,
 }: HeaderProps) {
-  return (
-    <header
-      className="sticky top-0 z-40 w-full border-b border-[var(--border-card)] bg-[var(--bg-primary)]/80 backdrop-blur-md supports-[backdrop-filter]:bg-[var(--bg-primary)]/70 transition-colors"
-    >
-      <div className="flex items-center justify-between h-14 px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto gap-3 sm:gap-4">
-        {/* Left: Brand Identity & Desktop Navigation */}
-        <div className="flex items-center gap-6 flex-shrink-0">
-          {variant === "full" && onMenuToggle && (
-            <button
-              className="lg:hidden p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-input)] text-[var(--text-secondary)] cursor-pointer"
-              onClick={onMenuToggle}
-              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-            >
-              {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
-          )}
+  const [scrolled, setScrolled] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
 
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 group select-none flex-shrink-0"
-            aria-label="OSSGrid Home"
-          >
-            <div className="w-8 h-8 rounded-lg bg-white text-zinc-950 flex items-center justify-center shadow-xs border border-black/10 dark:border-white/20 group-hover:border-blue-500/50 transition-all">
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const isExplorer = variant === "full";
+
+  return (
+    <div className="sticky top-0 z-40">
+      <header
+        className={cn(
+          "w-full border-b transition-colors duration-200",
+          scrolled || isExplorer
+            ? "border-[var(--border)] bg-[var(--bg-base)]/85 backdrop-blur-md"
+            : "border-transparent bg-transparent"
+        )}
+      >
+        <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center gap-3 px-4 sm:px-6 lg:px-8">
+          {/* Brand */}
+          <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label="OSSGrid home">
+            <span className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-control)] bg-[var(--text-primary)] text-[var(--bg-base)]">
               <LogoMark size={16} />
-            </div>
-            <span className="text-[15px] font-bold tracking-tight text-[var(--text-primary)] group-hover:text-blue-600 dark:text-blue-400 transition-colors">
-              OSSGrid
             </span>
+            <span className="text-[15px] font-semibold tracking-tight text-[var(--text-primary)]">OSSGrid</span>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-1">
-            <Link
-              href="/"
-              className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
-                activeSection === "overview" && variant !== "full"
-                  ? "text-[var(--text-primary)] bg-[var(--bg-card)] shadow-xs border border-[var(--border-card)]"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50"
-              }`}
-            >
-              All Programs
-            </Link>
+          {/* Marketing nav */}
+          {!isExplorer && (
+            <nav aria-label="Primary" className="ml-6 hidden items-center gap-1 lg:flex">
+              {links.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="rounded-[var(--radius-control)] px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
+          )}
 
-            <Link
-              href="/lfx"
-              className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors flex items-center gap-1.5 ${
-                activeSection === "lfx" || variant === "full"
-                  ? "text-[var(--text-primary)] bg-[var(--bg-card)] shadow-xs border border-[var(--border-card)]"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50"
-              }`}
-            >
-              <span>LFX Mentorship</span>
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
-              </span>
-            </Link>
-
-            <Link
-              href="/#playbook"
-              className="px-3 py-1.5 rounded-md text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50 transition-colors"
-            >
-              Contributor Playbook
-            </Link>
-
-            <Link
-              href="/#faq"
-              className="px-3 py-1.5 rounded-md text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50 transition-colors"
-            >
-              FAQ
-            </Link>
-
-            {/*
-            {savedCount > 0 && (
-              <button
-                onClick={() => onNavigateSection?.("saved")}
-                className="px-3 py-1.5 rounded-md text-[13px] font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 transition-colors flex items-center gap-1.5 cursor-pointer ml-1"
-              >
-                <Bookmark size={13} className="fill-blue-600 dark:fill-blue-400" />
-                <span>Saved ({savedCount})</span>
-              </button>
-            )}
-            */}
-          </nav>
-        </div>
-
-        {/* Center: Search input (in full variant) */}
-        {variant === "full" && onSearchChange && (
-          <div className="flex-1 max-w-md mx-2">
-            <div
-              onClick={onCommandPaletteOpen}
-              className="relative flex items-center w-full h-[34px] px-3 rounded-lg border border-[var(--border-input)] bg-[var(--bg-input)]/60 transition-all focus-within:border-blue-500/60 focus-within:ring-1 focus-within:ring-blue-500/30 cursor-text shadow-xs"
-            >
-              <Search size={14} className="text-[var(--text-muted)] flex-shrink-0 mr-2" />
-              <input
-                type="text"
+          {/* Explorer search (desktop) */}
+          {isExplorer && onSearchChange && (
+            <div className="mx-auto hidden w-full max-w-xl sm:block">
+              <SearchBar
                 value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                onClick={(e) => e.stopPropagation()}
-                placeholder="Search 96+ orgs, 560+ projects, skills (Go, Rust)..."
-                className="w-full bg-transparent text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
-                aria-label="Search organizations"
+                onChange={onSearchChange}
+                onCommandPaletteOpen={onCommandPaletteOpen}
+                placeholder={searchPlaceholder}
+                ariaLabel={searchAriaLabel}
               />
+            </div>
+          )}
+
+          <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
+            {!isExplorer && (
+              <Link href="/lfx" className="btn btn-primary btn-sm hidden sm:inline-flex">
+                Browse LFX orgs
+              </Link>
+            )}
+            {isExplorer ? (
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onCommandPaletteOpen?.();
-                }}
-                className="hidden sm:flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-[var(--border-card)] bg-[var(--bg-raised)] text-[10px] font-mono text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors flex-shrink-0 ml-1.5 cursor-pointer"
-                title="Open command palette (⌘K)"
+                className="icon-btn icon-btn-bordered lg:hidden"
+                onClick={onMenuToggle}
+                aria-label={isMobileMenuOpen ? "Close filters" : "Open filters"}
+                aria-expanded={isMobileMenuOpen}
               >
-                <Command size={10} />
-                <span>K</span>
+                {isMobileMenuOpen ? <X size={17} /> : <Menu size={17} />}
               </button>
-            </div>
+            ) : (
+              <button
+                type="button"
+                className="icon-btn icon-btn-bordered lg:hidden"
+                onClick={() => setNavOpen((o) => !o)}
+                aria-label={navOpen ? "Close menu" : "Open menu"}
+                aria-expanded={navOpen}
+                aria-controls="mobile-nav"
+              >
+                {navOpen ? <X size={17} /> : <Menu size={17} />}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Explorer search (mobile): always visible, no menu needed */}
+        {isExplorer && onSearchChange && (
+          <div className="border-t border-[var(--border)] px-4 py-2 sm:hidden">
+            <SearchBar value={searchQuery} onChange={onSearchChange} compact />
           </div>
         )}
 
-        {/* Right: External LFX Portal, About button & Theme Toggle */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <a
-            href="https://mentorship.lfx.linuxfoundation.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]/50 transition-colors"
-            title="Official LFX Mentorship Portal"
+        {/* Marketing nav (mobile) */}
+        {!isExplorer && navOpen && (
+          <nav
+            id="mobile-nav"
+            aria-label="Primary"
+            className="border-t border-[var(--border)] bg-[var(--bg-base)] px-4 py-3 lg:hidden"
           >
-            <span>LFX Portal</span>
-            <ExternalLink size={12} className="opacity-70" />
-          </a>
-
-          <a
-            href="https://buymeacoffee.com/rajatrsrivastav"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-raised)]/60 px-2.5 py-1.5 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:border-blue-500/40 hover:bg-blue-500/5 hover:text-blue-600 dark:hover:text-blue-400"
-            aria-label="Support OSSGrid on Buy Me a Coffee (opens in a new tab)"
-          >
-            <span aria-hidden="true">☕</span>
-            Support OSSGrid
-          </a>
-
-          <div className="hidden sm:block w-px h-4 bg-[var(--border-card)]" />
-
-          <button
-            onClick={onOpenAbout}
-            className="w-8 h-8 rounded-lg border border-[var(--border-card)] bg-[var(--bg-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] flex items-center justify-center transition-all cursor-pointer"
-            title="About OSSGrid & Guidebook"
-            aria-label="About and FAQ"
-          >
-            <HelpCircle size={15} />
-          </button>
-
-          <ThemeToggle />
-        </div>
-      </div>
-    </header>
+            <ul className="flex flex-col gap-1">
+              {links.map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    onClick={() => setNavOpen(false)}
+                    className="block rounded-[var(--radius-control)] px-3 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+              <li className="pt-2">
+                <Link href="/lfx" className="btn btn-primary w-full" onClick={() => setNavOpen(false)}>
+                  <Search size={15} /> Browse LFX orgs
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        )}
+      </header>
+    </div>
   );
 }
