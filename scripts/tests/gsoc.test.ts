@@ -134,3 +134,15 @@ test("committed GSoC dataset passes the audit, covers 2016 to 2026 and ships no 
   assert(orgs.some((o: { slug: string }) => o.slug === "cncf"));
   for (const [, file] of years) assert(!/"email"/.test(JSON.stringify(file)), "email field shipped");
 });
+
+test("program registry passes audit-programs and rejects a live program without data", async () => {
+  const { auditPrograms } = await import("../audit-programs");
+  const { PROGRAMS } = await import("../../src/data/programs");
+  auditPrograms(PROGRAMS, process.cwd(), new Date(), () => {});
+  const broken = structuredClone(PROGRAMS);
+  broken[0].dataFile = "/data/missing.json";
+  assert.throws(() => auditPrograms(broken, process.cwd(), new Date(), () => {}), /data file/);
+  const stale = structuredClone(PROGRAMS);
+  const warnings = auditPrograms(stale, process.cwd(), new Date("2028-01-01"), () => {});
+  assert(warnings.length > 0);
+});

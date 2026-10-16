@@ -59,6 +59,10 @@
   --color-program-lfx: var(--program-lfx);
   --color-program-gsoc: var(--program-gsoc);
   --color-program-other: var(--program-other);
+  --color-program-outreachy: var(--program-outreachy);
+  --color-program-gssoc: var(--program-gssoc);
+  --color-program-mlh: var(--program-mlh);
+  --color-program-sob: var(--program-sob);
 
   --animate-marquee: marquee 40s linear infinite;
   --animate-marquee-reverse: marquee-reverse 48s linear infinite;
@@ -101,6 +105,10 @@
 
   --program-lfx:    #22c55e;
   --program-gsoc:   #f59e0b;
+  --program-outreachy: #f472b6;
+  --program-gssoc:  #2dd4bf;
+  --program-mlh:    #60a5fa;
+  --program-sob:    #fb923c;
   --program-other:  #a78bfa;
 
   --success:        #22c55e;
@@ -175,6 +183,10 @@
 
   --program-lfx:    #166534;
   --program-gsoc:   #b45309;
+  --program-outreachy: #be185d;
+  --program-gssoc:  #0f766e;
+  --program-mlh:    #1d4ed8;
+  --program-sob:    #c2410c;
   --program-other:  #6d28d9;
 
   --success:        #166534;

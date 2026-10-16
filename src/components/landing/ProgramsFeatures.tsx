@@ -4,7 +4,10 @@ import Link from "next/link";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { Section } from "./Section";
 import { SectionHeading } from "./SectionHeading";
-import { programs, upcomingPrograms } from "@/data/programs";
+import { PROGRAMS, factRows, livePrograms, comingSoonPrograms } from "@/data/programs";
+const programs = livePrograms().map((p) => ({ id: p.id, name: p.name, sponsor: p.runBy, description: p.oneLiner, href: p.dashboardPath!, status: p.status, accentVar: p.accentVar, facts: factRows(p).slice(0, 3).map((f) => ({ label: f.label, value: f.value })), sourceUrl: p.facts.stipend.sourceUrl, shortName: p.shortName }));
+const upcomingPrograms = comingSoonPrograms().map((p) => ({ id: p.id, name: p.name, blurb: p.oneLiner, href: p.officialUrl }));
+void PROGRAMS;
 import { cn } from "@/lib/utils";
 
 export function Programs() {
@@ -49,11 +52,11 @@ export function Programs() {
               <div className="mt-5 flex items-center justify-between gap-3">
                 {live ? (
                   <Link href={p.href} className="btn btn-primary">
-                    Browse {p.id.toUpperCase()} orgs <ArrowRight size={15} aria-hidden="true" />
+                    Browse {p.shortName} orgs <ArrowRight size={15} aria-hidden="true" />
                   </Link>
                 ) : (
                   <a href={p.href} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
-                    Official {p.id.toUpperCase()} site <ExternalLink size={14} aria-hidden="true" />
+                    Official {p.shortName} site <ExternalLink size={14} aria-hidden="true" />
                   </a>
                 )}
                 <a href={p.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--text-muted)] underline underline-offset-4 hover:text-[var(--text-primary)]">
