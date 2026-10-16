@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import fs from "fs";
 import path from "path";
 import { GsocOrganization, Organization } from "@/lib/types";
+import { comingSoonPrograms } from "@/data/programs";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.ossgrid.tech";
@@ -35,6 +36,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 0.9,
     },
+    ...comingSoonPrograms().map((p) => ({
+      url: `${baseUrl}/programs/${p.id}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
     ...organizations.map((org) => ({
       url: `${baseUrl}/organization/${org.id}`,
       lastModified: now,

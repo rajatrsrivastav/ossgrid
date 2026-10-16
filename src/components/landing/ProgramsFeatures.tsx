@@ -64,7 +64,9 @@ function ComingSoonCard({ program }: { program: Program }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs text-[var(--text-muted)]">{program.runBy}</p>
-          <h3 className="mt-1 text-lg font-semibold text-[var(--text-primary)]">{program.name}</h3>
+          <h3 className="mt-1 text-lg font-semibold text-[var(--text-primary)]">
+            <Link href={`/programs/${program.id}`} className="hover:underline">{program.name}</Link>
+          </h3>
         </div>
         <span className="pill pill-muted">Coming soon</span>
       </div>
