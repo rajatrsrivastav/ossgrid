@@ -5,7 +5,7 @@ export interface ToolPage { id: "proposals" | "guide"; label: string; href: stri
 
 export const TOOL_PAGES: ToolPage[] = [
   { id: "proposals", label: "Proposals", href: "/proposals", verb: "Read proposals", enabled: true },
-  { id: "guide", label: "Playbook", href: "/guide", verb: "Read the playbook", enabled: false },
+  { id: "guide", label: "Playbook", href: "/guide", verb: "Read the playbook", enabled: true },
 ];
 
 export const enabledTools = () => TOOL_PAGES.filter((t) => t.enabled);

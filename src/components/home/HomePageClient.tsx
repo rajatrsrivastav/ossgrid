@@ -10,7 +10,7 @@ import { StatsStrip } from "@/components/landing/StatsStrip";
 import FirstTimerGuide from "@/components/FirstTimerGuide";
 import FirstTimerFAQ from "@/components/FirstTimerFAQ";
 import type { ProgramStats } from "@/lib/stats";
-import type { ProgramId } from "@/data/programs";
+import { PROGRAMS, type ProgramId } from "@/data/programs";
 
 export interface FeaturedOrg {
   id: string;
@@ -55,7 +55,7 @@ export default function HomePageClient({ programStats, combined, featured, marqu
         <LandingHero combined={combined} featured={featured} ctaOrder={ctaOrder} />
         <LogoMarquee orgs={marquee} />
         <Programs programStats={programStats} />
-        <DashboardsStrip programStats={programStats} extraTiles={[{ href: "/proposals", title: "Proposals library", count: `${nf.format(proposals.count)} proposals · ${proposals.orgCount} orgs`, verb: "Read proposals" }]} />
+        <DashboardsStrip programStats={programStats} extraTiles={[{ href: "/proposals", title: "Proposals library", count: `${nf.format(proposals.count)} proposals · ${proposals.orgCount} orgs`, verb: "Read proposals" }, { href: "/guide", title: "Contributor playbook", count: `${PROGRAMS.length} program checklists`, verb: "Read the playbook" }]} />
         <HowItWorks combined={combined} />
         <StatsStrip programStats={programStats} buildDate={buildDate} extraGroups={[{ id: "proposals", title: "Proposals library", columns: [{ value: proposals.count, label: "Proposals" }, { value: proposals.orgCount, label: "Organizations covered" }, { value: proposals.repos, label: "Archives" }] }]} />
         <FirstTimerGuide latestYear={combined.yearMax} />

@@ -158,3 +158,21 @@ test("proposals library filters by year and organization from the URL", async ({
   expect(await page.locator("main, body").first().locator("a[href^='https://github.com/']").count()).toBeGreaterThan(0);
   expect(errors).toEqual([]);
 });
+
+test("guide page renders every section and a per-program checklist", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/guide");
+  await settle(page);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  for (const id of ["readiness", "community", "loop", "issues", "threads", "selection", "programs", "resources"]) {
+    await expect(page.locator(`#${id}`)).toBeAttached();
+  }
+  const first = page.locator("#loop").locator("..").getByRole("checkbox").first();
+  await first.check();
+  await page.reload();
+  await settle(page);
+  await expect(page.locator("#loop").locator("..").getByRole("checkbox").first()).toBeChecked();
+  expect(await page.locator("details").count()).toBeGreaterThanOrEqual(6);
+  expect(errors).toEqual([]);
+});
