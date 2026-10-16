@@ -1,0 +1,15 @@
+{
+  "_comment": "Public archives of GSoC proposals, indexed through the GitHub Trees API and linked to, never downloaded. `revision` pins the commit; --refresh moves it to the branch head. Layouts are handled in scripts/lib/proposals-parser.ts.",
+  "sources": [
+    { "repo": "SammanSarkar/GSoC_archive_2025", "branch": "main", "revision": "d7267803939632303f28c100b57b12138c3acbc0", "layout": "org-file", "year": 2025, "status": "accepted", "license": "MIT" },
+    { "repo": "satwiksps/GSoC_archive_2026", "branch": "main", "revision": "52321020fdeda5dc5cd57a21df4e7e85525f23cd", "layout": "org-status-file", "year": 2026, "license": "MIT" },
+    { "repo": "Google-Summer-of-Code-Archive/gsoc-proposals-archive", "branch": "main", "revision": "20dc27bac2647cc7ebe6ed13f3cb500b109e76d0", "layout": "year-org-file", "status": "unknown", "license": "MIT" },
+    { "repo": "COPS-IITBHU/GSoC-Accepted-Proposals", "branch": "master", "revision": "ce5158beea123cf87af8fed71c14928b6fa611f0", "layout": "year-org-year-name", "status": "accepted", "license": "unknown" },
+    { "repo": "saketkc/fos-proposals", "branch": "master", "revision": "e3558e334d8abb4e9ba13257e7af4a58137b92f0", "layout": "fos", "license": "MIT" },
+    { "repo": "prondubuisi/accepted-gsoc-proposals", "branch": "master", "revision": "9321ffa75ba2e59a199b60331e91b1e0e29fa2f9", "layout": "org-year-md-table", "status": "accepted", "license": "MIT" },
+    { "repo": "Ishaan28malik/GSOC-Accepted-Proposals", "branch": "master", "revision": "57f2c6e39500853d7d8bb05c5b11596941190b9b", "layout": "year-md-list", "status": "accepted", "license": "unknown" },
+    { "repo": "CodeClubSMVDU/gsoc-proposals", "branch": "master", "revision": "942fb20c7ea1266a8412835519772c3b039e4f13", "layout": "flat-pdf", "status": "unknown", "license": "unknown" },
+    { "repo": "imohitpatel/Latest-GSoc-Proposal", "branch": "main", "layout": "skip", "note": "Inspected 2026-10-17: README only, no proposal files." },
+    { "repo": "akashnimare/gsoc-sample-proposals", "branch": "master", "layout": "skip", "note": "Inspected 2026-10-17: README only, no proposal files." }
+  ]
+}

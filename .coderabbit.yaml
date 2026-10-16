@@ -1,0 +1,163 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# CodeRabbit config for OSSGrid. Needs the CodeRabbit GitHub App installed on the repo.
+
+language: en-US
+tone_instructions: "Be direct and specific. Cite file:line. Explain why something breaks, then give the fix. No praise filler. Flag anything outside the linked issue's scope."
+
+reviews:
+  profile: assertive
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  sequence_diagrams: true
+
+  # Review every PR against the issue it closes.
+  assess_linked_issues: true
+  related_issues: true
+  related_prs: true
+
+  suggested_labels: true
+  labeling_instructions:
+    - label: "program:lfx"
+      instructions: "Changes LFX data, the /lfx route, or LFX-specific copy or pipeline code."
+    - label: "program:gsoc"
+      instructions: "Changes GSoC data, the /gsoc route, the CNCF GSoC parser or the global GSoC sync."
+    - label: "program:new"
+      instructions: "Adds or changes a program in src/data/programs.ts, or starts a new program dashboard (Outreachy, GSSoC, MLH Fellowship, Summer of Bitcoin, ...)."
+    - label: "area:ui"
+      instructions: "Changes components, layout, tokens or styles under src/components, src/app or globals.css."
+    - label: "area:copy"
+      instructions: "Changes user-facing text: labels, headings, tooltips, FAQ, metadata."
+    - label: "area:data-pipeline"
+      instructions: "Changes scripts/**, data JSON under public/data, or sync workflows."
+    - label: "area:a11y"
+      instructions: "Changes focus handling, aria attributes, contrast, keyboard behaviour or reduced-motion handling."
+    - label: "area:proposals"
+      instructions: "Changes the proposals index pipeline or the /proposals route."
+
+  path_filters:
+    - "!package-lock.json"
+    - "!public/data/**/*.json"
+    - "!public/logos/**"
+    - "!**/*.min.js"
+
+  path_instructions:
+    - path: "src/components/home/**"
+      instructions: |
+        Landing page. Two rules matter most:
+        1. Hero lock: the hero section layout, GlobeCanvas, frame and CTA placement must not change. Copy edits and token swaps are fine. Flag any structural change.
+        2. Multi-program: OSSGrid covers every mentorship program, not just LFX. Flag copy that frames the site as LFX-only. Program names, statuses, facts and links must come from src/data/programs.ts, never hardcoded in JSX.
+        Counts must be derived from data files, never typed as literals.
+    - path: "src/components/**/*.tsx"
+      instructions: |
+        Check against DESIGN.md:
+        - No new hex colours, rgba() literals or inline style={{}} except for truly dynamic values.
+        - Radius tiers: chip 6px, control 8px, card 12px, panel 16px, hero only 24px.
+        - No text-[10px] outside chart axes.
+        - Sentence case for headings, buttons, labels and tooltips.
+        - Banned copy: mission control, launchpad, telemetry, HUD, matrix, intelligence platform, effortless, seamless, unlock, supercharge, elevate, empower, journey, leverage, robust, cutting-edge, world-class, world's largest, deep-dive.
+        - Every interactive element is keyboard reachable with a visible focus ring. Decorative duplicates (e.g. marquee loops) are aria-hidden.
+        - Animations respect prefers-reduced-motion.
+        - Mentor emails are never rendered.
+    - path: "src/app/**"
+      instructions: |
+        Next.js 16 App Router; read AGENTS.md. Pages stay static: data is read from public/data at build time, with no runtime fetches to third parties.
+        Every program route needs metadata, canonical URL, JSON-LD breadcrumb and a noscript crawler list like /lfx. New routes must be added to sitemap.ts.
+    - path: "src/data/programs.ts"
+      instructions: |
+        Program registry, the single source of truth. Every fact (stipend, length, eligibility, cadence) needs sourceUrl and lastVerified (YYYY-MM-DD).
+        status is "live" only when a dashboard route exists and its data file is non-empty. Coming-soon programs must have officialUrl and trackingIssueUrl.
+    - path: "scripts/**"
+      instructions: |
+        Data pipelines. Check:
+        - Upstream sources are pinned to a commit SHA or snapshot, so --check is reproducible.
+        - Every record carries provenance (url, path, revision, line or equivalent).
+        - Parsers handle malformed input without throwing; missing fields go to missingFields and are logged with file and line.
+        - Tags are normalised through the shared alias map; no duplicate canonical tags.
+        - Network calls are throttled and use GITHUB_TOKEN where the GitHub API is called. No PDFs or third-party files are downloaded into the repo.
+        - Tests and fixtures are updated for every parser change.
+    - path: ".github/workflows/**"
+      instructions: "Least-privilege permissions. Sync jobs open a PR and never push to main. Pin action major versions. Cron schedules must match the documented cadence."
+    - path: "**/*.md"
+      instructions: "Docs must match the shipped code. DESIGN.md is the design source of truth; PRODUCT.md must describe OSSGrid as multi-program."
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches: []          # the default branch (main) is always reviewed
+    ignore_title_keywords:
+      - "[skip review]"
+      - "WIP"
+
+  pre_merge_checks:
+    title:
+      mode: warning
+      requirements: "Conventional commit style: type(scope): summary. Types: feat, fix, refactor, docs, chore, test, copy, data."
+    description:
+      mode: warning
+    issue_assessment:
+      mode: error
+    docstrings:
+      mode: off
+    custom_checks:
+      - name: "Linked issue and scope"
+        mode: error
+        instructions: |
+          Pass only if the PR description links an issue with a closing keyword (Closes #N, Fixes #N or Resolves #N), and every changed file serves that issue's tasks or acceptance criteria.
+          Fail if there is no linked issue, or list the files that are out of scope.
+      - name: "Hero and landing lock"
+        mode: error
+        instructions: |
+          If src/components/home/** or GlobeCanvas changed: pass only if the hero's layout, grid columns, globe, frame and CTA positions are unchanged, and the landing section order is still Hero, Programs, (optional Proposals teaser), How it works, Stats, Playbook, FAQ.
+          Copy, token and accessibility edits pass.
+      - name: "Multi-program, data-driven"
+        mode: error
+        instructions: |
+          Fail if user-facing copy frames OSSGrid as LFX-only, if a program fact or status is hardcoded outside src/data/programs.ts, or if an org/project count is a literal instead of being derived from public/data.
+      - name: "Design tokens and copy"
+        mode: warning
+        instructions: |
+          Warn on new hex/rgba literals in components, new inline styles, text-[10px] outside charts, radius values off the DESIGN.md tiers, Title Case UI labels, or banned words listed in DESIGN.md.
+      - name: "Data provenance and privacy"
+        mode: error
+        instructions: |
+          If public/data/** changed, it must be produced by a script in scripts/** in the same PR or by the sync workflow. Every record keeps a source reference. Mentor emails must never reach client components or rendered HTML.
+
+  tools:
+    eslint:
+      enabled: true
+    markdownlint:
+      enabled: true
+    actionlint:
+      enabled: true
+    gitleaks:
+      enabled: true
+    yamllint:
+      enabled: true
+
+  finishing_touches:
+    docstrings:
+      enabled: false
+    unit_tests:
+      enabled: true
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "DESIGN.md"
+      - "PRODUCT.md"
+      - "CONTRIBUTING.md"
+      - "AGENTS.md"
+      - "docs/**/*.md"
+  issues:
+    scope: local
+  learnings:
+    scope: local
+  pull_requests:
+    scope: local

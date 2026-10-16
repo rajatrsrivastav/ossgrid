@@ -1,42 +1,57 @@
 "use client";
 
 import { Search, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
+  onCommandPaletteOpen?: () => void;
+  compact?: boolean;
+  placeholder?: string;
+  ariaLabel?: string;
 }
 
-export default function SearchBar({ value, onChange }: SearchBarProps) {
+export default function SearchBar({
+  value,
+  onChange,
+  onCommandPaletteOpen,
+  compact = false,
+  placeholder = "Search orgs, projects, technologies, mentors",
+  ariaLabel = "Search organizations, projects, technologies and mentors",
+}: SearchBarProps) {
   return (
-    <div
-      className="flex items-center gap-3 px-4 py-2 rounded-xl w-full transition-all duration-200"
-      style={{
-        background: "var(--bg-input)",
-        border: "1px solid var(--border-card)",
-      }}
-      data-focus-within
-    >
-      <Search size={16} style={{ color: "var(--text-muted)", flexShrink: 0 }} />
+    <div className={cn("field w-full", compact && "field-sm")} role="search">
+      <Search size={15} className="shrink-0 text-[var(--text-muted)]" aria-hidden="true" />
       <input
-        type="text"
-        placeholder="Search organizations, projects, technologies…"
+        type="search"
+        inputMode="search"
+        placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        aria-label="Search organizations, projects, and technologies"
-        className="text-sm flex-1 bg-transparent outline-none"
-        style={{ color: "var(--text-primary)" }}
+        aria-label={ariaLabel}
+        autoComplete="off"
       />
-      {value && (
+      {value ? (
         <button
+          type="button"
           onClick={() => onChange("")}
-          style={{ color: "var(--text-muted)" }}
           aria-label="Clear search"
-          className="rounded-sm transition-colors hover:text-text-primary"
+          className="rounded-[var(--radius-chip)] p-0.5 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
         >
           <X size={14} />
         </button>
-      )}
+      ) : onCommandPaletteOpen ? (
+        <button
+          type="button"
+          onClick={onCommandPaletteOpen}
+          className="key hidden hover:text-[var(--text-primary)] md:inline-flex"
+          aria-label="Open quick search"
+          title="Quick search (⌘K)"
+        >
+          ⌘K
+        </button>
+      ) : null}
     </div>
   );
 }

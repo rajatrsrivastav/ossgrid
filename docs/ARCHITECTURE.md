@@ -137,3 +137,38 @@ Runs daily at 6:00 AM UTC and supports manual trigger:
 | `scripts/lfx-source.json` | Source lock file with SHA-256 hashes and project counts | ~8.6 KB |
 | `scripts/org-metadata.json` | Authoritative organization names, URLs, categories | ~51 KB |
 | `scripts/source-equivalences.json` | Canonical mapping for historical consolidated projects | ~2 KB |
+
+
+---
+
+## 6. Multi-program architecture (2026-10)
+
+### 6.1 Program registry
+`src/data/programs.ts` is the single source of truth: id, names, status, one-liner, accent token, official URL, dashboard path, tracking issue, four sourced facts, data sources and data file. `scripts/audit-programs.ts` (part of `npm run audit:data`) fails when a live program lacks a route or data, when a fact lacks a source or date, and warns when a fact is older than 180 days. Header, landing, footer, sitemap, JSON-LD and the playbook read from it.
+
+### 6.2 Explorer shell
+`src/components/explorer/ExplorerShell.tsx` renders every dashboard from a `ProgramConfig` (`src/lib/explorer/types.ts`): facets with URL keys, quick filters, sort options, category tabs, search keys, attribution and performance switches (debounce, windowing threshold, card animation). Programs map their DTO to `ExplorerOrg` (`src/lib/explorer/lfx.ts`, `gsoc-model.ts`). framer-motion lives only in `AnimatedCardGrid`, loaded on demand.
+
+### 6.3 Data layout
+```text
+public/data/organizations.json            LFX (light DTO), projects.json, source-coverage.json
+public/data/gsoc/organizations.json       GSoC light DTO (525 orgs)
+public/data/gsoc/projects-<year>.json     accepted projects + CNCF ideas, read only by org pages
+public/data/gsoc/search-index.json        prebuilt Fuse index
+public/data/proposals/proposals.json      326 records; by-org.json; source-coverage.json
+```
+
+### 6.4 Pipelines
+| Script | Sources | Pin | Output |
+|---|---|---|---|
+| `scripts/fetch-lfx-data.ts` | `cncf/mentoring/programs/lfx-mentorship` | `scripts/lfx-source.json` | `public/data/*.json` |
+| `scripts/fetch-gsoc-data.ts` | `api.gsocorganizations.dev` (2016–2026), `cncf/mentoring/programs/summerofcode` | `scripts/gsoc-cncf-source.json` | `public/data/gsoc/` |
+| `scripts/fetch-proposals.ts` | GitHub Trees API over `scripts/proposal-sources.json` | per-source `revision` | `public/data/proposals/` |
+
+Shared helpers: `scripts/gsoc-tag-aliases.json` + `scripts/lib/tag-aliases.ts` (tag normalisation), `scripts/gsoc-org-aliases.json` (slug merges), `scripts/lib/cncf-gsoc-parser.ts` (content-classified Markdown parser; bad blocks become warnings), `scripts/lib/proposals-parser.ts` (one function per archive layout). Raw downloads are cached in `scripts/.cache/` (git-ignored) so `--check` runs offline.
+
+### 6.5 Workflows
+`sync-data.yml` (LFX, daily), `sync-gsoc.yml` (Monday 05:00 UTC, daily February to April, manual with an optional year), `pr-linked-issue.yml` (every PR needs `Closes #N`), `.coderabbit.yaml` (review against the linked issue, five pre-merge checks).
+
+### 6.6 Tests
+`npm run test:data` covers the LFX parser, the CNCF GSoC parser fixtures (2017, 2021, 2022, 2024, malformed), the GSoC dataset builder, the proposals parser layouts and the program registry audit. `npm run test:e2e` runs Playwright smoke tests for `/`, `/lfx`, `/organization/[slug]`, `/gsoc`, `/gsoc/[slug]`, `/proposals` and `/guide` at 1440 and 375 px against a production build.

@@ -1,0 +1,31 @@
+name: Wrong or missing data
+description: An org, project, mentor, tag or proposal is wrong or missing.
+title: "data: "
+labels: ["area:data-pipeline"]
+body:
+  - type: dropdown
+    id: program
+    attributes:
+      label: Program
+      options: [LFX, GSoC, Proposals, Other]
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: OSSGrid page
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What's wrong
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Correct value and source link
+      description: Fixes go into the pipeline (parser, alias map or source config), not hand-edited JSON.
+    validations:
+      required: true

@@ -1,221 +1,149 @@
 "use client";
 
-import {
-  ArrowRight,
-  BookOpen,
-  Sparkles,
-  Compass,
-  Bookmark,
-  Flame,
-  Cloud,
-  Cpu,
-  Terminal,
-  Activity,
-  Award,
-  Layers,
-} from "lucide-react";
-import GlobeCanvas from "./GlobeCanvas";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import type { FeaturedOrg, CombinedStats } from "./home/HomePageClient";
+import { getProgram, livePrograms, type ProgramId } from "@/data/programs";
+import { cn } from "@/lib/utils";
 
 interface LandingHeroProps {
-  onExploreClick: () => void;
-  onGuideClick: () => void;
-  onFilterPreset?: (preset: "active" | "beginner" | "cloud" | "systems" | "ai" | "saved") => void;
-  orgCount?: number;
-  projectCount?: number;
-  savedCount?: number;
+  combined: CombinedStats;
+  featured: Record<string, FeaturedOrg[]>;
+  ctaOrder: ProgramId[];
 }
 
-export default function LandingHero({
-  onExploreClick,
-  onGuideClick,
-  onFilterPreset,
-  orgCount = 82,
-  projectCount = 560,
-  savedCount = 0,
-}: LandingHeroProps) {
+const ROTATE_MS = 6000;
+
+export default function LandingHero({ combined, featured, ctaOrder }: LandingHeroProps) {
+  const live = livePrograms();
+  const tabs = ctaOrder.map((id) => getProgram(id)!).filter(Boolean);
+  const [active, setActive] = useState<ProgramId>(tabs[0]?.id ?? "gsoc");
+  const [paused, setPaused] = useState(false);
+
+  // Auto-rotate the preview between live programs; pause on hover/focus; off under reduced motion.
+  useEffect(() => {
+    if (tabs.length < 2 || paused) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = setInterval(() => {
+      setActive((current) => {
+        const i = tabs.findIndex((t) => t.id === current);
+        return tabs[(i + 1) % tabs.length].id;
+      });
+    }, ROTATE_MS);
+    return () => clearInterval(timer);
+  }, [tabs, paused]);
+
+  const activeProgram = getProgram(active)!;
+  const cards = featured[active] ?? [];
+  const [primary, secondary] = tabs;
+  const nf = new Intl.NumberFormat("en-US");
+
   return (
-    <section className="relative w-full rounded-3xl overflow-hidden mb-10 border border-[var(--border-card)] bg-[var(--bg-secondary)] shadow-xl transition-all">
-      {/* Precision grid pattern background */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05]"
-        style={{
-          backgroundImage: `radial-gradient(var(--text-primary) 1px, transparent 1px)`,
-          backgroundSize: "24px 24px",
-        }}
-      />
-
-      {/* Subtle ambient accent glow */}
-      <div
-        className="absolute -top-32 right-10 w-96 h-96 rounded-full pointer-events-none opacity-20 blur-3xl"
-        style={{ background: "radial-gradient(circle, #3b82f6 0%, transparent 70%)" }}
-      />
-      <div
-        className="absolute -bottom-32 left-10 w-80 h-80 rounded-full pointer-events-none opacity-15 blur-3xl"
-        style={{ background: "radial-gradient(circle, #10b981 0%, transparent 70%)" }}
-      />
-
-      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center px-6 py-10 sm:px-12 sm:py-14">
-        {/* Left Column: Mission, Value Prop, CTAs & Quick Filters */}
-        <motion.div
-          className="lg:col-span-7 flex flex-col justify-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {/* Live Status Indicator */}
-          <div className="flex items-center gap-2 mb-4">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              LFX Mentorship Explorer • 2026 Terms Live
-            </span>
-          </div>
-
-          {/* Main Title - No gradient text, pure typographical authority */}
-          <h1 className="text-3xl sm:text-5xl lg:text-[3.25rem] font-black tracking-[-0.03em] leading-[1.12] mb-5 text-[var(--text-primary)]">
-            The Definitive Launchpad for Linux Foundation Mentorships
+    <section id="hero" className="relative overflow-hidden bg-[var(--bg-base)] pt-16 text-center sm:pt-20 md:pt-28">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col items-center px-4 sm:px-6 lg:px-8">
+        <div className="hero-enter flex max-w-4xl flex-col items-center">
+          <p className="eyebrow mb-5">Open-source mentorships, indexed</p>
+          <h1 className="display text-4xl font-semibold text-[var(--text-primary)] sm:text-5xl md:text-6xl lg:text-[4rem]">
+            Find the org you&rsquo;ll get into.
+            <span className="block text-[var(--text-secondary)]">Then prepare like you mean it.</span>
           </h1>
-
-          {/* Subtitle & Value Proposition */}
-          <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-2xl mb-8">
-            Discover funded open-source mentorships across {orgCount}+ organizations and {projectCount}+ projects.
-            Earn a <strong className="text-[var(--text-primary)] font-semibold">$1,000 to $6,600 USD stipend</strong> while
-            contributing to Kubernetes, Linux, GraphQL, and OpenSSF under 1-on-1 guidance from core maintainers.
+          <p className="prose-measure mt-6 text-base leading-relaxed text-[var(--text-secondary)] md:text-lg">
+            OSSGrid indexes {live.map((p) => p.name).join(" and ")} organizations, past projects, mentors and accepted proposals in one place. More programs are on the way. Free, no login.
           </p>
+          <p className="num mt-3 text-sm text-[var(--text-muted)]">
+            {nf.format(combined.orgCount)} organizations · {nf.format(combined.projectCount)} projects · {combined.liveCount} programs live
+          </p>
+        </div>
 
-          {/* Primary Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3.5 mb-8">
-            <button
-              onClick={onExploreClick}
-              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-              style={{
-                background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-                boxShadow: "0 4px 18px rgba(37, 99, 235, 0.4)",
-              }}
-            >
-              <Compass size={17} />
-              Explore All {orgCount} Organizations
-              <ArrowRight size={16} />
-            </button>
+        <div className="hero-enter hero-enter-2 mt-8 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
+          {primary && (
+            <Link href={primary.dashboardPath!} className="btn btn-primary btn-lg">
+              Browse {primary.shortName} orgs <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          )}
+          {secondary && (
+            <Link href={secondary.dashboardPath!} className="btn btn-secondary btn-lg">
+              Browse {secondary.shortName} orgs
+            </Link>
+          )}
+          <Link href="/#playbook" className="btn btn-ghost btn-lg">
+            Read the playbook
+          </Link>
+        </div>
+      </div>
 
-            <button
-              onClick={onGuideClick}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-all bg-slate-100/80 dark:bg-white/[0.04] hover:bg-slate-200/80 dark:hover:bg-white/[0.08] text-[var(--text-primary)] border border-slate-200/90 dark:border-[var(--border-card)] cursor-pointer"
-            >
-              <BookOpen size={16} className="text-blue-600 dark:text-blue-400" />
-              First-Timer Roadmap
-            </button>
-          </div>
+      {/* Preview: real organizations from the data, one program at a time */}
+      <div className="hero-enter hero-enter-3 relative mt-14 w-full md:mt-20">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-30 dark:opacity-20"
+          style={{ backgroundImage: "url('/images/flower-wildflower.jpg')" }}
+          aria-hidden="true"
+        />
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[var(--bg-base)] to-transparent" aria-hidden="true" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--bg-base)] to-transparent" aria-hidden="true" />
 
-          {/* Quick-Jump Stack Filters - Pure SVG Icons, Zero Emojis */}
-          <div className="flex flex-col gap-2.5 pt-4 border-t border-[var(--border-card)]">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-              Quick Stack Filters:
-            </span>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                onClick={() => onFilterPreset?.("active")}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-blue-500/40 transition-all cursor-pointer"
-              >
-                <Flame size={13} className="text-amber-600 dark:text-amber-400" />
-                <span>Active 2026/2025</span>
-              </button>
-
-              <button
-                onClick={() => onFilterPreset?.("beginner")}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-emerald-500/40 transition-all cursor-pointer"
-              >
-                <Sparkles size={13} className="text-emerald-600 dark:text-emerald-400" />
-                <span>Beginner Friendly</span>
-              </button>
-
-              <button
-                onClick={() => onFilterPreset?.("cloud")}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-blue-500/40 transition-all cursor-pointer"
-              >
-                <Cloud size={13} className="text-blue-600 dark:text-blue-400" />
-                <span>Cloud Native / Go</span>
-              </button>
-
-              <button
-                onClick={() => onFilterPreset?.("systems")}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-orange-500/40 transition-all cursor-pointer"
-              >
-                <Cpu size={13} className="text-orange-600 dark:text-orange-400" />
-                <span>Rust &amp; Systems</span>
-              </button>
-
-              <button
-                onClick={() => onFilterPreset?.("ai")}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-purple-500/40 transition-all cursor-pointer"
-              >
-                <Terminal size={13} className="text-purple-600 dark:text-purple-400" />
-                <span>Python &amp; AI</span>
-              </button>
-
-              {savedCount > 0 && (
-                <button
-                  onClick={() => onFilterPreset?.("saved")}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-all cursor-pointer"
-                >
-                  <Bookmark size={13} className="fill-blue-600 dark:fill-blue-400" />
-                  <span>Saved ({savedCount})</span>
-                </button>
-              )}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Right Column: Live Ecosystem Ticker & Interactive 3D Orbit */}
-        <div className="lg:col-span-5 flex flex-col items-center justify-center relative">
-          {/* Globe Canvas */}
-          <div className="w-full h-[280px] sm:h-[320px] relative">
-            <GlobeCanvas />
-          </div>
-
-          {/* Unified Precision HUD Telemetry Strip */}
-          <motion.div
-            className="w-full grid grid-cols-2 sm:grid-cols-4 rounded-2xl bg-slate-100/90 dark:bg-[var(--bg-raised)] border border-slate-200/90 dark:border-[var(--border-card)] shadow-md dark:shadow-lg mt-2 divide-x divide-slate-200/90 dark:divide-[var(--border-card)] overflow-hidden"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        <div className="relative mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 md:py-16">
+          <div
+            className="panel overflow-hidden rounded-[var(--radius-hero)] shadow-[var(--shadow-lg)]"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+            onFocus={() => setPaused(true)}
+            onBlur={() => setPaused(false)}
           >
-            <div className="flex flex-col p-3 sm:p-3.5 bg-white dark:bg-[var(--bg-card)] hover:bg-slate-50 dark:hover:bg-[var(--bg-card-hover)] transition-colors">
-              <span className="text-lg sm:text-xl font-bold font-mono tracking-tight text-[var(--text-primary)]" style={{ fontFeatureSettings: '"tnum"' }}>
-                {orgCount}+
+            <div className="flex items-center gap-2 border-b border-[var(--border)] bg-[var(--bg-base)] px-4 py-3">
+              <span className="h-3 w-3 rounded-full bg-[var(--border-strong)]" aria-hidden="true" />
+              <span className="h-3 w-3 rounded-full bg-[var(--border-strong)]" aria-hidden="true" />
+              <span className="h-3 w-3 rounded-full bg-[var(--border-strong)]" aria-hidden="true" />
+              <span className="num ml-3 rounded-[var(--radius-chip)] border border-[var(--border)] bg-[var(--bg-input)] px-2.5 py-1 text-xs text-[var(--text-muted)]">
+                ossgrid.tech{activeProgram.dashboardPath}
               </span>
-              <span className="text-[10px] sm:text-[11px] text-[var(--text-muted)] font-medium uppercase tracking-wider mt-0.5">
-                Organizations
-              </span>
+              <div className="ml-auto flex items-center rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-input)] p-0.5" role="tablist" aria-label="Preview program">
+                {tabs.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={t.id === active}
+                    aria-controls="hero-preview-panel"
+                    onClick={() => setActive(t.id)}
+                    className={cn(
+                      "h-7 rounded-[6px] px-2.5 text-xs font-medium transition-colors",
+                      t.id === active ? "bg-[var(--bg-card-hover)] text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    )}
+                  >
+                    {t.shortName}
+                  </button>
+                ))}
+              </div>
             </div>
-
-            <div className="flex flex-col p-3 sm:p-3.5 bg-white dark:bg-[var(--bg-card)] hover:bg-slate-50 dark:hover:bg-[var(--bg-card-hover)] transition-colors">
-              <span className="text-lg sm:text-xl font-bold font-mono tracking-tight text-[var(--text-primary)]" style={{ fontFeatureSettings: '"tnum"' }}>
-                {projectCount}+
-              </span>
-              <span className="text-[10px] sm:text-[11px] text-[var(--text-muted)] font-medium uppercase tracking-wider mt-0.5">
-                Active Projects
-              </span>
+            <div id="hero-preview-panel" role="tabpanel" className="grid gap-3 bg-[var(--bg-raised)] p-4 sm:p-6 md:grid-cols-3">
+              {cards.map((org) => (
+                <Link key={org.id} href={org.href} className="card card-interactive flex flex-col gap-3 p-4 text-left" style={{ "--program-color": `var(${activeProgram.accentVar})` } as React.CSSProperties}>
+                  <span className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-white">
+                      <Image src={org.logoUrl || "/placeholder.svg"} alt="" width={40} height={40} unoptimized className="h-full w-full object-contain p-1.5" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold text-[var(--text-primary)]">{org.name}</span>
+                      <span className="block truncate text-xs text-[var(--text-muted)]">{org.category}</span>
+                    </span>
+                    <span className="chip chip-mono shrink-0" style={{ color: "var(--program-color)" }}><span>{activeProgram.shortName}</span></span>
+                  </span>
+                  <span className="flex flex-wrap gap-1.5">
+                    {org.technologies.map((t) => (
+                      <span key={t} className="chip chip-mono"><span>{t}</span></span>
+                    ))}
+                  </span>
+                  <span className="num mt-auto flex items-center justify-between text-xs text-[var(--text-secondary)]">
+                    <span><strong className="font-semibold text-[var(--text-primary)]">{org.projectCount}</strong> projects · {org.years} years</span>
+                    <ArrowUpRight size={13} className="text-[var(--text-muted)]" aria-hidden="true" />
+                  </span>
+                </Link>
+              ))}
             </div>
-
-            <div className="flex flex-col p-3 sm:p-3.5 bg-white dark:bg-[var(--bg-card)] hover:bg-slate-50 dark:hover:bg-[var(--bg-card-hover)] transition-colors">
-              <span className="text-lg sm:text-xl font-bold font-mono tracking-tight text-[var(--text-primary)]" style={{ fontFeatureSettings: '"tnum"' }}>
-                $3k–$6.6k
-              </span>
-              <span className="text-[10px] sm:text-[11px] text-[var(--text-muted)] font-medium uppercase tracking-wider mt-0.5">
-                Paid Stipends
-              </span>
-            </div>
-
-            <div className="flex flex-col p-3 sm:p-3.5 bg-white dark:bg-[var(--bg-card)] hover:bg-slate-50 dark:hover:bg-[var(--bg-card-hover)] transition-colors">
-              <span className="text-lg sm:text-xl font-bold font-mono tracking-tight text-[var(--text-primary)]" style={{ fontFeatureSettings: '"tnum"' }}>
-                11 Terms
-              </span>
-              <span className="text-[10px] sm:text-[11px] text-[var(--text-muted)] font-medium uppercase tracking-wider mt-0.5">
-                Historical Span
-              </span>
-            </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

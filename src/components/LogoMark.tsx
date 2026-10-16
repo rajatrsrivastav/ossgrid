@@ -1,5 +1,4 @@
-// OSSGrid Architectural Vector Mark — Precision Coordinate Matrix
-// Monochromatic vector geometry engineered for crisp rendering at all DPI scales
+// OSSGrid logo mark: three grid squares and an outward arrow.
 
 "use client";
 
@@ -20,12 +19,12 @@ export default function LogoMark({ size = 20, className = "" }: LogoMarkProps) {
       className={className}
       aria-hidden="true"
     >
-      {/* Precision Grid Matrix Quadrants */}
+      {/* Grid squares */}
       <rect x="3.5" y="3.5" width="7" height="7" rx="1.75" fill="currentColor" />
       <rect x="3.5" y="13.5" width="7" height="7" rx="1.75" fill="currentColor" />
       <rect x="13.5" y="13.5" width="7" height="7" rx="1.75" fill="currentColor" />
 
-      {/* Trajectory / Open Source Launch Vector (Top-Right Quadrant) */}
+      {/* Arrow in the top-right cell */}
       <path
         d="M14 4.5H19.5V10"
         stroke="currentColor"

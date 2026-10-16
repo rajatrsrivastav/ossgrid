@@ -2,294 +2,182 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ArrowUpRight, Layers } from "lucide-react";
 import Image from "next/image";
-import { Organization, LfxOrganizationDto } from "@/lib/types";
-import { truncate, sanitizeDescription } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { ArrowUpRight, ExternalLink } from "lucide-react";
+import type { ExplorerOrg } from "@/lib/explorer/types";
+import { truncate, sanitizeDescription, cn } from "@/lib/utils";
 
 interface OrganizationCardProps {
-  org: Organization | LfxOrganizationDto;
+  org: ExplorerOrg;
+  /** Years to plot in the activity strip, oldest first. Defaults to the last five years in the org data. */
+  years?: number[];
+  /** CSS variable holding the program colour. */
+  accentVar?: string;
+  /** Root element. ExplorerShell passes a framer-motion article when the program animates cards. */
+  Root?: React.ComponentType<{ className?: string; style?: React.CSSProperties; children?: React.ReactNode }>;
+  /** Label for the per-year counts, e.g. "project". */
+  unit?: string;
   isSelected?: boolean;
-  onSelect?: (org: Organization | LfxOrganizationDto) => void;
-  isSaved?: boolean;
-  onToggleSave?: (orgId: string) => void;
-}
-
-// Deterministic color hash for fallback avatar
-function getOrgColor(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const hue = Math.abs(hash) % 360;
-  return `hsl(${hue}, 55%, 45%)`;
 }
 
 function getInitials(name: string): string {
   const clean = name.replace(/[^a-zA-Z0-9\s]/g, "").trim();
   const words = clean.split(/\s+/);
-  if (words.length >= 2) {
-    return (words[0][0] + words[1][0]).toUpperCase();
-  }
+  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
   return clean.slice(0, 2).toUpperCase() || name.slice(0, 1).toUpperCase();
 }
 
-function getListingTechnologies(technologies: string[], maxCount = 2): { visible: string[]; extraCount: number } {
-  if (!technologies || technologies.length === 0) return { visible: [], extraCount: 0 };
+const NOISE = ["understanding", "familiarity", "experience", "knowledge", "ability", "optional", "concepts", "basic", "e2e", "pipelines", "http", ".md"];
 
-  // Exclude verbose requirement sentences dumped from project requirements
-  const cleanTech = technologies.filter((tech) => {
-    if (!tech || tech.length > 22) return false;
-    const lower = tech.toLowerCase();
-    if (
-      lower.includes("understanding") ||
-      lower.includes("familiarity") ||
-      lower.includes("experience") ||
-      lower.includes("knowledge") ||
-      lower.includes("ability") ||
-      lower.includes("optional") ||
-      lower.includes("concepts") ||
-      lower.includes("basic") ||
-      lower.includes("e2e") ||
-      lower.includes("pipelines") ||
-      lower.includes("http") ||
-      lower.includes(".md") ||
-      lower.startsWith("(")
-    ) {
-      return false;
-    }
-    return true;
+function getListingTechnologies(technologies: string[], maxCount: number) {
+  if (!technologies?.length) return { visible: [] as string[], extraCount: 0 };
+  const clean = technologies.filter((t) => {
+    if (!t || t.length > 22) return false;
+    const lower = t.toLowerCase();
+    return !NOISE.some((n) => lower.includes(n)) && !lower.startsWith("(");
   });
-
-  const visible = cleanTech.slice(0, maxCount);
-  const extraCount = technologies.length - visible.length;
-  return { visible, extraCount: extraCount > 0 ? extraCount : 0 };
+  const visible = clean.slice(0, maxCount);
+  return { visible, extraCount: Math.max(technologies.length - visible.length, 0) };
 }
 
-export default function OrganizationCard({
-  org,
-  isSelected = false,
-  onSelect,
-  isSaved: _isSaved = false,
-  onToggleSave: _onToggleSave,
-}: OrganizationCardProps) {
+export default function OrganizationCard({ org, years, accentVar = "--program-lfx", Root = "article" as unknown as NonNullable<OrganizationCardProps["Root"]>, unit = "project", isSelected = false }: OrganizationCardProps) {
   const [imgError, setImgError] = useState(false);
   const showFallback = !org.logoUrl || imgError;
-  const { visible: visibleTech, extraCount: extraTechCount } = useMemo(
-    () => getListingTechnologies(org.technologies, 2),
-    [org.technologies]
-  );
+
+  const { visible: visibleTech, extraCount } = useMemo(() => getListingTechnologies(org.technologies, 3), [org.technologies]);
+
+  const plotYears = useMemo(() => {
+    if (years?.length) return years;
+    const max = Math.max(...org.years, new Date().getFullYear());
+    return Array.from({ length: 5 }, (_, i) => max - 4 + i);
+  }, [years, org.years]);
 
   const yearlyCounts = useMemo(() => {
-    const counts: Record<number, number> = { 2022: 0, 2023: 0, 2024: 0, 2025: 0, 2026: 0 };
-    if (org.projects && org.projects.length > 0) {
-      for (const p of org.projects) {
-        if (p.year && counts[p.year] !== undefined) {
-          counts[p.year]++;
-        }
-      }
-    } else if (org.years && org.years.length > 0) {
-      for (const y of org.years) {
-        if (counts[y] !== undefined) {
-          counts[y] = 1;
-        }
-      }
-    }
+    const counts: Record<number, number> = {};
+    plotYears.forEach((y) => (counts[y] = org.yearlyCounts[y] || 0));
     return counts;
-  }, [org]);
+  }, [org.yearlyCounts, plotYears]);
+  const maxProjects = Math.max(...Object.values(yearlyCounts), 1);
+  const yearSpan = org.years.length ? `${Math.min(...org.years)}–${Math.max(...org.years)}` : "";
 
-  const maxProjects = useMemo(() => {
-    return Math.max(...Object.values(yearlyCounts), 1);
-  }, [yearlyCounts]);
+  const description = truncate(sanitizeDescription(org.description, org.name), 140);
+  const plural = `${unit}s`;
 
-  const router = useRouter();
+  const className = cn(
+    "card card-interactive group relative flex flex-col p-5",
+    "has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-[var(--accent)]",
+    isSelected && "card-selected"
+  );
+  const style = { "--program-color": `var(${accentVar})` } as React.CSSProperties;
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    // If the click is on an interactive child (link, button), let it propagate naturally
-    const target = e.target as HTMLElement;
-    if (target.closest("a, button")) return;
-    router.push(`/organization/${org.id}`);
-  };
-
-  return (
-    <motion.div
-      layout
-      onClick={handleCardClick}
-      className={`glass-card flex flex-col rounded-2xl transition-colors duration-200 cursor-pointer group select-none relative overflow-hidden ${
-        isSelected
-          ? "ring-2 ring-blue-500 shadow-[0_0_24px_rgba(59,130,246,0.35)]"
-          : "border-[var(--border-card)] shadow-sm"
-      }`}
-      style={{
-        background: "var(--bg-card)",
-        border: isSelected ? "1px solid rgba(79, 142, 255, 0.8)" : "1px solid var(--border-card)",
-      }}
-      initial={{ opacity: 0, scale: 0.97 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.96 }}
-      whileHover={{ y: -2 }}
-      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onSelect?.(org);
-        }
-      }}
-      aria-label={`${org.name} — ${org.projectCount} projects, ${org.foundation}`}
-      aria-pressed={isSelected}
-    >
-      {/* Top row: Logo, Name */}
-      <div className="p-4 pb-2 flex items-center gap-3">
-        {/* Logo with smooth fallback */}
+  const body = (
+    <>
+      {/* Identity */}
+      <div className="flex items-center gap-3">
         <div
-          className="flex-shrink-0 w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center border border-white/10 shadow-sm transition-transform group-hover:scale-105"
-          style={{
-            background: showFallback ? getOrgColor(org.name) : "var(--bg-raised)",
-          }}
+          className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-white"
+          aria-hidden="true"
         >
           {showFallback ? (
-            <span className="text-xs font-bold text-white tracking-wider font-mono select-none">
-              {getInitials(org.name)}
-            </span>
+            <span className="num text-xs font-semibold text-[#1a1917]">{getInitials(org.name)}</span>
           ) : (
             <Image
               src={org.logoUrl}
-              alt={org.name}
+              alt=""
               width={40}
               height={40}
-              className="w-full h-full object-contain p-1"
+              className="h-full w-full object-contain p-1.5"
               onError={() => setImgError(true)}
               unoptimized
             />
           )}
         </div>
-
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm sm:text-base font-bold truncate leading-tight text-[var(--text-primary)] group-hover:text-blue-600 dark:text-blue-400 transition-colors">
-            {org.name}
+          <h3 className="truncate text-base font-semibold leading-tight text-[var(--text-primary)]">
+            <Link
+              href={org.href}
+              className="after:absolute after:inset-0 after:rounded-[inherit] focus-visible:outline-none"
+            >
+              {org.name}
+            </Link>
           </h3>
+          <p className="mt-0.5 truncate text-xs text-[var(--text-muted)]">
+            {org.category}
+            {yearSpan && <span className="num"> · {yearSpan}</span>}
+            {org.badge && <span className="ml-1.5 font-medium text-[var(--program-color)]">· {org.badge}</span>}
+          </p>
         </div>
       </div>
 
-      {/* Description (strictly max 2 lines, no empty flex-1 space) */}
-      <div className="px-4 pb-2.5">
-        <p className="text-xs text-[var(--text-secondary)] leading-relaxed line-clamp-2">
-          {truncate(sanitizeDescription(org.description, org.name), 120)}
-        </p>
-      </div>
+      <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[var(--text-secondary)]">{description}</p>
 
-      {/* Tech & Category Badges (compact discovery tags) */}
-      <div className="px-4 pb-2.5 flex items-center gap-1.5 flex-wrap">
-        {org.category && (
-          <span
-            className="text-[10px] font-medium px-2 py-0.5 rounded-md border border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400 truncate max-w-[130px]"
-          >
-            {org.category.split("&")[0].trim()}
-          </span>
-        )}
+      {/* Tech */}
+      <ul className="mt-3 flex flex-wrap items-center gap-1.5" aria-label="Technologies">
         {visibleTech.map((tech) => (
-          <span
-            key={tech}
-            className="text-[10px] font-mono px-2 py-0.5 rounded-md border border-[var(--border-card)] bg-[var(--bg-raised)] text-[var(--text-secondary)] truncate max-w-[110px]"
-            title={tech}
-          >
-            {tech}
-          </span>
+          <li key={tech} className="chip chip-mono max-w-[140px]" title={tech}>
+            <span>{tech}</span>
+          </li>
         ))}
-        {extraTechCount > 0 && (
-          <span
-            className="text-[10px] font-mono px-1.5 py-0.5 rounded-md text-[var(--text-muted)] bg-[var(--bg-raised)]/60 border border-transparent"
-            title={`${extraTechCount} more technologies and skills`}
-          >
-            +{extraTechCount}
-          </span>
+        {extraCount > 0 && (
+          <li className="chip chip-quiet chip-mono" title={`${extraCount} more technologies`}>
+            <span>+{extraCount}</span>
+          </li>
         )}
-      </div>
+      </ul>
 
-      {/* Precision Term Activity Micro-Histogram */}
-      <div className="px-4 pb-3">
-        <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)] font-mono mb-1.5">
-          <span className="tracking-wider uppercase">Activity</span>
-          <span className="text-[var(--text-secondary)]" style={{ fontFeatureSettings: '"tnum"' }}>
-            {org.years.length} {org.years.length === 1 ? "year" : "years"} active
-          </span>
-        </div>
-
-        {/* Micro-chart container */}
-        <div className="h-10 flex items-end gap-1.5 p-1.5 rounded-xl bg-slate-50/80 dark:bg-[var(--bg-raised)] border border-slate-200/80 dark:border-[var(--border-card)]">
-          {[2022, 2023, 2024, 2025, 2026].map((year) => {
+      {/* Activity strip: projects per year */}
+      <div className="mt-4" aria-label={`${plural[0].toUpperCase()}${plural.slice(1)} per year, ${plotYears[0]} to ${plotYears[plotYears.length - 1]}`}>
+        <div className="flex h-8 items-end gap-1">
+          {plotYears.map((year) => {
             const count = yearlyCounts[year] || 0;
-            const heightPercent = count > 0 ? Math.max(Math.round((count / maxProjects) * 100), 18) : 0;
-            const isRecent = year === 2026 || year === 2025;
+            const pct = count > 0 ? Math.max(Math.round((count / maxProjects) * 100), 20) : 0;
             return (
-              <div
-                key={year}
-                className="flex-1 flex flex-col items-center h-full justify-end group/bar relative"
-              >
-                {/* Precision Tooltip on hover */}
-                <div className="absolute -top-7 opacity-0 group-hover/bar:opacity-100 pointer-events-none transition-all duration-150 transform group-hover/bar:-translate-y-0.5 bg-[var(--bg-secondary)] border border-[var(--border-card)] text-[10px] text-[var(--text-primary)] px-2 py-0.5 rounded-md shadow-xl whitespace-nowrap z-30 font-mono">
-                  &apos;{String(year).slice(2)}: <strong className="text-blue-600 dark:text-blue-400">{count}</strong> {count === 1 ? "project" : "projects"}
-                </div>
-
-                {/* Vertical Bar Slot with subtle track */}
-                <div className="w-full h-full flex items-end justify-center rounded-[2px] bg-slate-200/40 dark:bg-white/[0.03]">
-                  {count > 0 ? (
-                    <div
-                      className={`w-full rounded-t-[3px] transition-all duration-300 ${
-                        isRecent
-                          ? "bg-blue-500 group-hover/bar:bg-blue-400 shadow-[0_0_6px_rgba(59,130,246,0.3)]"
-                          : "bg-blue-400/50 group-hover/bar:bg-blue-400"
-                      }`}
-                      style={{ height: `${heightPercent}%` }}
-                    />
-                  ) : (
-                    <div className="w-2 h-0.5 rounded-full bg-slate-300 dark:bg-white/10" />
-                  )}
-                </div>
-
-                {/* Year Label */}
-                <span
-                  className={`text-[9px] font-mono mt-0.5 select-none ${
-                    count > 0 ? "text-[var(--text-secondary)] font-medium" : "text-[var(--text-muted)] opacity-60"
-                  }`}
-                  style={{ fontFeatureSettings: '"tnum"' }}
-                >
-                  &apos;{String(year).slice(2)}
-                </span>
+              <div key={year} className="flex h-full flex-1 flex-col justify-end" title={`${year}: ${count} ${count === 1 ? unit : plural}`}>
+                <div
+                  className={cn("w-full rounded-[2px]", count > 0 ? "bg-[var(--program-color)]" : "bg-[var(--border)]")}
+                  style={{ height: count > 0 ? `${pct}%` : "2px", opacity: count > 0 ? 0.9 : 1 }}
+                />
               </div>
             );
           })}
         </div>
-      </div>
-
-      {/* Footer row */}
-      <div
-        className="px-4 py-2.5 flex items-center justify-between text-xs text-[var(--text-muted)] border-t border-[var(--border-card)] bg-[var(--bg-raised)]/20"
-      >
-        <span className="flex items-center gap-1.5 font-medium text-[var(--text-secondary)]">
-          <Layers size={13} className="text-blue-600 dark:text-blue-400" />
-          <span style={{ fontFeatureSettings: '"tnum"' }}>
-            {org.projectCount} {org.projectCount === 1 ? "project" : "projects"}
-          </span>
-        </span>
-
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] text-[var(--text-muted)]">{org.foundation}</span>
-          <Link
-            href={`/organization/${org.id}`}
-            onClick={(e) => e.stopPropagation()}
-            className="p-1 rounded-md hover:bg-[var(--bg-input)] text-[var(--text-muted)] hover:text-blue-600 dark:text-blue-400 transition-colors cursor-pointer"
-            aria-label={`Open ${org.name} details page`}
-            title="Open deep-dive page"
-          >
-            <ArrowUpRight size={14} />
-          </Link>
+        <div className="num mt-1 flex justify-between text-xs text-[var(--text-muted)]" aria-hidden="true">
+          <span>{String(plotYears[0]).slice(2).padStart(3, "'")}</span>
+          <span>{String(plotYears[plotYears.length - 1]).slice(2).padStart(3, "'")}</span>
         </div>
       </div>
-    </motion.div>
+
+      {/* Footer */}
+      <div className="mt-4 flex items-center justify-between border-t border-[var(--border)] pt-3 text-xs">
+        <span className="num text-[var(--text-secondary)]">
+          <strong className="font-semibold text-[var(--text-primary)]">{org.projectCount}</strong>{" "}
+          {org.projectCount === 1 ? unit : plural}
+          <span className="text-[var(--text-muted)]"> · {org.years.length} {org.years.length === 1 ? "year" : "years"}</span>
+        </span>
+        <span className="inline-flex items-center gap-1 font-medium text-[var(--text-muted)] transition-colors group-hover:text-[var(--text-primary)]">
+          View details <ArrowUpRight size={13} aria-hidden="true" />
+        </span>
+      </div>
+
+      {/* Outbound links sit above the stretched card link so they stay clickable. */}
+      {org.links && org.links.length > 0 && (
+        <ul className="relative z-10 mt-3 flex flex-wrap gap-1.5" aria-label="Links">
+          {org.links.map((l) => (
+            <li key={`${l.label}-${l.href}`}>
+              <a href={l.href} target="_blank" rel="noopener noreferrer" className="chip h-7 hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]">
+                <span>{l.label}</span>
+                <ExternalLink size={11} className="text-[var(--text-muted)]" aria-hidden="true" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+
+  return (
+    <Root className={className} style={style}>
+      {body}
+    </Root>
   );
 }

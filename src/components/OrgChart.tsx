@@ -12,9 +12,9 @@ import {
 import { Project } from "@/lib/types";
 
 export const TERM_CONFIG = {
-  "Term 1": { label: "Term 1", sublabel: "Spring", color: "#3b82f6" },
-  "Term 2": { label: "Term 2", sublabel: "Summer", color: "#10b981" },
-  "Term 3": { label: "Term 3", sublabel: "Fall", color: "#a855f7" },
+  "Term 1": { label: "Term 1", sublabel: "Spring", color: "var(--chart-1)" },
+  "Term 2": { label: "Term 2", sublabel: "Summer", color: "var(--chart-2)" },
+  "Term 3": { label: "Term 3", sublabel: "Fall", color: "var(--chart-3)" },
 } as const;
 
 export type TermCategory = keyof typeof TERM_CONFIG;
@@ -81,32 +81,10 @@ export function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   );
 
   return (
-    <div
-      className="pointer-events-none select-none rounded-xl"
-      style={{
-        minWidth: 160,
-        padding: "8px 12px",
-        background: "var(--bg-overlay)",
-        border: "1px solid var(--border-card)",
-        boxShadow: "var(--shadow-card)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-      }}
-    >
-      <div
-        className="flex items-center justify-between pb-1.5 mb-1.5"
-        style={{ borderBottom: "1px solid var(--border-card)" }}
-      >
-        <span
-          className="text-xs font-bold font-mono tracking-tight"
-          style={{ color: "var(--text-primary)" }}
-        >
-          {label}
-        </span>
-        <span
-          className="text-[11px] font-mono font-semibold"
-          style={{ color: "var(--text-muted)" }}
-        >
+    <div className="card pointer-events-none min-w-[160px] select-none px-3 py-2">
+      <div className="mb-1.5 flex items-center justify-between border-b border-[var(--border)] pb-1.5">
+        <span className="num text-xs font-semibold text-[var(--text-primary)]">{label}</span>
+        <span className="num text-xs text-[var(--text-muted)]">
           {total} {total === 1 ? "project" : "projects"}
         </span>
       </div>
@@ -123,31 +101,14 @@ export function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
               key={termKey}
               className="flex items-center justify-between gap-3 text-xs"
             >
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span
-                  className="w-2 h-2 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: dotColor }}
-                  aria-hidden="true"
-                />
-                <span
-                  className="text-[11px] font-medium truncate"
-                  style={{ color: "var(--text-secondary)" }}
-                >
+              <div className="flex min-w-0 items-center gap-1.5">
+                <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: dotColor }} aria-hidden="true" />
+                <span className="truncate text-xs font-medium text-[var(--text-secondary)]">
                   {termKey}
-                  <span
-                    className="text-[10px] ml-1"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    {sublabel}
-                  </span>
+                  <span className="ml-1 text-[var(--text-muted)]">{sublabel}</span>
                 </span>
               </div>
-              <span
-                className="text-[11px] font-mono font-semibold whitespace-nowrap"
-                style={{ color: "var(--text-primary)" }}
-              >
-                {count}
-              </span>
+              <span className="num whitespace-nowrap text-xs font-semibold text-[var(--text-primary)]">{count}</span>
             </div>
           );
         })}
@@ -212,7 +173,7 @@ export default function OrgChart({ projects }: OrgChartProps) {
             />
             <YAxis
               allowDecimals={false}
-              tick={{ fill: "var(--text-secondary)", fontSize: 11 }}
+              tick={{ fill: "var(--text-secondary)", fontSize: 11, fontFamily: "var(--font-mono, monospace)" }}
               axisLine={false}
               tickLine={false}
             />
@@ -252,28 +213,14 @@ export default function OrgChart({ projects }: OrgChartProps) {
       </div>
 
       {/* Clean Unified Legend */}
-      <div
-        className="flex items-center justify-center gap-4 pt-2.5 mt-1 select-none"
-        style={{ borderTop: "1px solid var(--border-card)" }}
-      >
+      <div className="mt-1 flex select-none items-center justify-center gap-4 border-t border-[var(--border)] pt-2.5">
         {(["Term 1", "Term 2", "Term 3"] as const).map((termKey) => {
           const cfg = TERM_CONFIG[termKey];
           return (
             <div key={termKey} className="flex items-center gap-1.5">
-              <span
-                className="w-2.5 h-2.5 rounded-xs flex-shrink-0"
-                style={{ backgroundColor: cfg.color }}
-              />
-              <span
-                className="text-[11px] font-mono font-medium"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                {termKey}{" "}
-                <span
-                  style={{ color: "var(--text-muted)", fontSize: "10px" }}
-                >
-                  ({cfg.sublabel})
-                </span>
+              <span className="h-2.5 w-2.5 flex-shrink-0 rounded-[3px]" style={{ backgroundColor: cfg.color }} aria-hidden="true" />
+              <span className="num text-xs font-medium text-[var(--text-secondary)]">
+                {termKey} <span className="text-[var(--text-muted)]">({cfg.sublabel})</span>
               </span>
             </div>
           );

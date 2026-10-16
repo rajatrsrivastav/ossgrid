@@ -1,0 +1,58 @@
+name: Add a program dashboard
+description: Propose or track a dashboard for a new mentorship program (Outreachy, GSSoC, MLH Fellowship, Summer of Bitcoin, ...).
+title: "program: <name> dashboard"
+labels: ["program:new"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Program name
+      placeholder: Outreachy
+    validations:
+      required: true
+  - type: input
+    id: official
+    attributes:
+      label: Official site
+      placeholder: https://www.outreachy.org
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Data sources
+      description: Where org and project data can be read automatically (GitHub repo, public JSON, archive pages). Note the format and any terms of use.
+    validations:
+      required: true
+  - type: textarea
+    id: facts
+    attributes:
+      label: Program facts, with links
+      description: Stipend, length, eligibility, cadence. Each one needs a source link.
+      placeholder: |
+        - Stipend: ... (source: ...)
+        - Length: ... (source: ...)
+        - Eligibility: ... (source: ...)
+        - Cadence: ... (source: ...)
+    validations:
+      required: true
+  - type: checkboxes
+    id: tasks
+    attributes:
+      label: Delivery checklist
+      options:
+        - label: Registry entry in src/data/programs.ts (status coming-soon, trackingIssueUrl set to this issue)
+        - label: Pipeline in scripts/programs/<id>/ with fixtures and tests
+        - label: Scheduled sync workflow that opens a PR
+        - label: /<id> route built on ExplorerShell, with metadata, sitemap and noscript list
+        - label: Registry status switched to live; landing card, header and footer update automatically
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ] Data syncs on schedule with no manual edits
+        - [ ] Dashboard has the same search, filters and URL state as /lfx and /gsoc
+        - [ ] Attribution to every source is visible on the page
+    validations:
+      required: true

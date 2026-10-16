@@ -88,16 +88,6 @@ export interface LfxOrganizationDto {
   projects: LfxProjectSummary[];
 }
 
-/** Current state of all active filters */
-export interface FilterState {
-  search: string;
-  terms: string[];
-  categories: string[];
-  technologies: string[];
-  years: number[];
-  quickFilters: string[];
-}
-
 /** Term definition for the data pipeline */
 export interface TermDefinition {
   year: number;
@@ -107,10 +97,103 @@ export interface TermDefinition {
   status?: string;
 }
 
-/** Available filter options derived from the dataset */
-export interface FilterOptions {
-  terms: { value: string; count: number }[];
-  categories: { value: string; count: number }[];
-  technologies: { value: string; count: number }[];
-  years: { value: number; count: number }[];
+// =============================================================================
+// Google Summer of Code — Shipped Data Types
+// =============================================================================
+
+export type GsocProjectSize = "small" | "medium" | "large";
+
+/** Outbound links for a GSoC organization. Empty string when the source has none. */
+export interface GsocOrgLinks {
+  ideas: string;
+  guide: string;
+  chat: string;
+  mailingList: string;
+  blog: string;
+  twitter: string;
+  /** GSoC archive page for the latest year. */
+  archive: string;
+}
+
+/** Light organization DTO shipped to /gsoc. Projects live in projects-<year>.json. */
+export interface GsocOrganization {
+  slug: string;
+  name: string;
+  logoUrl: string;
+  logoBackground: string;
+  description: string;
+  website: string;
+  category: string;
+  topics: string[];
+  technologies: string[];
+  /** Years the org was accepted, ascending. */
+  years: number[];
+  /** Accepted projects per year (from the GSoC archive). */
+  projectsByYear: Record<string, number>;
+  /** GSoC archive page per year. */
+  archiveByYear: Record<string, string>;
+  projectCount: number;
+  firstYear: number;
+  latestYear: number;
+  links: GsocOrgLinks;
+}
+
+/** Mentor as shipped: never an email address. */
+export interface GsocMentor {
+  name: string;
+  github: string;
+  primary?: boolean;
+}
+
+export interface GsocProject {
+  id: string;
+  orgSlug: string;
+  year: number;
+  title: string;
+  /** One-line summary (GSoC short description or the first sentence of a CNCF idea). */
+  summary: string;
+  /** Full text, HTML stripped. */
+  description: string;
+  /** Accepted contributor, when the archive lists one. */
+  contributor: string;
+  projectUrl: string;
+  codeUrl: string;
+  /** "gsoc": accepted project from the archive. "cncf": idea from cncf/mentoring. */
+  origin: "gsoc" | "cncf";
+  status: "accepted" | "proposed";
+  /** Upstream project for umbrella organizations, e.g. "Kubernetes" under CNCF. */
+  subProject?: string;
+  skills: string[];
+  size?: GsocProjectSize;
+  difficulty?: string;
+  mentors: GsocMentor[];
+  upstreamIssueUrls: string[];
+  sources: ProjectSource[];
+  missingFields: string[];
+}
+
+/** projects-<year>.json */
+export interface GsocYearFile {
+  year: number;
+  projects: GsocProject[];
+}
+
+// =============================================================================
+// Proposals library — Shipped Data Types
+// =============================================================================
+
+export interface ProposalRecord {
+  id: string;
+  year: number | null;
+  orgName: string;
+  /** GSoC organization slug, "" when the archive's org name did not match. */
+  orgId: string;
+  title: string;
+  author: string;
+  status: "accepted" | "rejected" | "unknown";
+  format: "pdf" | "md" | "docx" | "link";
+  /** Link to the original file. OSSGrid never rehosts proposals. */
+  url: string;
+  sourceRepo: string;
+  license: string;
 }

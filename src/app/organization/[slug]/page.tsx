@@ -4,16 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import fs from "fs";
 import path from "path";
-import { ExternalLink, ArrowLeft, Users, Layers, TrendingUp, Calendar, Code2 } from "lucide-react";
+import { cache } from "react";
+import { ExternalLink, ArrowLeft, Users, Layers, TrendingUp, Calendar } from "lucide-react";
 import { Organization, Project } from "@/lib/types";
 import OrgChartWrapper from "@/components/OrgChartWrapper";
 import Header from "@/components/Header";
 import OrgSectionNav from "@/components/OrgSectionNav";
-import { sanitizeDescription } from "@/lib/utils";
+import { sanitizeDescription, cn } from "@/lib/utils";
 import { safeJsonLd } from "@/lib/seo";
-
-// ─── SVG Icons ──────────────────────────────────────────────────────────────
-import { cache } from "react";
+import { lfxCalendar } from "@/data/programs";
 
 const getOrganizationsCached = cache(async (): Promise<Organization[]> => {
   const filePath = path.join(process.cwd(), "public", "data", "organizations.json");
@@ -40,48 +39,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const orgs = await getOrganizationsCached();
   const org = orgs.find((o) => o.id === slug);
-  if (!org) return { title: "Organization Not Found" };
-  const desc = `${org.name} has ${org.projectCount} LFX Mentorship projects across ${org.years.length} terms. View projects, mentors, technologies (${org.technologies.slice(0, 5).join(", ")}), and participation history.`;
+  if (!org) return { title: "Organization not found" };
+  const desc = `${org.name} has run ${org.projectCount} LFX Mentorship ${org.projectCount === 1 ? "project" : "projects"} over ${org.years.length} ${org.years.length === 1 ? "year" : "years"}. Projects, mentors and technologies (${org.technologies.slice(0, 5).join(", ")}).`;
   const canonicalUrl = `https://www.ossgrid.tech/organization/${slug}`;
   const ogImage = org.logoUrl || "/og-image.jpg";
+  const title = `${org.name} — LFX Mentorship projects and mentors`;
   return {
-    title: `${org.name} — Open Source Mentorship Projects & History`,
+    title,
     description: desc,
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    openGraph: {
-      title: `${org.name} — Open Source Mentorship Projects & History`,
-      description: desc,
-      url: canonicalUrl,
-      type: "website",
-      siteName: "OSSGrid",
-      images: [
-        {
-          url: ogImage,
-          alt: `${org.name} logo`,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${org.name} — Open Source Mentorship Projects & History`,
-      description: desc,
-      images: [ogImage],
-    },
+    alternates: { canonical: canonicalUrl },
+    openGraph: { title, description: desc, url: canonicalUrl, type: "website", siteName: "OSSGrid", images: [{ url: ogImage, alt: `${org.name} logo` }] },
+    twitter: { card: "summary_large_image", title, description: desc, images: [ogImage] },
   };
 }
 
 // ─── Data helpers ─────────────────────────────────────────────────────────────
-
-async function getOrganization(slug: string): Promise<Organization | null> {
-  const orgs = await getOrganizationsCached();
-  return orgs.find((o) => o.id === slug) || null;
-}
-
-async function getAllOrganizations(): Promise<Organization[]> {
-  return getOrganizationsCached();
-}
 
 function parseTerm(term: string): { year: number; termNum: number; monthRange: string } {
   const m = term.match(/(\d{4})\s+Term\s+(\d+)\s*\(([^)]+)\)/i);
@@ -97,18 +69,18 @@ function sortTermsDesc(terms: string[]): string[] {
   });
 }
 
-function getTermStatus(term: string): "open" | "closing" | "closed" {
-  const { year } = parseTerm(term);
-  // 2026 Term 3 is concluded; next active cycle is 2027 Term 1
-  if (year <= 2026) return "closed";
-  return "open";
+/** A term is "upcoming" only if the program calendar lists it as such. */
+function getTermStatus(term: string): "upcoming" | "concluded" {
+  const { year, termNum } = parseTerm(term);
+  const match = lfxCalendar.terms.find((t) => t.label === `${year} Term ${termNum}`);
+  return match?.status === "upcoming" ? "upcoming" : "concluded";
 }
+
+const nextTerm = lfxCalendar.terms.find((t) => t.status === "upcoming");
 
 function getTechFrequency(projects: Project[]): Map<string, number> {
   const freq = new Map<string, number>();
-  for (const p of projects) {
-    for (const s of p.skills) freq.set(s, (freq.get(s) ?? 0) + 1);
-  }
+  for (const p of projects) for (const s of p.skills) freq.set(s, (freq.get(s) ?? 0) + 1);
   return freq;
 }
 
@@ -127,17 +99,16 @@ function deduplicateMentors(projects: Project[]): Array<{ name: string; github: 
 }
 
 function getRelatedOrgs(org: Organization, all: Organization[]): Organization[] {
-  const myTechs = new Set(org.technologies);
+  const mine = new Set(org.technologies);
   return all
     .filter((o) => o.id !== org.id)
-    .map((o) => ({ org: o, score: o.technologies.filter((t) => myTechs.has(t)).length }))
+    .map((o) => ({ org: o, score: o.technologies.filter((t) => mine.has(t)).length }))
     .filter((x) => x.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 4)
     .map((x) => x.org);
 }
 
-/** Clean project descriptions: strip scraper artifacts, markdown links, and bare URLs */
 function sanitizeProjectDesc(desc: string): string {
   if (!desc) return "";
   const clean = desc
@@ -150,20 +121,14 @@ function sanitizeProjectDesc(desc: string): string {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function TermBadge({ status, term }: { status: "open" | "closing" | "closed"; term: string }) {
-  const { monthRange, year, termNum } = parseTerm(term);
-  const cfg = {
-    open: { dot: "#34d399", bg: "rgba(52,211,153,0.10)", border: "rgba(52,211,153,0.25)", text: "#34d399", label: "OPEN" },
-    closing: { dot: "#fbbf24", bg: "rgba(251,191,36,0.10)", border: "rgba(251,191,36,0.30)", text: "#fbbf24", label: "CLOSING SOON" },
-    closed: { dot: "#6b7e99", bg: "rgba(107,126,153,0.08)", border: "rgba(107,126,153,0.15)", text: "#6b7e99", label: "CLOSED" },
-  }[status];
-
+function SectionTitle({ icon: Icon, children, count }: { icon: typeof Layers; children: React.ReactNode; count?: number }) {
   return (
-    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded" style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, fontFamily: "var(--font-mono)", fontSize: "0.7rem", letterSpacing: "0.08em", fontWeight: 600, color: cfg.text }}>
-      {status !== "closed" && <span className="w-1.5 h-1.5 rounded-full" style={{ background: cfg.dot, boxShadow: status === "open" ? `0 0 6px ${cfg.dot}` : undefined }} />}
-      {cfg.label}
-      <span style={{ color: "var(--text-muted)", letterSpacing: "0.02em" }}>{year} T{termNum} · {monthRange}</span>
-    </span>
+    <div className="mb-5 flex items-center gap-3">
+      <Icon size={16} className="text-[var(--text-muted)]" aria-hidden="true" />
+      <h2 className="text-lg font-semibold text-[var(--text-primary)]">{children}</h2>
+      {count !== undefined && <span className="num text-sm text-[var(--text-muted)]">{count}</span>}
+      <span className="h-px flex-1 bg-[var(--border)]" aria-hidden="true" />
+    </div>
   );
 }
 
@@ -171,37 +136,32 @@ function TermBadge({ status, term }: { status: "open" | "closing" | "closed"; te
 
 export default async function OrganizationPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [org, allOrgs] = await Promise.all([getOrganization(slug), getAllOrganizations()]);
+  const allOrgs = await getOrganizationsCached();
+  const org = allOrgs.find((o) => o.id === slug);
   if (!org) notFound();
 
   const sortedTerms = sortTermsDesc(org.terms);
   const latestTerm = sortedTerms[0];
-  const termStatus = latestTerm ? getTermStatus(latestTerm) : "closed";
+  const latestParsed = latestTerm ? parseTerm(latestTerm) : null;
+  const latestStatus = latestTerm ? getTermStatus(latestTerm) : "concluded";
   const latestTermProjects = org.projects.filter((p) => p.term === latestTerm);
   const latestLfxUrl = latestTermProjects.find((p) => p.lfxUrl)?.lfxUrl ?? org.projects.find((p) => p.lfxUrl)?.lfxUrl;
 
   const projectsByYearTerm: Record<number, Record<string, Project[]>> = {};
   for (const project of org.projects) {
-    if (!projectsByYearTerm[project.year]) projectsByYearTerm[project.year] = {};
-    if (!projectsByYearTerm[project.year][project.term]) projectsByYearTerm[project.year][project.term] = [];
+    projectsByYearTerm[project.year] ??= {};
+    projectsByYearTerm[project.year][project.term] ??= [];
     projectsByYearTerm[project.year][project.term].push(project);
   }
   const displayYears = Object.keys(projectsByYearTerm).map(Number).sort((a, b) => b - a);
 
-  const techFreq = getTechFrequency(org.projects);
-  const techsSorted = [...techFreq.entries()].sort((a, b) => b[1] - a[1]);
-  const maxFreq = techsSorted[0]?.[1] ?? 1;
-
-  const currentMentors = deduplicateMentors(latestTermProjects);
+  const techsSorted = [...getTechFrequency(org.projects).entries()].sort((a, b) => b[1] - a[1]);
   const allMentors = deduplicateMentors(org.projects);
-  const mentorsToShow = currentMentors.length > 0 ? currentMentors : allMentors.slice(0, 8);
-
   const relatedOrgs = getRelatedOrgs(org, allOrgs);
 
   const yearSpan = { min: Math.min(...org.years), max: Math.max(...org.years) };
   const allYears: number[] = [];
   for (let y = yearSpan.max; y >= yearSpan.min; y--) allYears.push(y);
-  const allTermNums = [1, 2, 3];
 
   const cleanDesc = sanitizeDescription(org.description, org.name, org.id);
 
@@ -209,27 +169,11 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://www.ossgrid.tech",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "LFX Mentorship Explorer",
-        item: "https://www.ossgrid.tech/lfx",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: org.name,
-        item: `https://www.ossgrid.tech/organization/${org.id}`,
-      },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.ossgrid.tech" },
+      { "@type": "ListItem", position: 2, name: "LFX Mentorship organizations", item: "https://www.ossgrid.tech/lfx" },
+      { "@type": "ListItem", position: 3, name: org.name, item: `https://www.ossgrid.tech/organization/${org.id}` },
     ],
   };
-
   const orgLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -242,274 +186,168 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
   };
 
   return (
-    <div style={{ background: "var(--bg-primary)", minHeight: "100vh" }}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(orgLd) }}
-      />
+    <div className="min-h-screen bg-[var(--bg-base)]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(orgLd) }} />
       <Header variant="simple" />
 
-      {/* ══════════════════════════════════════════
-          HERO BANNER — Full-width premium identity
-      ══════════════════════════════════════════ */}
-      <div
-        id="overview"
-        className="relative overflow-hidden scroll-mt-28"
-        style={{
-          background: "linear-gradient(135deg, rgba(79,142,255,0.08) 0%, rgba(167,139,250,0.05) 50%, transparent 100%)",
-          borderBottom: "1px solid var(--border-card)",
-        }}
-      >
-        {/* Dot grid */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: "radial-gradient(circle, rgba(79,142,255,0.07) 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
-            maskImage: "linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%)",
-          }}
-        />
+      {/* Identity */}
+      <div id="overview" className="scroll-mt-28 border-b border-[var(--border)] bg-[var(--bg-raised)]">
+        <div className="mx-auto w-full max-w-[1440px] px-4 pb-8 pt-6 sm:px-6 lg:px-8">
+          <nav aria-label="Breadcrumb" className="mb-6 text-xs text-[var(--text-muted)]">
+            <ol className="flex items-center gap-2">
+              <li><Link href="/" className="hover:text-[var(--text-primary)]">Home</Link></li>
+              <li aria-hidden="true">/</li>
+              <li><Link href="/lfx" className="inline-flex items-center gap-1 hover:text-[var(--text-primary)]"><ArrowLeft size={12} aria-hidden="true" /> LFX organizations</Link></li>
+              <li aria-hidden="true">/</li>
+              <li aria-current="page" className="truncate text-[var(--text-secondary)]">{org.name}</li>
+            </ol>
+          </nav>
 
-        <div className="relative max-w-[1280px] mx-auto px-6 lg:px-10 pt-6 pb-8">
-          {/* Breadcrumb */}
-          <Link href="/lfx" className="inline-flex items-center gap-1.5 text-xs mb-8 transition-colors hover:text-blue-600 dark:text-blue-400" style={{ color: "var(--text-muted)" }}>
-            <ArrowLeft size={13} />
-            LFX Mentorship
-          </Link>
-
-          {/* Identity: logo + name + meta */}
-          <div className="flex flex-col lg:flex-row lg:items-end gap-6 lg:gap-10">
-            {/* Logo */}
-            <div
-              className="w-20 h-20 lg:w-24 lg:h-24 rounded-2xl flex-shrink-0 overflow-hidden flex items-center justify-center"
-              style={{ border: "1px solid var(--border-card)", background: "var(--bg-raised)", boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}
-            >
-              <Image src={org.logoUrl || "/placeholder.svg"} alt={`${org.name} logo`} width={96} height={96} className="w-full h-full object-contain p-2" unoptimized />
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:gap-10">
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)] bg-white lg:h-24 lg:w-24">
+              <Image src={org.logoUrl || "/placeholder.svg"} alt={`${org.name} logo`} width={96} height={96} className="h-full w-full object-contain p-2.5" unoptimized />
             </div>
 
-            {/* Name + badges + description */}
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                {org.foundation && (
-                  <span className="badge badge-accent" style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", letterSpacing: "0.06em" }}>
-                    {org.foundation}
+            <div className="min-w-0 flex-1">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                {org.foundation && <span className="chip chip-active"><span>{org.foundation}</span></span>}
+                <span className="chip"><span>{org.category}</span></span>
+                {latestParsed && (
+                  <span className={cn("pill", latestStatus === "upcoming" ? "pill-success" : "pill-muted")}>
+                    {latestStatus === "upcoming" && <span className="pill-dot" aria-hidden="true" />}
+                    {latestStatus === "upcoming" ? "Listed for" : "Last term"} <span className="num">{latestParsed.year} T{latestParsed.termNum}</span>
                   </span>
                 )}
-                <span className="badge" style={{ fontSize: "0.7rem" }}>{org.category}</span>
-                {latestTerm && (
-                  <div className="flex items-center gap-2">
-                    <TermBadge status={termStatus} term={latestTerm} />
-                  </div>
-                )}
               </div>
-
-              <h1 className="text-4xl lg:text-5xl font-black tracking-tight leading-none mb-3" style={{ color: "var(--text-primary)" }}>
-                {org.name}
-              </h1>
-
-              <p className="text-sm lg:text-base leading-relaxed max-w-2xl" style={{ color: "var(--text-secondary)" }}>
-                {cleanDesc}
-              </p>
+              <h1 className="display text-3xl font-semibold text-[var(--text-primary)] md:text-4xl lg:text-5xl">{org.name}</h1>
+              <p className="prose-measure mt-3 text-sm leading-relaxed text-[var(--text-secondary)] lg:text-base">{cleanDesc}</p>
             </div>
 
-            {/* Stats strip — right-aligned on desktop */}
-            <div className="flex lg:flex-col gap-6 lg:gap-4 flex-shrink-0 lg:items-end">
-              <div className="text-right">
-                <div className="text-3xl font-black font-mono" style={{ color: "var(--color-accent-raw)", letterSpacing: "-0.02em" }}>
-                  {org.projectCount}
+            <dl className="grid shrink-0 grid-cols-3 gap-px overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--border)] lg:w-[360px]">
+              {[
+                { label: "Projects", value: org.projectCount },
+                { label: "Years active", value: org.years.length },
+                { label: latestParsed ? `In ${latestParsed.year} T${latestParsed.termNum}` : "Latest term", value: latestTermProjects.length },
+              ].map((s) => (
+                <div key={s.label} className="bg-[var(--bg-card)] px-4 py-3 text-right">
+                  <dd className="num text-2xl font-semibold text-[var(--text-primary)]">{s.value}</dd>
+                  <dt className="mt-0.5 text-xs text-[var(--text-muted)]">{s.label}</dt>
                 </div>
-                <div className="text-xs font-medium" style={{ color: "var(--text-muted)", marginTop: 2 }}>total projects</div>
-              </div>
-              <div className="text-right">
-                <div className="text-3xl font-black font-mono" style={{ color: "var(--color-purple, #a78bfa)", letterSpacing: "-0.02em" }}>
-                  {org.years.length}
-                </div>
-                <div className="text-xs font-medium" style={{ color: "var(--text-muted)", marginTop: 2 }}>years active</div>
-              </div>
-              <div className="text-right">
-                <div className="text-3xl font-black font-mono text-zinc-400" style={{ letterSpacing: "-0.02em" }}>
-                  {latestTermProjects.length}
-                </div>
-                <div className="text-xs font-medium" style={{ color: "var(--text-muted)", marginTop: 2 }}>2026 T3 (over)</div>
-              </div>
-            </div>
+              ))}
+            </dl>
           </div>
 
-          {/* CTA row */}
-          <div className="flex flex-wrap items-center gap-3 mt-8">
+          <div className="mt-8 flex flex-wrap items-center gap-2">
             {latestLfxUrl && (
-              <a href={latestLfxUrl} target="_blank" rel="noopener noreferrer" className="btn-primary" id="apply-cta-main" style={{ padding: "11px 24px", fontSize: "0.9rem", fontWeight: 700, borderRadius: "var(--radius-lg)" }}>
-                <ExternalLink size={15} />
-                Check LFX Portal
+              <a href={latestLfxUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary" id="apply-cta-main">
+                View on the LFX portal <ExternalLink size={14} aria-hidden="true" />
               </a>
             )}
-            <a href={org.github || org.sources[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "11px 20px", fontSize: "0.85rem" }}>
-              <GitHubIcon size={14} />
-              {org.github ? "GitHub" : "Project source"}
+            <a href={org.github || org.sources[0]} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+              <GitHubIcon size={14} /> {org.github ? "GitHub" : "Source file"}
             </a>
             {org.website && (
-              <a href={org.website} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "11px 20px", fontSize: "0.85rem" }}>
-                <ExternalLink size={14} /> Website
+              <a href={org.website} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+                Website <ExternalLink size={14} aria-hidden="true" />
               </a>
             )}
-            {/* Tech pills — top 3 inline in hero */}
-            <div className="flex items-center gap-2 ml-2">
-              {techsSorted.slice(0, 3).map(([tech]) => (
-                <span key={tech} className="badge" style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", background: "var(--bg-badge)", border: "1px solid var(--border-card)" }}>
-                  {tech}
-                </span>
+            <ul className="ml-1 flex flex-wrap items-center gap-1.5" aria-label="Most requested skills">
+              {techsSorted.slice(0, 4).map(([tech]) => (
+                <li key={tech} className="chip chip-mono"><span>{tech}</span></li>
               ))}
-              {techsSorted.length > 3 && (
-                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>+{techsSorted.length - 3}</span>
-              )}
-            </div>
+              {techsSorted.length > 4 && <li className="chip chip-quiet chip-mono"><span>+{techsSorted.length - 4}</span></li>}
+            </ul>
           </div>
         </div>
       </div>
 
-      {/* Section Navigation Tabs (Sticky) */}
-      <OrgSectionNav
-        projectCount={org.projectCount}
-        mentorCount={allMentors.length}
-      />
+      <OrgSectionNav projectCount={org.projectCount} mentorCount={allMentors.length} />
 
-      {/* ══════════════════════════════════════════
-          MAIN: Two-column layout
-          LEFT (flex-1): Projects
-          RIGHT (w-80/w-96 sticky): Analytics sidebar
-      ══════════════════════════════════════════ */}
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-8">
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-
-          {/* ── LEFT COLUMN: Projects ── */}
-          <main className="flex-1 min-w-0 space-y-14">
-
-            {/* Section: Projects */}
-            <section id="projects" aria-label="Project list" className="scroll-mt-28">
-              <div className="flex items-center gap-3 mb-6">
-                <Layers size={15} style={{ color: "var(--color-accent-raw)" }} />
-                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--color-accent-raw)" }}>Projects</span>
-                <div style={{ flex: 1, height: 1, background: "var(--border-card)" }} />
-              </div>
+      <div className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-start gap-8 lg:flex-row">
+          <main className="min-w-0 flex-1 space-y-14">
+            {/* Projects */}
+            <section id="projects" aria-labelledby="projects-heading" className="scroll-mt-28">
+              <SectionTitle icon={Layers} count={org.projectCount}><span id="projects-heading">Projects</span></SectionTitle>
 
               <div className="space-y-10">
                 {displayYears.map((year) => {
                   const termsForYear = Object.keys(projectsByYearTerm[year]).sort((a, b) => parseTerm(b).termNum - parseTerm(a).termNum);
+                  const yearCount = Object.values(projectsByYearTerm[year]).flat().length;
                   return (
                     <div key={year}>
-                      {/* Year header */}
-                      <div className="flex items-center gap-3 mb-5 pb-2" style={{ borderBottom: "1px solid var(--border-card)" }}>
-                        <span className="text-lg font-black font-mono" style={{ color: "var(--color-purple, #a78bfa)", letterSpacing: "0.04em" }}>{year}</span>
-                        <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-                          {Object.values(projectsByYearTerm[year]).flat().length} projects
-                        </span>
+                      <div className="mb-4 flex items-baseline gap-3 border-b border-[var(--border)] pb-2">
+                        <h3 className="num text-lg font-semibold text-[var(--text-primary)]">{year}</h3>
+                        <span className="num text-xs text-[var(--text-muted)]">{yearCount} {yearCount === 1 ? "project" : "projects"}</span>
                       </div>
 
-                      <div className="space-y-8">
+                      <div className="space-y-6">
                         {termsForYear.map((termLabel) => {
                           const { termNum, monthRange } = parseTerm(termLabel);
                           const projects = projectsByYearTerm[year][termLabel];
-                          const isCurrentTerm = termLabel === latestTerm;
+                          const isLatest = termLabel === latestTerm;
                           return (
                             <div key={termLabel}>
-                              {/* Term sub-header */}
-                              <div className="flex items-center gap-3 mb-4">
-                                <span
-                                  style={{
-                                    width: 7, height: 7, borderRadius: "50%", flexShrink: 0,
-                                    background: isCurrentTerm ? "var(--color-accent-raw)" : "var(--text-muted)",
-                                    boxShadow: isCurrentTerm ? "0 0 8px var(--color-accent-raw)" : undefined,
-                                  }}
-                                />
-                                <span className="text-xs font-semibold uppercase tracking-wide font-mono" style={{ color: isCurrentTerm ? "var(--text-secondary)" : "var(--text-muted)" }}>
-                                  Term {termNum} · {monthRange}
-                                </span>
-                                {isCurrentTerm && <TermBadge status={termStatus} term={termLabel} />}
-                                <span className="text-xs" style={{ color: "var(--text-muted)" }}>{projects.length} project{projects.length !== 1 ? "s" : ""}</span>
-                              </div>
+                              <p className="num mb-3 flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                                <span className={cn("h-1.5 w-1.5 rounded-full", isLatest ? "bg-[var(--accent)]" : "bg-[var(--border-strong)]")} aria-hidden="true" />
+                                Term {termNum} · {monthRange} · {projects.length} {projects.length === 1 ? "project" : "projects"}
+                              </p>
 
-                              {/* Project cards grid — more visual than a table */}
-                              <div className="space-y-3">
+                              <ul className="space-y-3">
                                 {projects.map((project, i) => {
                                   const primaryMentor = project.mentors[0];
-                                  const cleanProjectDesc = sanitizeProjectDesc(project.description || project.expectedOutcome || "");
+                                  const desc = sanitizeProjectDesc(project.description || project.expectedOutcome || "");
                                   return (
-                                    <div
-                                      key={`${project.id}-${i}`}
-                                      className="rounded-xl p-4 transition-all"
-                                      style={{
-                                        background: "var(--bg-raised)",
-                                        border: `1px solid ${isCurrentTerm ? "var(--border-card)" : "var(--border-card)"}`,
-                                      }}
-                                    >
-                                      {/* Title row */}
-                                      <div className="flex items-start justify-between gap-3 mb-2">
-                                        <div className="flex items-start gap-2 flex-1 min-w-0">
-                                          <h3 className="text-sm font-semibold leading-snug" style={{ color: "var(--text-primary)" }}>
-                                            {project.title}
-                                          </h3>
+                                    <li key={`${project.id}-${i}`} className="card p-4">
+                                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                        <div className="min-w-0 flex-1">
+                                          <h4 className="text-sm font-semibold leading-snug text-[var(--text-primary)]">{project.title}</h4>
+                                          <p className="mt-1 text-xs text-[var(--text-muted)]">
+                                            {project.program} · {project.status === "proposed" ? "Proposed, acceptance not recorded" : "Listed in the official cohort"}
+                                          </p>
                                         </div>
-                                        {/* Right: mentor + links */}
-                                        <div className="flex items-center gap-2 flex-shrink-0">
+                                        <div className="flex shrink-0 flex-wrap items-center gap-1.5">
                                           {primaryMentor?.github && (
-                                            <a href={`https://github.com/${primaryMentor.github}`} target="_blank" rel="noopener noreferrer" title={primaryMentor.name} style={{ display: "flex", alignItems: "center", gap: 5, textDecoration: "none" }}>
-                                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                                              <img src={`https://github.com/${primaryMentor.github}.png?size=40`} alt={primaryMentor.name} width={22} height={22} style={{ width: 22, height: 22, borderRadius: "50%", border: "1px solid var(--border-card)" }} loading="lazy" />
-                                              <span className="hidden sm:block text-xs font-mono" style={{ color: "var(--text-muted)" }}>@{primaryMentor.github}</span>
+                                            <a
+                                              href={`https://github.com/${primaryMentor.github}`}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="chip h-7 gap-1.5 pl-1 hover:border-[var(--border-strong)]"
+                                              title={`Mentor: ${primaryMentor.name}`}
+                                            >
+                                              <Image src={`https://github.com/${primaryMentor.github}.png?size=40`} alt="" width={20} height={20} unoptimized className="h-5 w-5 rounded-full" />
+                                              <span className="num">@{primaryMentor.github}</span>
                                             </a>
                                           )}
-                                          <a href={project.sources[0].url} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "3px 8px", fontSize: "0.7rem" }} aria-label={`Official source for ${project.title}`}>
-                                            Source <ExternalLink size={10} />
+                                          <a href={project.sources[0].url} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm h-7" aria-label={`Source file for ${project.title} on GitHub`}>
+                                            Source <ExternalLink size={11} aria-hidden="true" />
                                           </a>
                                           {project.upstreamIssueUrl && (
-                                            <a href={project.upstreamIssueUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "3px 8px", fontSize: "0.7rem" }} aria-label={`GitHub issue for ${project.title}`}>
+                                            <a href={project.upstreamIssueUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm h-7" aria-label={`GitHub issue for ${project.title}`}>
                                               <GitHubIcon size={11} /> Issue
                                             </a>
                                           )}
-                                          {project.lfxUrl ? (
-                                            <a href={project.lfxUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding: "3px 8px", fontSize: "0.7rem" }} aria-label={`View on LFX Portal: ${project.title}`}>
-                                              {project.program === "CommunityBridge" ? "CommunityBridge" : "LFX"} <ExternalLink size={10} />
+                                          {project.lfxUrl && (
+                                            <a href={project.lfxUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm h-7" aria-label={`${project.title} on the LFX portal`}>
+                                              {project.program === "CommunityBridge" ? "CommunityBridge" : "LFX portal"} <ExternalLink size={11} aria-hidden="true" />
                                             </a>
-                                          ) : (
-                                            <span style={{ padding: "3px 8px", fontSize: "0.7rem", color: "var(--text-muted)", background: "var(--bg-badge)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-card)", opacity: 0.5 }}>
-                                              Link unavailable
-                                            </span>
                                           )}
                                         </div>
                                       </div>
-
-                                      <p className="text-xs mb-2" style={{ color: "var(--text-muted)" }}>
-                                        {project.program} · {project.status === "proposed" ? "Proposal — acceptance not recorded" : "Listed in the official cohort"}
-                                      </p>
-                                      {/* Description */}
-                                      {cleanProjectDesc && (
-                                        <p className="text-xs leading-relaxed mb-2 line-clamp-2" style={{ color: "var(--text-secondary)" }}>
-                                          {cleanProjectDesc}
-                                        </p>
-                                      )}
-
-                                      {/* Skills */}
+                                      {desc && <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[var(--text-secondary)]">{desc}</p>}
                                       {project.skills.length > 0 && (
-                                        <div className="flex flex-wrap gap-1">
+                                        <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Skills">
                                           {project.skills.slice(0, 6).map((skill) => (
-                                            <span key={skill} style={{ fontFamily: "var(--font-mono)", fontSize: "0.62rem", color: "var(--text-muted)", background: "var(--bg-badge)", border: "1px solid var(--border-card)", borderRadius: "var(--radius-xs)", padding: "2px 6px", whiteSpace: "nowrap" }}>
-                                              {skill}
-                                            </span>
+                                            <li key={skill} className="chip chip-mono max-w-[200px]"><span>{skill}</span></li>
                                           ))}
-                                          {project.skills.length > 6 && (
-                                            <span style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>+{project.skills.length - 6}</span>
-                                          )}
-                                        </div>
+                                          {project.skills.length > 6 && <li className="chip chip-quiet chip-mono"><span>+{project.skills.length - 6}</span></li>}
+                                        </ul>
                                       )}
-                                    </div>
+                                    </li>
                                   );
                                 })}
-                              </div>
+                              </ul>
                             </div>
                           );
                         })}
@@ -520,178 +358,140 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
               </div>
             </section>
 
-            {/* Section: Mentors */}
+            {/* Mentors */}
             {allMentors.length > 0 && (
-              <section id="mentors" aria-label="Organization mentors" className="scroll-mt-28">
-                <div className="flex items-center gap-3 mb-5">
-                  <Users size={15} style={{ color: "var(--color-accent-raw)" }} />
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--color-accent-raw)" }}>Mentors</span>
-                  <span className="text-xs font-mono" style={{ color: "var(--text-muted)" }}>({allMentors.length})</span>
-                  <div style={{ flex: 1, height: 1, background: "var(--border-card)" }} />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-                  {allMentors.slice(0, 9).map((mentor) => (
-                    <a
-                      key={mentor.github}
-                      href={`https://github.com/${mentor.github}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-xl transition-all hover:border-[var(--border-hover)]"
-                      style={{
-                        background: "var(--bg-raised)",
-                        border: "1px solid var(--border-card)",
-                        textDecoration: "none",
-                      }}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`https://github.com/${mentor.github}.png?size=64`}
-                        alt={mentor.name}
-                        width={36}
-                        height={36}
-                        style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, border: "1px solid var(--border-card)" }}
-                        loading="lazy"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)" }}>{mentor.name}</div>
-                        <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.68rem", color: "var(--color-accent-raw)", opacity: 0.9 }}>@{mentor.github}</div>
-                      </div>
-                      <ExternalLink size={12} style={{ color: "var(--text-muted)", flexShrink: 0 }} />
-                    </a>
+              <section id="mentors" aria-labelledby="mentors-heading" className="scroll-mt-28">
+                <SectionTitle icon={Users} count={allMentors.length}><span id="mentors-heading">Mentors</span></SectionTitle>
+                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {allMentors.slice(0, 12).map((mentor) => (
+                    <li key={mentor.github}>
+                      <a href={`https://github.com/${mentor.github}`} target="_blank" rel="noopener noreferrer" className="card card-interactive flex items-center gap-3 p-3">
+                        <Image src={`https://github.com/${mentor.github}.png?size=64`} alt="" width={36} height={36} unoptimized className="h-9 w-9 shrink-0 rounded-full border border-[var(--border)]" />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-semibold text-[var(--text-primary)]">{mentor.name}</span>
+                          <span className="num block truncate text-xs text-[var(--text-muted)]">@{mentor.github}</span>
+                        </span>
+                        <ExternalLink size={12} className="shrink-0 text-[var(--text-muted)]" aria-hidden="true" />
+                      </a>
+                    </li>
                   ))}
-                </div>
+                </ul>
+                {allMentors.length > 12 && <p className="mt-3 text-xs text-[var(--text-muted)]">Showing 12 of {allMentors.length}. Each project card links to its own mentor.</p>}
               </section>
             )}
 
-            {/* Section: Related Organizations */}
+            {/* Related */}
             {relatedOrgs.length > 0 && (
-              <section id="related" aria-label="Related organizations">
-                <div className="flex items-center gap-3 mb-5">
-                  <Users size={15} style={{ color: "var(--color-accent-raw)" }} />
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--color-accent-raw)" }}>Related Organizations</span>
-                  <div style={{ flex: 1, height: 1, background: "var(--border-card)" }} />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <section id="related" aria-labelledby="related-heading">
+                <SectionTitle icon={Layers}><span id="related-heading">Organizations with similar skills</span></SectionTitle>
+                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {relatedOrgs.map((related) => {
-                    const sharedTechs = related.technologies.filter((t) => org.technologies.includes(t));
+                    const shared = related.technologies.filter((t) => org.technologies.includes(t));
                     return (
-                      <Link key={related.id} href={`/organization/${related.id}`} style={{ display: "block", padding: "14px 16px", borderRadius: "var(--radius-lg)", background: "var(--bg-raised)", border: "1px solid var(--border-card)", textDecoration: "none", transition: "border-color 0.15s, transform 0.15s" }}>
-                        <div className="flex items-center gap-3 mb-2">
-                          <div style={{ width: 30, height: 30, borderRadius: 8, overflow: "hidden", flexShrink: 0, border: "1px solid var(--border-card)", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <Image src={related.logoUrl || "/placeholder.svg"} alt={related.name} width={30} height={30} className="object-contain p-0.5" unoptimized />
-                          </div>
-                          <span className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)" }}>{related.name}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {sharedTechs.slice(0, 3).map((t) => (
-                            <span key={t} style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--color-accent-raw)", background: "var(--color-accent-dim)", border: "1px solid rgba(79,142,255,0.15)", borderRadius: "var(--radius-sm)", padding: "2px 6px" }}>{t}</span>
-                          ))}
-                          {sharedTechs.length > 3 && <span style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>+{sharedTechs.length - 3}</span>}
-                        </div>
-                      </Link>
+                      <li key={related.id}>
+                        <Link href={`/organization/${related.id}`} className="card card-interactive block p-4">
+                          <span className="mb-2 flex items-center gap-3">
+                            <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-chip)] border border-[var(--border)] bg-white">
+                              <Image src={related.logoUrl || "/placeholder.svg"} alt="" width={32} height={32} className="h-full w-full object-contain p-1" unoptimized />
+                            </span>
+                            <span className="truncate text-sm font-semibold text-[var(--text-primary)]">{related.name}</span>
+                          </span>
+                          <span className="flex flex-wrap gap-1.5">
+                            {shared.slice(0, 3).map((t) => <span key={t} className="chip chip-active chip-mono"><span>{t}</span></span>)}
+                            {shared.length > 3 && <span className="chip chip-quiet chip-mono"><span>+{shared.length - 3}</span></span>}
+                          </span>
+                        </Link>
+                      </li>
                     );
                   })}
-                </div>
+                </ul>
               </section>
             )}
           </main>
 
-          {/* ── RIGHT COLUMN: Sticky Analytics Sidebar ── */}
-          <aside className="w-full lg:w-[340px] xl:w-[380px] flex-shrink-0 space-y-5 lg:sticky lg:top-28">
-            {/* CTA Card */}
-            <div className="rounded-2xl p-5" style={{ background: "var(--bg-raised)", border: "1px solid var(--border-card)" }}>
-              {latestTerm && (
-                <div className="mb-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Term Status</p>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 font-semibold">
-                      Next: 2027 T1
-                    </span>
-                  </div>
-                  <TermBadge status={termStatus} term={latestTerm} />
-                  <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>
-                    2026 Term 3 has concluded. Upcoming cycle is 2027 Term 1 (Spring, Mar–May).
+          {/* Sidebar */}
+          <aside className="w-full shrink-0 space-y-4 lg:sticky lg:top-28 lg:w-[340px] xl:w-[380px]">
+            <div className="card p-5">
+              <p className="eyebrow mb-3">Next term</p>
+              {nextTerm ? (
+                <>
+                  <p className="num text-lg font-semibold text-[var(--text-primary)]">{nextTerm.label}</p>
+                  <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                    {nextTerm.season} term. Projects are announced on the portal before it opens.
                   </p>
-                </div>
-              )}
-              {latestLfxUrl ? (
-                <a href={latestLfxUrl} target="_blank" rel="noopener noreferrer" className="btn-primary w-full" style={{ justifyContent: "center", padding: "12px", fontSize: "0.9rem", fontWeight: 700, borderRadius: "var(--radius-lg)" }}>
-                  <ExternalLink size={15} /> Check LFX Portal
-                </a>
+                </>
               ) : (
-                <div style={{ textAlign: "center", fontSize: "0.8rem", color: "var(--text-muted)", padding: "10px 0" }}>Applications currently closed</div>
+                <p className="text-sm text-[var(--text-secondary)]">No upcoming term listed. Check the portal.</p>
               )}
-              <a href={org.github || org.sources[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost w-full mt-2" style={{ justifyContent: "center", fontSize: "0.8rem" }}>
-                <GitHubIcon size={13} /> {org.github ? "View on GitHub" : "Project source"}
-              </a>
+              <p className="mt-2 text-xs text-[var(--text-muted)]">Dates checked {lfxCalendar.lastVerified}.</p>
+              <div className="mt-4 flex flex-col gap-2">
+                <a href={latestLfxUrl ?? lfxCalendar.portalUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary w-full">
+                  Open the LFX portal <ExternalLink size={14} aria-hidden="true" />
+                </a>
+                <a href={org.github || org.sources[0]} target="_blank" rel="noopener noreferrer" className="btn btn-secondary w-full">
+                  <GitHubIcon size={13} /> {org.github ? "View on GitHub" : "Source file on GitHub"}
+                </a>
+              </div>
             </div>
 
-            {/* Bar Chart Card */}
-            <div className="rounded-2xl p-5" style={{ background: "var(--bg-raised)", border: "1px solid var(--border-card)" }}>
-              <div className="flex items-center gap-2 mb-3">
-                <TrendingUp size={14} style={{ color: "var(--color-accent-raw)" }} />
-                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Projects by year</p>
-              </div>
-              <div style={{ height: 235 }}>
+            <div className="card p-5">
+              <p className="eyebrow mb-3 flex items-center gap-2"><TrendingUp size={13} aria-hidden="true" /> Projects by year</p>
+              <div className="h-[235px]">
                 <OrgChartWrapper projects={org.projects} />
               </div>
             </div>
 
-            {/* Participation Card */}
-            <div id="participation" className="rounded-2xl p-5 scroll-mt-28" style={{ background: "var(--bg-raised)", border: "1px solid var(--border-card)" }}>
-              <div className="flex items-center gap-2 mb-4">
-                <Calendar size={14} style={{ color: "var(--color-accent-raw)" }} />
-                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Participation</p>
-              </div>
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ borderCollapse: "separate", borderSpacing: "5px", fontFamily: "var(--font-mono)", fontSize: "0.65rem", width: "100%" }} aria-label="Participation matrix by year and term">
-                  <thead>
-                    <tr>
-                      <th style={{ color: "var(--text-muted)", textAlign: "left", paddingRight: 8, fontWeight: 500 }}>Year</th>
-                      {allTermNums.map((t) => (
-                        <th key={t} style={{ color: "var(--text-muted)", fontWeight: 500, textAlign: "center", width: 28 }}>T{t}</th>
-                      ))}
+            <div id="participation" className="card scroll-mt-28 p-5">
+              <p className="eyebrow mb-4 flex items-center gap-2"><Calendar size={13} aria-hidden="true" /> Participation</p>
+              <table className="num w-full border-separate border-spacing-1 text-xs" aria-label="Participation by year and term">
+                <thead>
+                  <tr className="text-[var(--text-muted)]">
+                    <th scope="col" className="pr-2 text-left font-medium">Year</th>
+                    {[1, 2, 3].map((t) => <th key={t} scope="col" className="w-8 text-center font-medium">T{t}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {allYears.map((year) => (
+                    <tr key={year}>
+                      <th scope="row" className="pr-3 text-left font-medium text-[var(--text-secondary)]">{year}</th>
+                      {[1, 2, 3].map((termNum) => {
+                        const participated = org.terms.some((t) => { const p = parseTerm(t); return p.year === year && p.termNum === termNum; });
+                        const isLatest = latestParsed?.year === year && latestParsed?.termNum === termNum;
+                        return (
+                          <td key={termNum} className="text-center">
+                            <span
+                              className={cn(
+                                "mx-auto block h-[18px] w-[18px] rounded-[4px] border",
+                                participated
+                                  ? isLatest ? "border-[var(--accent)] bg-[var(--accent)]" : "border-transparent bg-[var(--accent)] opacity-40"
+                                  : "border-[var(--border)] bg-[var(--bg-base)]"
+                              )}
+                              role="img"
+                              aria-label={participated ? `Took part in ${year} Term ${termNum}` : `No project in ${year} Term ${termNum}`}
+                              title={participated ? `Took part in ${year} Term ${termNum}` : `No project in ${year} Term ${termNum}`}
+                            />
+                          </td>
+                        );
+                      })}
                     </tr>
-                  </thead>
-                  <tbody>
-                    {allYears.map((year) => (
-                      <tr key={year}>
-                        <td style={{ color: "var(--text-secondary)", paddingRight: 12, fontWeight: 600, letterSpacing: "0.03em" }}>{year}</td>
-                        {allTermNums.map((termNum) => {
-                          const participated = org.terms.some((t) => { const p = parseTerm(t); return p.year === year && p.termNum === termNum; });
-                          const isLatest = latestTerm && parseTerm(latestTerm).year === year && parseTerm(latestTerm).termNum === termNum;
-                          return (
-                            <td key={termNum} style={{ textAlign: "center" }}>
-                              <div
-                                style={{
-                                  width: 18, height: 18, borderRadius: 3, margin: "0 auto",
-                                  background: participated ? (isLatest ? "var(--color-accent-raw)" : "rgba(79,142,255,0.35)") : "var(--bg-primary)",
-                                  border: `1px solid ${participated ? (isLatest ? "rgba(79,142,255,0.6)" : "rgba(79,142,255,0.25)") : "var(--border-card)"}`,
-                                  boxShadow: isLatest ? "0 0 8px rgba(79,142,255,0.4)" : undefined,
-                                }}
-                                title={participated ? `Participated in ${year} Term ${termNum}` : `No participation in ${year} Term ${termNum}`}
-                                role="img"
-                                aria-label={participated ? `Participated ${year} Term ${termNum}` : `Absent ${year} Term ${termNum}`}
-                              />
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="flex items-center gap-3 mt-3" style={{ fontSize: "0.62rem", color: "var(--text-muted)" }}>
-                  <span className="flex items-center gap-1.5"><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: "var(--color-accent-raw)" }} /> Current</span>
-                  <span className="flex items-center gap-1.5"><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: "rgba(79,142,255,0.35)" }} /> Past</span>
-                  <span className="flex items-center gap-1.5"><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: "var(--bg-primary)", border: "1px solid var(--border-card)" }} /> No projects</span>
-                </div>
-              </div>
+                  ))}
+                </tbody>
+              </table>
+              <p className="mt-3 flex items-center gap-3 text-xs text-[var(--text-muted)]">
+                <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-[3px] bg-[var(--accent)]" aria-hidden="true" /> Latest</span>
+                <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-[3px] bg-[var(--accent)] opacity-40" aria-hidden="true" /> Past</span>
+                <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-[3px] border border-[var(--border)]" aria-hidden="true" /> None</span>
+              </p>
             </div>
-          </aside>
 
+            <p className="px-1 text-xs text-[var(--text-muted)]">
+              Data from{" "}
+              <a href="https://github.com/cncf/mentoring" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[var(--text-primary)]">cncf/mentoring on GitHub</a>.
+              Mentor emails are never shown.
+            </p>
+          </aside>
         </div>
       </div>
-
     </div>
   );
 }

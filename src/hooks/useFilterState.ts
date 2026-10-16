@@ -1,73 +1,80 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { FilterState } from "@/lib/types";
-import { defaultFilterState } from "@/lib/data";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import type { ExplorerFilterState, ProgramConfig } from "@/lib/explorer/types";
+import { emptyFilterState } from "@/lib/explorer/filter";
 
-function parseUrlFilters(): Partial<FilterState> {
-  if (typeof window === "undefined") return {};
+type UrlConfig = Pick<ProgramConfig, "facets" | "quickFilters">;
 
-  const params = new URLSearchParams(window.location.search);
-  const result: Partial<FilterState> = {};
+const QUICK_KEY = "quick";
 
+/** Read filters from the query string. Keys come from each facet's urlKey, so LFX links (q, terms, categories, tech, years) keep working. */
+export function parseUrlFilters(config: UrlConfig, search: string): ExplorerFilterState {
+  const params = new URLSearchParams(search);
+  const state = emptyFilterState(config);
   const q = params.get("q");
-  if (q) result.search = q;
-
-  const terms = params.get("terms");
-  if (terms) result.terms = terms.split(",").filter(Boolean);
-
-  const categories = params.get("categories");
-  if (categories) result.categories = categories.split(",").filter(Boolean);
-
-  const tech = params.get("tech");
-  if (tech) result.technologies = tech.split(",").filter(Boolean);
-
-  const years = params.get("years");
-  if (years) result.years = years.split(",").map(Number).filter((n) => !isNaN(n));
-
-  return result;
+  if (q) state.search = q;
+  for (const def of config.facets) {
+    if (!def.urlKey) continue;
+    const raw = params.get(def.urlKey);
+    if (!raw) continue;
+    let values = raw.split(",").filter(Boolean);
+    if (def.sort === "valueDesc") values = values.filter((v) => !isNaN(Number(v))).map((v) => String(Number(v)));
+    state.facets[def.id] = values;
+  }
+  const quick = params.get(QUICK_KEY);
+  if (quick && config.quickFilters?.length) {
+    const known = new Set(config.quickFilters.map((f) => f.id));
+    state.quickFilters = quick.split(",").filter((id) => known.has(id));
+  }
+  return state;
 }
 
-function syncUrlFilters(filters: FilterState) {
-  if (typeof window === "undefined") return;
-
+export function buildUrlQuery(config: UrlConfig, filters: ExplorerFilterState): string {
   const params = new URLSearchParams();
-
   if (filters.search) params.set("q", filters.search);
-  if (filters.terms.length > 0) params.set("terms", filters.terms.join(","));
-  if (filters.categories.length > 0) params.set("categories", filters.categories.join(","));
-  if (filters.technologies.length > 0) params.set("tech", filters.technologies.join(","));
-  if (filters.years.length > 0) params.set("years", filters.years.join(","));
+  for (const def of config.facets) {
+    if (!def.urlKey) continue;
+    const values = filters.facets[def.id];
+    if (values?.length) params.set(def.urlKey, values.join(","));
+  }
+  if (filters.quickFilters.length) params.set(QUICK_KEY, filters.quickFilters.join(","));
+  return params.toString();
+}
 
-  const str = params.toString();
+function syncUrl(config: UrlConfig, filters: ExplorerFilterState) {
+  if (typeof window === "undefined") return;
+  const str = buildUrlQuery(config, filters);
   const newUrl = str ? `${window.location.pathname}?${str}` : window.location.pathname;
-
   window.history.replaceState(null, "", newUrl);
 }
 
-export function useFilterState() {
-  const [filters, setFiltersInternal] = useState<FilterState>(defaultFilterState);
+export function useFilterState(config: UrlConfig) {
+  const empty = useMemo(() => emptyFilterState(config), [config]);
+  const [filters, setFiltersInternal] = useState<ExplorerFilterState>(empty);
   const [initialized, setInitialized] = useState(false);
 
-  // Initialize from URL on mount
+  // Initialize from URL on mount (after hydration, so server and client markup match).
   useEffect(() => {
     const timer = setTimeout(() => {
-      const urlFilters = parseUrlFilters();
-      setFiltersInternal({ ...defaultFilterState, ...urlFilters });
+      setFiltersInternal(parseUrlFilters(config, window.location.search));
       setInitialized(true);
     }, 0);
     return () => clearTimeout(timer);
-  }, []);
+  }, [config]);
 
-  const setFilters = useCallback((newFilters: FilterState) => {
-    setFiltersInternal(newFilters);
-    syncUrlFilters(newFilters);
-  }, []);
+  const setFilters = useCallback((next: ExplorerFilterState | ((prev: ExplorerFilterState) => ExplorerFilterState)) => {
+    setFiltersInternal((prev) => {
+      const resolved = typeof next === "function" ? next(prev) : next;
+      syncUrl(config, resolved);
+      return resolved;
+    });
+  }, [config]);
 
   const clearFilters = useCallback(() => {
-    setFiltersInternal(defaultFilterState);
-    syncUrlFilters(defaultFilterState);
-  }, []);
+    setFiltersInternal(empty);
+    syncUrl(config, empty);
+  }, [config, empty]);
 
   return { filters, setFilters, clearFilters, initialized };
 }
