@@ -32,6 +32,7 @@ export function makeGsocConfig(currentYear: number): ProgramConfig {
     quickFilters: [
       { id: "new", label: `New this year (${currentYear})`, predicate: (o) => o.years.length === 1 && o.years[0] === currentYear },
       { id: "veteran", label: "Veteran, 5 or more years", predicate: (o) => o.years.length >= 5 },
+      { id: "proposals", label: "Has public proposals", predicate: (o) => (o.proposalCount ?? 0) > 0 },
     ],
     sortOptions: [
       { id: "relevance", label: "Relevance" },

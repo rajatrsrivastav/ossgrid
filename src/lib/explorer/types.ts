@@ -30,6 +30,8 @@ export interface ExplorerOrg {
   badge?: string;
   /** Projects this year, when the program tracks a current cycle. */
   currentYearProjects?: number;
+  /** Public proposals indexed for this org (GSoC). */
+  proposalCount?: number;
 }
 
 export interface FacetOption {

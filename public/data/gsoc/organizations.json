@@ -5642,50 +5642,6 @@
     }
   },
   {
-    "slug": "cuneiform-digital-library-initiative",
-    "name": "Cuneiform Digital Library Initiative",
-    "logoUrl": "https://lh3.googleusercontent.com/9xWQAVg3GoqmGtF-w5hjpo0SAfcu5EIVXE-jMk7vd0wXjp1Bs_JA44pH5fvBmkLV5V8BsUAhvdSqIo33cqXsAE_GfbEPEqSY",
-    "logoBackground": "#000000",
-    "description": "International digital library of artifacts inscribed with cuneiform writing",
-    "website": "https://cdli.ucla.edu",
-    "category": "Data",
-    "topics": [
-      "information retrieval",
-      "linguistics",
-      "machine translation",
-      "natural language processing",
-      "semantic web"
-    ],
-    "technologies": [
-      "mariadb",
-      "nltk",
-      "PHP",
-      "Python",
-      "Semantic web"
-    ],
-    "years": [
-      2018
-    ],
-    "projectsByYear": {
-      "2018": 2
-    },
-    "archiveByYear": {
-      "2018": "https://summerofcode.withgoogle.com/archive/2018/organizations/4794601982394368/"
-    },
-    "projectCount": 2,
-    "firstYear": 2018,
-    "latestYear": 2018,
-    "links": {
-      "ideas": "",
-      "guide": "",
-      "chat": "",
-      "mailingList": "",
-      "blog": "",
-      "twitter": "https://twitter.com/cdli_news",
-      "archive": "https://summerofcode.withgoogle.com/archive/2018/organizations/4794601982394368/"
-    }
-  },
-  {
     "slug": "cuneiform-digital-library-initiative-cdli",
     "name": "Cuneiform Digital Library Initiative (CDLI)",
     "logoUrl": "https://summerofcode.withgoogle.com/media/org/cuneiform-digital-library-initiative-cdli/pcifkvibocfw8hiy.png",
@@ -5706,11 +5662,14 @@
       "data-collection",
       "digitization",
       "history",
+      "information retrieval",
       "linguistics",
       "lod",
+      "machine translation",
       "natural language processing",
       "nlp",
       "science",
+      "semantic web",
       "web portal"
     ],
     "technologies": [
@@ -5721,11 +5680,14 @@
       "HTML",
       "Java",
       "JavaScript",
+      "mariadb",
       "MySQL",
+      "nltk",
       "PHP",
       "Python",
       "scss",
-      "SCSS"
+      "SCSS",
+      "Semantic web"
     ],
     "years": [
       2018,

@@ -6,6 +6,7 @@ import type { MarqueeOrg } from "@/components/landing/LogoMarquee";
 import { safeJsonLd, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { getProgramStats, getCombinedStats } from "@/lib/stats";
 import { orderByNextWindow } from "@/lib/program-windows";
+import { getProposalStats } from "@/lib/proposals-data";
 import { PROGRAMS, livePrograms } from "@/data/programs";
 import type { GsocOrganization, Organization } from "@/lib/types";
 
@@ -62,10 +63,11 @@ export default function HomePage() {
   const { featured, marquee } = getLandingData();
   const ctaOrder = orderByNextWindow(live).map((p) => p.id);
   const buildDate = new Date().toISOString().slice(0, 10);
+  const proposals = getProposalStats();
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(homeJsonLd) }} />
-      <HomePageClient programStats={programStats} combined={combined} featured={featured} marquee={marquee} ctaOrder={ctaOrder} buildDate={buildDate} />
+      <HomePageClient programStats={programStats} combined={combined} featured={featured} marquee={marquee} ctaOrder={ctaOrder} buildDate={buildDate} proposals={proposals} />
     </>
   );
 }

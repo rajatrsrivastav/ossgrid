@@ -177,3 +177,23 @@ export interface GsocYearFile {
   year: number;
   projects: GsocProject[];
 }
+
+// =============================================================================
+// Proposals library — Shipped Data Types
+// =============================================================================
+
+export interface ProposalRecord {
+  id: string;
+  year: number | null;
+  orgName: string;
+  /** GSoC organization slug, "" when the archive's org name did not match. */
+  orgId: string;
+  title: string;
+  author: string;
+  status: "accepted" | "rejected" | "unknown";
+  format: "pdf" | "md" | "docx" | "link";
+  /** Link to the original file. OSSGrid never rehosts proposals. */
+  url: string;
+  sourceRepo: string;
+  license: string;
+}

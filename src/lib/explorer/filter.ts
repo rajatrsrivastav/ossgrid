@@ -5,7 +5,9 @@ export function emptyFilterState(config: Pick<ProgramConfig, "facets">): Explore
   return { search: "", facets: Object.fromEntries(config.facets.map((f) => [f.id, []])), quickFilters: [] };
 }
 
-export function matchesFacets(org: ExplorerOrg, filters: ExplorerFilterState, defs: FacetDefinition[]): boolean {
+type Faceted = Pick<ExplorerOrg, "facets">;
+
+export function matchesFacets(org: Faceted, filters: ExplorerFilterState, defs: FacetDefinition[]): boolean {
   for (const def of defs) {
     const selected = filters.facets[def.id];
     if (!selected || selected.length === 0) continue;
@@ -30,8 +32,8 @@ export function matchesQuickFilters(org: ExplorerOrg, ids: string[], defs: Quick
   return true;
 }
 
-export function filterOrgs(orgs: ExplorerOrg[], filters: ExplorerFilterState, config: Pick<ProgramConfig, "facets" | "quickFilters">): ExplorerOrg[] {
-  return orgs.filter((org) => matchesFacets(org, filters, config.facets) && matchesQuickFilters(org, filters.quickFilters, config.quickFilters));
+export function filterOrgs<T extends Faceted>(orgs: T[], filters: ExplorerFilterState, config: Pick<ProgramConfig, "facets" | "quickFilters">): T[] {
+  return orgs.filter((org) => matchesFacets(org, filters, config.facets) && (!config.quickFilters?.length || matchesQuickFilters(org as unknown as ExplorerOrg, filters.quickFilters, config.quickFilters)));
 }
 
 export function activeFilterCount(filters: ExplorerFilterState): number {
@@ -43,7 +45,7 @@ export function activeFilterCount(filters: ExplorerFilterState): number {
  * from `all` stays listed with a zero count so an active filter can always be deselected. Derived
  * options sort by whole-dataset frequency, then label, so the list does not jitter on click.
  */
-export function facetOptions(def: FacetDefinition, all: ExplorerOrg[], scoped: ExplorerOrg[]): FacetOption[] {
+export function facetOptions(def: FacetDefinition, all: Faceted[], scoped: Faceted[]): FacetOption[] {
   const source = def.countScope === "all" ? all : scoped;
   const counts = new Map<string, number>();
   for (const org of source) for (const v of org.facets[def.id] || []) counts.set(v, (counts.get(v) || 0) + 1);
@@ -63,7 +65,7 @@ export function facetOptions(def: FacetDefinition, all: ExplorerOrg[], scoped: E
   return entries.map(([value, count]) => ({ value, label: label(value), count }));
 }
 
-export function allFacetOptions(config: Pick<ProgramConfig, "facets">, all: ExplorerOrg[], scoped: ExplorerOrg[]): Record<string, FacetOption[]> {
+export function allFacetOptions(config: Pick<ProgramConfig, "facets">, all: Faceted[], scoped: Faceted[]): Record<string, FacetOption[]> {
   return Object.fromEntries(config.facets.map((def) => [def.id, facetOptions(def, all, scoped)]));
 }
 

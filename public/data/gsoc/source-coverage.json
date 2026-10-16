@@ -1088,7 +1088,7 @@
       "Continuous Delivery": 1
     }
   },
-  "orgCount": 525,
+  "orgCount": 524,
   "projectCount": 12451,
   "warnings": [
     "2016: organization \"Berkman Center for Internet and Society\" is missing from organizations.json; record built from 2016.json",
@@ -1099,7 +1099,6 @@
     "2017: organization \"JdeRobot - Universidad Rey Juan Carlos\" is missing from organizations.json; record built from 2017.json",
     "2017: organization \"OSGeo\" is missing from organizations.json; record built from 2017.json",
     "2017: organization \"Software Product Data Exchange (SPDX)\" is missing from organizations.json; record built from 2017.json",
-    "2018: organization \"Cuneiform Digital Library Initiative\" is missing from organizations.json; record built from 2018.json",
     "2019: organization \"shogun.ml\" is missing from organizations.json; record built from 2019.json",
     "2019: organization \"SPDX (Software Product Data Exchange)\" is missing from organizations.json; record built from 2019.json"
   ]

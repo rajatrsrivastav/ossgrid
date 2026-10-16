@@ -14,13 +14,14 @@ export function gsocOrgSize(projectCount: number): "large" | "medium" | "small" 
   return projectCount >= 40 ? "large" : projectCount >= 10 ? "medium" : "small";
 }
 
-export function gsocToExplorerOrg(org: GsocOrganization, currentYear: number): ExplorerOrg {
+export function gsocToExplorerOrg(org: GsocOrganization, currentYear: number, proposalCount = 0): ExplorerOrg {
   const yearlyCounts: Record<number, number> = {};
   for (const [y, n] of Object.entries(org.projectsByYear)) yearlyCounts[Number(y)] = n;
   const links: { label: string; href: string }[] = [];
   if (org.links.ideas) links.push({ label: "Ideas list", href: org.links.ideas });
   if (org.links.guide) links.push({ label: "Contributor guide", href: org.links.guide });
   if (org.links.chat) links.push({ label: "Chat", href: org.links.chat });
+  if (proposalCount > 0) links.push({ label: `${proposalCount} ${proposalCount === 1 ? "proposal" : "proposals"}`, href: `/proposals?orgs=${org.slug}` });
   const isNew = org.firstYear === currentYear;
   return {
     id: org.slug,
@@ -44,6 +45,7 @@ export function gsocToExplorerOrg(org: GsocOrganization, currentYear: number): E
     links,
     badge: isNew ? `New in ${currentYear}` : undefined,
     currentYearProjects: org.projectsByYear[String(currentYear)] ?? 0,
+    proposalCount,
   };
 }
 

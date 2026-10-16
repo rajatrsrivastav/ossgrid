@@ -37,5 +37,12 @@
   "java-pathfinder-team": "java-pathfinder",
   "shogun-ml": "shogun-machine-learning-toolbox",
   "boost-c": "boost-c-libraries",
-  "afl": "aflplusplus"
+  "afl": "aflplusplus",
+  "ccextractor": "ccextractor-development",
+  "catrobat": "international-catrobat-association",
+  "kde": "kde-community",
+  "psf": "python-software-foundation",
+  "ga4gh": "global-alliance-for-genomics-health",
+  "uccross": "center-for-research-in-open-source-software-cross",
+  "cuneiform-digital-library-initiative": "cuneiform-digital-library-initiative-cdli"
 }

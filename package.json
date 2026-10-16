@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test:data": "node --import tsx --test scripts/tests/*.test.ts",
     "sync:data": "node --import tsx scripts/fetch-lfx-data.ts",
-    "audit:data": "node --import tsx scripts/audit-data.ts && node --import tsx scripts/audit-gsoc-data.ts && node --import tsx scripts/audit-programs.ts",
+    "audit:data": "node --import tsx scripts/audit-data.ts && node --import tsx scripts/audit-gsoc-data.ts && node --import tsx scripts/audit-programs.ts && node --import tsx scripts/audit-proposals.ts",
     "check:data": "node --import tsx scripts/fetch-lfx-data.ts --check",
     "check:copy": "node --import tsx scripts/check-copy.ts",
     "typecheck": "tsc --noEmit",
@@ -18,7 +18,9 @@
     "sync:gsoc": "node --import tsx scripts/fetch-gsoc-data.ts",
     "check:gsoc": "node --import tsx scripts/fetch-gsoc-data.ts --check",
     "audit:gsoc": "node --import tsx scripts/audit-gsoc-data.ts",
-    "audit:programs": "node --import tsx scripts/audit-programs.ts"
+    "audit:programs": "node --import tsx scripts/audit-programs.ts",
+    "sync:proposals": "node --import tsx scripts/fetch-proposals.ts",
+    "check:proposals": "node --import tsx scripts/fetch-proposals.ts --check"
   },
   "dependencies": {
     "d3-force": "^3.0.0",

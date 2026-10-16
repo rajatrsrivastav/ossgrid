@@ -113,7 +113,7 @@ export interface BuildInput {
 
 /** Loose key for matching an organization listed under slightly different names across years. */
 export function orgNameKey(name: string): string {
-  return slugify(name)
+  return slugify(name.replace(/\s*\([^)]*\)\s*/g, " "))
     .replace(/\b(?:the|project|foundation|initiative|inc|llc|gmbh|org|com|team|group|lab|labs|software|open-source|opensource)\b/g, "")
     .replace(/-+/g, "-").replace(/^-|-$/g, "");
 }
@@ -128,6 +128,11 @@ export function buildGsocDataset(input: BuildInput) {
   const bySlug = new Set<string>(), byHost = new Map<string, string | null>(), byKey = new Map<string, string | null>();
   const register = (slug: string, name: string, url: string) => {
     bySlug.add(slug);
+    // "Cuneiform Digital Library Initiative (CDLI)" also answers to "CDLI".
+    for (const acronym of name.match(/\(([A-Za-z0-9.+-]{2,12})\)/g) || []) {
+      const k = slugify(acronym);
+      if (k) byKey.set(k, byKey.has(k) && byKey.get(k) !== slug ? null : slug);
+    }
     const host = hostOf(url);
     if (host && !GENERIC_HOSTS.has(host)) byHost.set(host, byHost.has(host) && byHost.get(host) !== slug ? null : slug);
     const key = orgNameKey(name);

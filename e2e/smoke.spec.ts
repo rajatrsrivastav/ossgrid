@@ -141,3 +141,20 @@ test("GSoC organization page renders projects by year and structured data", asyn
   expect(errors).toEqual([]);
   await expect(page).toHaveScreenshot("gsoc-org.png", { fullPage: false });
 });
+
+test("proposals library filters by year and organization from the URL", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/proposals");
+  await settle(page);
+  await expect(page.getByRole("heading", { level: 1, name: /Public GSoC proposals/ })).toBeVisible();
+  const count = page.locator('[aria-live="polite"]').first();
+  await expect(count).toContainText(/proposals?/);
+  const total = Number((await count.textContent())!.match(/\d+/)![0]);
+  expect(total).toBeGreaterThan(100);
+  await page.goto("/proposals?status=accepted&years=2026");
+  await settle(page);
+  await expect.poll(async () => Number((await count.textContent())!.match(/\d+/)![0])).toBeLessThan(total);
+  expect(await page.locator("main, body").first().locator("a[href^='https://github.com/']").count()).toBeGreaterThan(0);
+  expect(errors).toEqual([]);
+});

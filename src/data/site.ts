@@ -1,10 +1,12 @@
 import { livePrograms, type Program } from "./programs";
 
 /** Tool pages that are not programs. `enabled` flips when the route ships. */
-export const TOOL_PAGES = [
-  { id: "proposals", label: "Proposals", href: "/proposals", verb: "Read proposals", enabled: false },
+export interface ToolPage { id: "proposals" | "guide"; label: string; href: string; verb: string; enabled: boolean }
+
+export const TOOL_PAGES: ToolPage[] = [
+  { id: "proposals", label: "Proposals", href: "/proposals", verb: "Read proposals", enabled: true },
   { id: "guide", label: "Playbook", href: "/guide", verb: "Read the playbook", enabled: false },
-] as const;
+];
 
 export const enabledTools = () => TOOL_PAGES.filter((t) => t.enabled);
 

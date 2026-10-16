@@ -43,9 +43,11 @@ interface HomePageClientProps {
   /** Program ids in CTA order (nearest application window first). */
   ctaOrder: ProgramId[];
   buildDate: string;
+  proposals: { count: number; orgCount: number; repos: number };
 }
 
-export default function HomePageClient({ programStats, combined, featured, marquee, ctaOrder, buildDate }: HomePageClientProps) {
+export default function HomePageClient({ programStats, combined, featured, marquee, ctaOrder, buildDate, proposals }: HomePageClientProps) {
+  const nf = new Intl.NumberFormat("en-US");
   return (
     <>
       <Header variant="simple" />
@@ -53,9 +55,9 @@ export default function HomePageClient({ programStats, combined, featured, marqu
         <LandingHero combined={combined} featured={featured} ctaOrder={ctaOrder} />
         <LogoMarquee orgs={marquee} />
         <Programs programStats={programStats} />
-        <DashboardsStrip programStats={programStats} />
+        <DashboardsStrip programStats={programStats} extraTiles={[{ href: "/proposals", title: "Proposals library", count: `${nf.format(proposals.count)} proposals · ${proposals.orgCount} orgs`, verb: "Read proposals" }]} />
         <HowItWorks combined={combined} />
-        <StatsStrip programStats={programStats} buildDate={buildDate} />
+        <StatsStrip programStats={programStats} buildDate={buildDate} extraGroups={[{ id: "proposals", title: "Proposals library", columns: [{ value: proposals.count, label: "Proposals" }, { value: proposals.orgCount, label: "Organizations covered" }, { value: proposals.repos, label: "Archives" }] }]} />
         <FirstTimerGuide latestYear={combined.yearMax} />
         <FirstTimerFAQ />
       </main>

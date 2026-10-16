@@ -3854,8 +3854,8 @@
       "missingFields": []
     },
     {
-      "id": "cuneiform-digital-library-initiative-2018-towards-building-the-first-semantic-role-labeling-system-for",
-      "orgSlug": "cuneiform-digital-library-initiative",
+      "id": "cuneiform-digital-library-initiative-cdli-2018-towards-building-the-first-semantic-role-labeling-system-for",
+      "orgSlug": "cuneiform-digital-library-initiative-cdli",
       "year": 2018,
       "title": "Towards building the first Semantic Role Labeling system for Sumerian",
       "summary": "Semantic role labeling (SRL) is a task in Natural Language Processing which helps in detecting the semantic arguments of the predicate/s of a...",
@@ -3872,8 +3872,8 @@
       "missingFields": []
     },
     {
-      "id": "cuneiform-digital-library-initiative-2018-granular-temporal-data-management",
-      "orgSlug": "cuneiform-digital-library-initiative",
+      "id": "cuneiform-digital-library-initiative-cdli-2018-granular-temporal-data-management",
+      "orgSlug": "cuneiform-digital-library-initiative-cdli",
       "year": 2018,
       "title": "Granular Temporal Data Management",
       "summary": "The Cuneiform Digital Library Initiative (CDLI) aims to collect, maintain and make available images, text, and metadata of all artifacts inscribed...",

@@ -26,6 +26,7 @@ interface GsocClientProps {
 export default function GsocClient({ stats }: GsocClientProps) {
   const [dtos, setDtos] = useState<GsocOrganization[]>([]);
   const [prebuilt, setPrebuilt] = useState<unknown>(undefined);
+  const [proposalCounts, setProposalCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [aboutOpen, setAboutOpen] = useState(false);
 
@@ -34,11 +35,13 @@ export default function GsocClient({ stats }: GsocClientProps) {
     Promise.all([
       fetch("/data/gsoc/organizations.json").then((r) => r.json()),
       fetch("/data/gsoc/search-index.json").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+      fetch("/data/proposals/by-org.json").then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
     ])
-      .then(([orgs, index]: [GsocOrganization[], unknown]) => {
+      .then(([orgs, index, counts]: [GsocOrganization[], unknown, Record<string, number>]) => {
         if (cancelled) return;
         setDtos(orgs);
         setPrebuilt(index);
+        setProposalCounts(counts || {});
         setLoading(false);
       })
       .catch(() => { if (!cancelled) setLoading(false); });
@@ -47,7 +50,7 @@ export default function GsocClient({ stats }: GsocClientProps) {
 
   const currentYear = useMemo(() => (dtos.length ? gsocCurrentYear(dtos) : stats.yearMax), [dtos, stats.yearMax]);
   const config = useMemo(() => makeGsocConfig(currentYear), [currentYear]);
-  const organizations = useMemo(() => dtos.map((o) => gsocToExplorerOrg(o, currentYear)), [dtos, currentYear]);
+  const organizations = useMemo(() => dtos.map((o) => gsocToExplorerOrg(o, currentYear, proposalCounts[o.slug] ?? 0)), [dtos, currentYear, proposalCounts]);
   const searchIndex = useMemo<Fuse<ExplorerOrg> | null>(() => {
     if (!organizations.length) return null;
     return prebuilt ? createExplorerIndexFromPrebuilt(organizations, config.searchKeys, prebuilt) : createExplorerIndex(organizations, config.searchKeys);

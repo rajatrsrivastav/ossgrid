@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { safeJsonLd } from "@/lib/seo";
 import { gsocCalendar } from "@/data/programs";
 import { getGsocOrganizations, getGsocOrgProjects } from "@/lib/gsoc-data";
+import { getProposals } from "@/lib/proposals-data";
 
 // ─── SSG ─────────────────────────────────────────────────────────────────────
 
@@ -130,6 +131,7 @@ export default async function GsocOrganizationPage({ params }: { params: Promise
   if (!org) notFound();
 
   const byYear = getGsocOrgProjects(org.slug);
+  const proposals = getProposals().filter((p) => p.orgId === org.slug);
   const currentYear = allOrgs.reduce((m, o) => Math.max(m, o.latestYear), 0);
   const activeThisYear = org.latestYear === currentYear;
   const allYears: number[] = [];
@@ -283,6 +285,28 @@ export default async function GsocOrganizationPage({ params }: { params: Promise
                 </div>
               )}
             </section>
+
+            {proposals.length > 0 && (
+              <section id="proposals" aria-labelledby="proposals-heading" className="scroll-mt-28">
+                <SectionTitle icon={Lightbulb} count={proposals.length}><span id="proposals-heading">Public proposals</span></SectionTitle>
+                <ul className="space-y-2">
+                  {proposals.slice(0, 12).map((p) => (
+                    <li key={p.id}>
+                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="card card-interactive flex items-center justify-between gap-3 px-4 py-3">
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-semibold text-[var(--text-primary)]">{p.title}</span>
+                          <span className="num block text-xs text-[var(--text-muted)]">{p.year ?? "Year not recorded"}{p.author ? ` · ${p.author}` : ""} · {p.status === "accepted" ? "Accepted" : p.status === "rejected" ? "Rejected" : "Status not recorded"} · from {p.sourceRepo}</span>
+                        </span>
+                        <ExternalLink size={13} className="shrink-0 text-[var(--text-muted)]" aria-hidden="true" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-3 text-xs text-[var(--text-muted)]">
+                  {proposals.length > 12 ? `Showing 12 of ${proposals.length}. ` : ""}Read them for structure, not to copy. <Link href={`/proposals?orgs=${org.slug}`} className="underline underline-offset-4 hover:text-[var(--text-primary)]">All proposals for {org.name}</Link>.
+                </p>
+              </section>
+            )}
 
             {related.length > 0 && (
               <section id="related" aria-labelledby="related-heading">
