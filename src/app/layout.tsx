@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     template: "%s | OSSGrid",
   },
   description:
-    "A free index of open-source mentorship programs. Browse LFX Mentorship organizations and projects by technology, year and mentor. GSoC is next.",
+    "A free index of open-source mentorship programs. Browse LFX Mentorship and Google Summer of Code organizations by technology, year and project history.",
   keywords: [
     "OSSGrid",
     "LFX Mentorship",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     siteName: "OSSGrid",
     title: "OSSGrid — Open Source Mentorship & Ecosystem Explorer",
     description:
-      "A free index of open-source mentorship programs. Browse LFX Mentorship organizations and projects by technology, year and mentor. GSoC is next.",
+      "A free index of open-source mentorship programs. Browse LFX Mentorship and Google Summer of Code organizations by technology, year and project history.",
     images: [
       {
         url: "/og-image.jpg",
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "OSSGrid — Open Source Mentorship & Ecosystem Explorer",
     description:
-      "A free index of open-source mentorship programs. Browse LFX Mentorship organizations and projects by technology, year and mentor. GSoC is next.",
+      "A free index of open-source mentorship programs. Browse LFX Mentorship and Google Summer of Code organizations by technology, year and project history.",
     images: ["/og-image.jpg"],
   },
   robots: {

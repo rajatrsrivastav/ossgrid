@@ -87,7 +87,7 @@ export const lfxConfig: ProgramConfig = {
     { name: "description", weight: 0.8 },
     { name: "category", weight: 0.5 },
   ],
-  attribution: { text: "Data from", linkLabel: "cncf/mentoring on GitHub", href: "https://github.com/cncf/mentoring", suffix: ". OSSGrid is a community index, not an official LFX site." },
+  attribution: { text: "Data from", links: [{ label: "cncf/mentoring on GitHub", href: "https://github.com/cncf/mentoring" }], suffix: ". OSSGrid is a community index, not an official LFX site." },
   emptyState: (filters) => {
     const tech = filters.facets.technologies || [];
     const years = filters.facets.years || [];

@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, ExternalLink } from "lucide-react";
-import { motion } from "framer-motion";
 import type { ExplorerOrg } from "@/lib/explorer/types";
 import { truncate, sanitizeDescription, cn } from "@/lib/utils";
 
@@ -14,8 +13,8 @@ interface OrganizationCardProps {
   years?: number[];
   /** CSS variable holding the program colour. */
   accentVar?: string;
-  /** Animate enter/exit with framer-motion. Off for large, windowed lists. */
-  animate?: boolean;
+  /** Root element. ExplorerShell passes a framer-motion article when the program animates cards. */
+  Root?: React.ComponentType<{ className?: string; style?: React.CSSProperties; children?: React.ReactNode }>;
   /** Label for the per-year counts, e.g. "project". */
   unit?: string;
   isSelected?: boolean;
@@ -41,15 +40,7 @@ function getListingTechnologies(technologies: string[], maxCount: number) {
   return { visible, extraCount: Math.max(technologies.length - visible.length, 0) };
 }
 
-const motionProps = {
-  layout: true,
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-  transition: { duration: 0.18, ease: "easeOut" as const },
-};
-
-export default function OrganizationCard({ org, years, accentVar = "--program-lfx", animate = true, unit = "project", isSelected = false }: OrganizationCardProps) {
+export default function OrganizationCard({ org, years, accentVar = "--program-lfx", Root = "article" as unknown as NonNullable<OrganizationCardProps["Root"]>, unit = "project", isSelected = false }: OrganizationCardProps) {
   const [imgError, setImgError] = useState(false);
   const showFallback = !org.logoUrl || imgError;
 
@@ -184,16 +175,9 @@ export default function OrganizationCard({ org, years, accentVar = "--program-lf
     </>
   );
 
-  if (!animate) {
-    return (
-      <article className={className} style={style}>
-        {body}
-      </article>
-    );
-  }
   return (
-    <motion.article {...motionProps} className={className} style={style}>
+    <Root className={className} style={style}>
       {body}
-    </motion.article>
+    </Root>
   );
 }

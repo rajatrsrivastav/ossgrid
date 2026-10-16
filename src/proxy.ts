@@ -26,7 +26,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Validate organization slugs
-  if (request.nextUrl.pathname.startsWith("/organization/")) {
+  if (request.nextUrl.pathname.startsWith("/organization/") || /^\/gsoc\/[^/]+/.test(request.nextUrl.pathname)) {
     const slug = request.nextUrl.pathname.split("/").pop() || "";
 
     if (slug.length > 100) {
@@ -44,5 +44,6 @@ export const config = {
   matcher: [
     "/api/:path*",
     "/organization/:path*",
+    "/gsoc/:slug+",
   ],
 };

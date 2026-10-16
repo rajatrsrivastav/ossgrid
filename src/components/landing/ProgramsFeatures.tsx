@@ -13,7 +13,7 @@ export function Programs() {
       <SectionHeading
         eyebrow="Programs"
         title="Two programs, one place to prepare."
-        description="LFX is fully indexed today. GSoC organizations and past proposals are being added next."
+        description="LFX Mentorship and Google Summer of Code are both indexed: every organization, every year, with the projects they ran."
       />
 
       <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">

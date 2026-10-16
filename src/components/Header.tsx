@@ -131,7 +131,7 @@ export default function Header({
         {/* Explorer search (mobile): always visible, no menu needed */}
         {isExplorer && onSearchChange && (
           <div className="border-t border-[var(--border)] px-4 py-2 sm:hidden">
-            <SearchBar value={searchQuery} onChange={onSearchChange} compact />
+            <SearchBar value={searchQuery} onChange={onSearchChange} compact placeholder={searchPlaceholder} ariaLabel={searchAriaLabel} />
           </div>
         )}
 

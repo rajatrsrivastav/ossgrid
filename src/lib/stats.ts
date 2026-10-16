@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import type { Organization } from "./types";
+import type { GsocOrganization, Organization } from "./types";
 
 /**
  * Site-wide counts derived from the built JSON. Server-only (uses fs).
@@ -50,4 +50,30 @@ export function getSiteStats(): SiteStats {
     projectLabel: roundedPlus(projectCount),
   };
   return cached;
+}
+
+export interface GsocSiteStats {
+  orgCount: number;
+  projectCount: number;
+  yearMin: number;
+  yearMax: number;
+  orgLabel: string;
+  projectLabel: string;
+}
+
+let gsocCached: GsocSiteStats | null = null;
+
+/** Counts for /gsoc from public/data/gsoc/organizations.json. Server-only. */
+export function getGsocStats(): GsocSiteStats {
+  if (gsocCached) return gsocCached;
+  const filePath = path.join(process.cwd(), "public", "data", "gsoc", "organizations.json");
+  const orgs: GsocOrganization[] = JSON.parse(fs.readFileSync(filePath, "utf8"));
+  let projectCount = 0, yearMin = 9999, yearMax = 0;
+  for (const org of orgs) {
+    projectCount += org.projectCount;
+    yearMin = Math.min(yearMin, org.firstYear);
+    yearMax = Math.max(yearMax, org.latestYear);
+  }
+  gsocCached = { orgCount: orgs.length, projectCount, yearMin, yearMax, orgLabel: roundedPlus(orgs.length), projectLabel: roundedPlus(projectCount) };
+  return gsocCached;
 }

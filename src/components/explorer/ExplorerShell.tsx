@@ -3,8 +3,8 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { SearchX, ArrowUpRight } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
 import type Fuse from "fuse.js";
 import type { ExplorerFilterState, ExplorerOrg, ProgramConfig } from "@/lib/explorer/types";
 import { activeFilterCount, allFacetOptions, createExplorerIndex, defaultEmptyState, filterOrgs, searchOrgs } from "@/lib/explorer/filter";
@@ -15,6 +15,9 @@ import ExplorerToolbar, { type ViewMode } from "@/components/explorer/ExplorerTo
 import WindowedGrid from "@/components/explorer/WindowedGrid";
 import OrganizationCard from "@/components/OrganizationCard";
 import CommandPalette from "@/components/CommandPalette";
+import type { CardRoot } from "@/components/explorer/AnimatedCardGrid";
+
+const AnimatedCardGrid = dynamic(() => import("@/components/explorer/AnimatedCardGrid"));
 
 export function SkeletonCard() {
   return (
@@ -150,8 +153,8 @@ export default function ExplorerShell({ config, organizations, loading, intro, o
     />
   );
 
-  const renderCard = (org: ExplorerOrg) => (
-    <OrganizationCard key={org.id} org={org} years={plotYears} accentVar={config.accentVar} animate={config.animateCards && !windowed} unit={unit} />
+  const renderCard = (org: ExplorerOrg, Root?: CardRoot) => (
+    <OrganizationCard key={org.id} org={org} years={plotYears} accentVar={config.accentVar} Root={Root} unit={unit} />
   );
 
   return (
@@ -212,15 +215,13 @@ export default function ExplorerShell({ config, organizations, loading, intro, o
                 </div>
               ) : viewMode === "grid" ? (
                 windowed ? (
-                  <WindowedGrid items={filteredOrgs} renderItem={renderCard} />
+                  <WindowedGrid items={filteredOrgs} renderItem={(org) => renderCard(org)} />
                 ) : (
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                     {config.animateCards ? (
-                      <AnimatePresence mode="popLayout" initial={false}>
-                        {filteredOrgs.map(renderCard)}
-                      </AnimatePresence>
+                      <AnimatedCardGrid items={filteredOrgs} renderCard={renderCard} />
                     ) : (
-                      filteredOrgs.map(renderCard)
+                      filteredOrgs.map((org) => renderCard(org))
                     )}
                   </div>
                 )
@@ -255,9 +256,14 @@ export default function ExplorerShell({ config, organizations, loading, intro, o
 
               <p className="mt-8 text-center text-xs text-[var(--text-muted)]">
                 {config.attribution.text}{" "}
-                <a href={config.attribution.href} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[var(--text-primary)]">
-                  {config.attribution.linkLabel}
-                </a>
+                {config.attribution.links.map((l, i) => (
+                  <span key={l.href}>
+                    {i > 0 && " and "}
+                    <a href={l.href} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[var(--text-primary)]">
+                      {l.label}
+                    </a>
+                  </span>
+                ))}
                 {config.attribution.suffix}
               </p>
             </div>

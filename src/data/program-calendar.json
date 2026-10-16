@@ -7,14 +7,42 @@
     "docsUrl": "https://docs.linuxfoundation.org/lfx/mentorship",
     "sourceUrl": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship",
     "lastVerified": "2026-10-17",
-    "stipend": { "minUsd": 1000, "maxUsd": 6600, "note": "Depends on country of residence (purchasing power parity)." },
+    "stipend": {
+      "minUsd": 1000,
+      "maxUsd": 6600,
+      "note": "Depends on country of residence (purchasing power parity)."
+    },
     "eligibility": "Anyone 18 or older who is not employed by the mentoring organization.",
     "applicationsPerTerm": 3,
-    "durationWeeks": { "fullTime": 12, "partTime": 24 },
+    "durationWeeks": {
+      "fullTime": 12,
+      "partTime": 24
+    },
     "terms": [
-      { "id": "2026-t2", "label": "2026 Term 2", "season": "Summer", "start": "2026-06-01", "end": "2026-08-31", "status": "concluded" },
-      { "id": "2026-t3", "label": "2026 Term 3", "season": "Fall", "start": "2026-09-01", "end": "2026-11-30", "status": "concluded" },
-      { "id": "2027-t1", "label": "2027 Term 1", "season": "Spring", "start": "2027-03-01", "end": "2027-05-31", "status": "upcoming" }
+      {
+        "id": "2026-t2",
+        "label": "2026 Term 2",
+        "season": "Summer",
+        "start": "2026-06-01",
+        "end": "2026-08-31",
+        "status": "concluded"
+      },
+      {
+        "id": "2026-t3",
+        "label": "2026 Term 3",
+        "season": "Fall",
+        "start": "2026-09-01",
+        "end": "2026-11-30",
+        "status": "concluded"
+      },
+      {
+        "id": "2027-t1",
+        "label": "2027 Term 1",
+        "season": "Spring",
+        "start": "2027-03-01",
+        "end": "2027-05-31",
+        "status": "upcoming"
+      }
     ]
   },
   "gsoc": {
@@ -22,10 +50,62 @@
     "sponsor": "Google",
     "portalUrl": "https://summerofcode.withgoogle.com",
     "timelineUrl": "https://developers.google.com/open-source/gsoc/timeline",
-    "sourceUrl": "https://developers.google.com/open-source/gsoc/help/student-stipends",
+    "sourceUrl": "https://github.com/cncf/mentoring/tree/main/programs/summerofcode",
     "lastVerified": "2026-10-17",
-    "stipend": { "minUsd": 750, "maxUsd": 6600, "note": "Scaled by project size (~90, ~175 or ~350 hours) and country." },
+    "stipend": {
+      "minUsd": 750,
+      "maxUsd": 6600,
+      "note": "Scaled by project size (~90, ~175 or ~350 hours) and country."
+    },
     "eligibility": "Open to new and beginner contributors aged 18 or older.",
-    "status": "coming-soon"
+    "status": "live",
+    "stipendUrl": "https://developers.google.com/open-source/gsoc/help/student-stipends",
+    "durationWeeks": {
+      "standard": 12,
+      "extended": 22
+    },
+    "projectSizes": [
+      {
+        "id": "small",
+        "label": "Small",
+        "hours": 90
+      },
+      {
+        "id": "medium",
+        "label": "Medium",
+        "hours": 175
+      },
+      {
+        "id": "large",
+        "label": "Large",
+        "hours": 350
+      }
+    ],
+    "phases": [
+      {
+        "id": "orgs",
+        "label": "Organizations apply",
+        "when": "January",
+        "note": "Mentoring organizations send their application to Google."
+      },
+      {
+        "id": "announce",
+        "label": "Organizations announced",
+        "when": "February",
+        "note": "Accepted orgs publish ideas lists. Start reading them now."
+      },
+      {
+        "id": "apply",
+        "label": "Contributors apply",
+        "when": "March to April",
+        "note": "Write a proposal with the org, then submit it on the GSoC site."
+      },
+      {
+        "id": "code",
+        "label": "Coding period",
+        "when": "May to August",
+        "note": "12 weeks by default, up to 22 for extended projects."
+      }
+    ]
   }
 }

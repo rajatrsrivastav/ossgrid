@@ -52,7 +52,8 @@ export default function WindowedGrid({ items, renderItem, overscan = 2 }: Window
       const viewTop = window.scrollY - top;
       const viewBottom = viewTop + window.innerHeight;
       const start = Math.max(0, Math.floor(viewTop / stride) - overscan);
-      const end = Math.min(rowCount, Math.ceil(viewBottom / stride) + overscan);
+      // Always keep a few rows mounted even while the grid sits below the fold.
+      const end = Math.min(rowCount, Math.max(Math.ceil(viewBottom / stride) + overscan, start + 4));
       setRange((r) => (r.start === start && r.end === end ? r : { start, end }));
     };
     const onScroll = () => { if (!frame) frame = requestAnimationFrame(compute); };

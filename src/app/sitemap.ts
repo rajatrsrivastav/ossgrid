@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import fs from "fs";
 import path from "path";
-import { Organization } from "@/lib/types";
+import { GsocOrganization, Organization } from "@/lib/types";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.ossgrid.tech";
@@ -13,6 +13,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   const organizations: Organization[] = JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const gsocPath = path.join(process.cwd(), "public", "data", "gsoc", "organizations.json");
+  const gsocOrgs: GsocOrganization[] = fs.existsSync(gsocPath) ? JSON.parse(fs.readFileSync(gsocPath, "utf8")) : [];
 
   const routes: MetadataRoute.Sitemap = [
     {
@@ -27,11 +29,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/gsoc`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
     ...organizations.map((org) => ({
       url: `${baseUrl}/organization/${org.id}`,
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.8,
+    })),
+    ...gsocOrgs.map((org) => ({
+      url: `${baseUrl}/gsoc/${org.slug}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
     })),
   ];
 

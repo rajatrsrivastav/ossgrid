@@ -115,8 +115,8 @@ export interface ProgramConfig {
   searchAriaLabel: string;
   /** Fuse keys and weights over ExplorerOrg. */
   searchKeys: { name: string; weight: number }[];
-  /** Attribution line under the grid. */
-  attribution: { text: string; linkLabel: string; href: string; suffix: string };
+  /** Attribution line under the grid: text, then links joined by " and ", then suffix. */
+  attribution: { text: string; links: { label: string; href: string }[]; suffix: string };
   /** Sentences for the empty state: what did not match, and one line of advice. */
   emptyState?: (filters: ExplorerFilterState, defs: FacetDefinition[]) => { hint: string; advice: string };
   /** Delay between typing and filtering, in ms. 0 filters on every keystroke. */
