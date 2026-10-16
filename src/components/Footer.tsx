@@ -2,7 +2,15 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Eye } from "lucide-react";
+
+const contributors = [
+  { handle: "rajatrsrivastav", name: "Rajat Srivastav" },
+  { handle: "anand24mishra", name: "Anand Mishra" },
+  { handle: "mitul-bhatia", name: "Mitul Bhatia" },
+  { handle: "OmvedNagre", name: "Omved Nagre" },
+];
 
 export default function Footer() {
   const [views, setViews] = useState<number | null>(null);
@@ -10,12 +18,16 @@ export default function Footer() {
   const fetchedRef = useRef(false);
 
   useEffect(() => {
-    // React Strict Mode / HMR guard — only run once per mount
     if (fetchedRef.current) return;
     fetchedRef.current = true;
 
     const SESSION_KEY = "ossgrid_visited";
-    const isNewSession = !sessionStorage.getItem(SESSION_KEY);
+    let isNewSession = true;
+    try {
+      isNewSession = !sessionStorage.getItem(SESSION_KEY);
+    } catch {
+      /* storage unavailable */
+    }
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
 
@@ -28,13 +40,17 @@ export default function Footer() {
       .then((res) => {
         clearTimeout(timeout);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json() as Promise<{ views?: number; error?: string }>;
+        return res.json() as Promise<{ views?: number }>;
       })
       .then((data) => {
         if (typeof data.views === "number") {
           setViews(data.views);
           if (isNewSession) {
-            sessionStorage.setItem(SESSION_KEY, "1");
+            try {
+              sessionStorage.setItem(SESSION_KEY, "1");
+            } catch {
+              /* ignore */
+            }
           }
         } else {
           setHasError(true);
@@ -47,84 +63,78 @@ export default function Footer() {
   }, []);
 
   const viewsDisplay =
-    views !== null
-      ? `${views.toLocaleString()} views`
-      : hasError
-      ? "Views unavailable"
-      : "… views";
+    views !== null ? `${views.toLocaleString()} views` : hasError ? "Views unavailable" : "… views";
 
   return (
-    <footer className="w-full border-t border-[var(--border-card)] bg-[var(--bg-primary)] py-8 mt-auto relative z-10">
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-10 flex flex-col items-center justify-center gap-4">
-        <nav aria-label="Footer Navigation" className="flex flex-wrap items-center justify-center gap-6 text-xs text-[var(--text-muted)]">
-          <Link href="/" className="hover:text-[var(--text-primary)] transition-colors">
-            Home
-          </Link>
-          <Link href="/lfx" className="hover:text-[var(--text-primary)] transition-colors">
-            LFX Explorer
-          </Link>
-          <a
-            href="https://github.com/rajatrsrivastav/ossgrid"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[var(--text-primary)] transition-colors"
-          >
-            GitHub Repository
-          </a>
+    <footer className="relative z-10 mt-auto w-full border-t border-[var(--border)] bg-[var(--bg-base)]">
+      <div className="mx-auto grid w-full max-w-[1440px] gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
+        <div className="max-w-sm">
+          <p className="text-sm font-semibold text-[var(--text-primary)]">OSSGrid</p>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
+            A free, community-built index of open-source mentorship programs. No login, no tracking of you, just the data.
+          </p>
+          <p className="mt-4 text-xs text-[var(--text-muted)]">
+            LFX data from{" "}
+            <a
+              href="https://github.com/cncf/mentoring"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4 hover:text-[var(--text-primary)]"
+            >
+              cncf/mentoring on GitHub
+            </a>
+            . LFX, Linux Foundation, CNCF, GSoC and Google are trademarks of their owners. OSSGrid is not affiliated with them.
+          </p>
+        </div>
+
+        <nav aria-label="Footer" className="text-sm">
+          <p className="eyebrow mb-3">Site</p>
+          <ul className="flex flex-col gap-2">
+            <li><Link href="/" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Home</Link></li>
+            <li><Link href="/lfx" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">LFX organizations</Link></li>
+            <li><Link href="/#playbook" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Contributor playbook</Link></li>
+            <li>
+              <a href="https://github.com/rajatrsrivastav/ossgrid" target="_blank" rel="noopener noreferrer" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+                Source on GitHub
+              </a>
+            </li>
+          </ul>
         </nav>
-        <p className="text-sm font-medium text-[var(--text-secondary)] flex flex-wrap items-center justify-center gap-1.5 text-center">
-          Made with <span className="text-red-500 mx-0.5 text-xs">❤️</span> by{" "}
-          <a
-            href="https://x.com/rajatrsrivastav"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[var(--text-primary)] hover:underline decoration-1 underline-offset-4 transition-colors"
-          >
-            Rajat Srivastav
-          </a>{" "}
-          for oss communities
-          <span className="hidden sm:inline-block mx-1.5 text-[var(--border-hover)]">
-            &middot;
-          </span>
-          <span className="flex items-center gap-1.5 text-[var(--text-muted)] text-xs sm:text-sm mt-1 sm:mt-0 font-mono">
-            <Eye size={13} className="opacity-70" />
+
+        <div className="text-sm">
+          <p className="eyebrow mb-3">Built by</p>
+          <ul className="flex flex-col gap-2.5">
+            {contributors.map((c) => (
+              <li key={c.handle}>
+                <a
+                  href={`https://github.com/${c.handle}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                >
+                  <Image
+                    src={`https://github.com/${c.handle}.png?size=48`}
+                    alt=""
+                    width={24}
+                    height={24}
+                    unoptimized
+                    className="h-6 w-6 rounded-full border border-[var(--border)]"
+                  />
+                  {c.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="border-t border-[var(--border)]">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center justify-between gap-3 px-4 py-4 text-xs text-[var(--text-muted)] sm:px-6 lg:px-8">
+          <span>Made for open-source communities.</span>
+          <span className="num inline-flex items-center gap-1.5">
+            <Eye size={13} aria-hidden="true" />
             {viewsDisplay}
           </span>
-        </p>
-
-        <div className="relative group flex justify-center">
-          <p className="text-sm text-[var(--text-muted)] cursor-help flex items-center gap-1.5 transition-colors group-hover:text-[var(--text-primary)]">
-            OSSGrid Contributors <span className="opacity-50 text-xs">✦</span>
-          </p>
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 pointer-events-none group-hover:pointer-events-auto transition-all duration-200 z-50">
-            <div className="bg-[var(--bg-card)] border border-[var(--border-card)] shadow-2xl rounded-xl p-4 w-max flex flex-col gap-3">
-              <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Contributors</span>
-              <a href="https://github.com/rajatrsrivastav" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[var(--text-primary)] hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] overflow-hidden border border-[var(--border-input)]">
-                  <img src="https://github.com/rajatrsrivastav.png?size=48" alt="Rajat Srivastav" className="w-full h-full object-cover" />
-                </div>
-                Rajat Srivastav
-              </a>
-              <a href="https://github.com/anand24mishra" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[var(--text-primary)] hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] overflow-hidden border border-[var(--border-input)]">
-                  <img src="https://github.com/anand24mishra.png?size=48" alt="Anand Mishra" className="w-full h-full object-cover" />
-                </div>
-                Anand Mishra
-              </a>
-              <a href="https://github.com/mitul-bhatia" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[var(--text-primary)] hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] overflow-hidden border border-[var(--border-input)]">
-                  <img src="https://github.com/mitul-bhatia.png?size=48" alt="Mitul Bhatia" className="w-full h-full object-cover" />
-                </div>
-                Mitul Bhatia
-              </a>
-              <a href="https://github.com/OmvedNagre" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[var(--text-primary)] hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] overflow-hidden border border-[var(--border-input)]">
-                  <img src="https://github.com/OmvedNagre.png?size=48" alt="Omved Nagre" className="w-full h-full object-cover" />
-                </div>
-                Omved Nagre
-              </a>
-            </div>
-          </div>
         </div>
       </div>
     </footer>

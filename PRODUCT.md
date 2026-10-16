@@ -8,49 +8,52 @@ web
 
 ## Users
 
-Developers and students exploring the LFX Mentorship program ecosystem. Primary job: discover organizations to apply to, evaluate their technology stacks, and find projects that match their skills. Secondary audience: open-source community members tracking program growth over time. Used on desktop primarily; mobile access for quick checks.
+Students and early-career developers preparing for open-source mentorship programs, first LFX Mentorship and next Google Summer of Code. Primary job: find organizations whose stack they already know, read what those orgs have run before, and learn how selection works. Secondary audience: mentors and community members tracking program history. Used mostly on laptops, with phones for quick checks.
 
 ## Product Purpose
 
-A fast, no-login-required explorer for LFX Mentorship organizations and projects. Users search, filter, and browse 80+ organizations and 560+ projects across 11 terms (2022–present) sourced from cncf/mentoring on GitHub. Success = a user finds a relevant organization or project to apply to in under 60 seconds.
+OSSGrid is a free, no-login, fully static index of mentorship programs. Today it covers every LFX Mentorship organization and project in `cncf/mentoring`, searchable by name, project, technology and mentor, with URL-synced filters and a detail page per organization. Success: a visitor shortlists two or three organizations in under a minute and leaves knowing what to do before applying.
 
 ## Positioning
 
-The only purpose-built visual explorer for the LFX Mentorship ecosystem. Unlike the official LFX portal, it surfaces historical data (all terms, not just the current one), technology-based filtering, and a shareable URL state — all with no login requirement.
+The one place to prepare for GSoC and LFX. Unlike the official portals, OSSGrid shows history across every term, filters by technology, and explains the selection process in plain words. It never takes applications and never claims to be official.
 
 ## Operating Context
 
-Used at a desk or laptop, often alongside a browser tab to the official LFX portal or a GitHub repository. Users are technically fluent (developers, students in CS/engineering). Search is the primary action; sidebar filters are used for narrowing results; org detail pages are used for final evaluation before applying.
+Used next to the official portal, a project's GitHub repo and its community chat. Visitors are technically fluent but new to the programs. Search is the primary action; sidebar filters narrow; the organization page is where they decide.
 
 ## Capabilities and Constraints
 
-- 100% static: all data is pre-built JSON in /public/data/; no server-side data fetching at runtime.
-- Data auto-synced daily from cncf/mentoring via GitHub Actions.
-- No authentication, no user accounts, no user-generated content.
-- Theme: dark-first with full light-mode support via next-themes.
-- Performance budget: search → click → detail under 2 seconds including any new animations.
+- 100% static: all data is pre-built JSON in `public/data/`; no runtime server fetches, no database server, no auth.
+- Data is regenerated from pinned upstream commits by GitHub Actions and lands through pull requests, never direct pushes.
+- Facts that change (stipends, term dates, eligibility) live in `src/data/program-calendar.json` with a source URL and a last-verified date. Counts are derived from the JSON at build time.
+- Dark-first with full light mode via `next-themes`.
+- Performance budget: search → click → detail under 2 seconds.
 
 ## Brand Commitments
 
-- Name: "LFX Organizations" (product name), "OSSGrid" (repo name)
-- Logo: node-cluster SVG mark (grid/node motif established in v2 design system)
-- Data attribution to cncf/mentoring must be preserved in UI
-- LFX and Linux Foundation are third-party brands — cannot be modified or claimed
+- Name: OSSGrid. Programs are referred to by their owners' names: LFX Mentorship, Google Summer of Code.
+- Logo: three grid squares and an outward arrow.
+- Attribution to `cncf/mentoring` stays visible on every data surface. Every new source gets the same treatment.
+- LFX, Linux Foundation, CNCF, GSoC and Google are third-party brands. OSSGrid is not affiliated with them.
+- Mentor emails may exist in the pipeline but are never rendered.
 
 ## Evidence on Hand
 
-- /public/data/organizations.json — 80+ organizations with projects, terms, years, technologies
-- Live data: org count, project count derivable from organizations.json at runtime
-- No photography, illustration assets, or user testimonials on hand
+- `public/data/organizations.json`, `public/data/projects.json`, `public/data/source-coverage.json` with line-level provenance.
+- Logos in `public/logos/`.
+- No photography beyond the four stock flower images used as a soft backdrop; no testimonials.
 
 ## Product Principles
 
-1. Speed over decoration — the core task (find an org) must never be slowed by visual effects.
-2. Real data, not UI chrome — every visual element should represent actual information.
-3. One bold moment per surface — memorable in 2-3 places, disciplined everywhere else.
-4. Token-first — all visual decisions flow from the token system; no one-off inline values.
-5. Accessible by default — WCAG AA minimum; prefers-reduced-motion always honored.
+1. Speed over decoration.
+2. Real data, not UI chrome.
+3. One bold moment per surface.
+4. Token-first; see `DESIGN.md`.
+5. Accessible by default: WCAG 2.2 AA, `prefers-reduced-motion` always honoured.
 
-## Accessibility & Inclusion
+## Roadmap (tracked in GitHub issues)
 
-WCAG 2.2 AA required. prefers-reduced-motion: all animations must have static fallbacks. Target users include developers with motor or visual disabilities using keyboard navigation or screen readers.
+- `/gsoc`: organizations 2016 to present from `gsocorganizations.dev` and `cncf/mentoring`, same explorer shell as `/lfx` (epic #12, sub-issues #13 and #14).
+- `/proposals`: an index of publicly shared GSoC proposals, linked to the original files.
+- `/guide`: the contributor playbook as a full page with program checklists.

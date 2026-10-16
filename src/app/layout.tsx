@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Instrument_Sans } from "next/font/google";
 import ThemeProvider from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
@@ -19,6 +19,13 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.ossgrid.tech"),
   title: {
@@ -26,7 +33,7 @@ export const metadata: Metadata = {
     template: "%s | OSSGrid",
   },
   description:
-    "Explore and discover open-source mentorship programs (LFX Mentorship, CNCF, and upcoming GSoC). Filter projects, technologies, stipends, and mentors.",
+    "A free index of open-source mentorship programs. Browse LFX Mentorship organizations and projects by technology, year and mentor. GSoC is next.",
   keywords: [
     "OSSGrid",
     "LFX Mentorship",
@@ -55,7 +62,7 @@ export const metadata: Metadata = {
     siteName: "OSSGrid",
     title: "OSSGrid — Open Source Mentorship & Ecosystem Explorer",
     description:
-      "Explore and discover open-source mentorship programs (LFX Mentorship, CNCF, and upcoming GSoC). Filter projects, technologies, stipends, and mentors.",
+      "A free index of open-source mentorship programs. Browse LFX Mentorship organizations and projects by technology, year and mentor. GSoC is next.",
     images: [
       {
         url: "/og-image.jpg",
@@ -69,7 +76,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "OSSGrid — Open Source Mentorship & Ecosystem Explorer",
     description:
-      "Explore and discover open-source mentorship programs (LFX Mentorship, CNCF, and upcoming GSoC). Filter projects, technologies, stipends, and mentors.",
+      "A free index of open-source mentorship programs. Browse LFX Mentorship organizations and projects by technology, year and mentor. GSoC is next.",
     images: ["/og-image.jpg"],
   },
   robots: {
@@ -127,14 +134,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${instrumentSans.variable} h-full antialiased`}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      <body
-        className="min-h-full flex flex-col"
-        style={{ fontFamily: "var(--font-inter, 'Inter', sans-serif)" }}
-      >
+      <body className="min-h-full flex flex-col">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: safeJsonLd(globalJsonLd) }}
@@ -151,7 +155,7 @@ export default function RootLayout({
           data-id="rajatrsrivastav"
           data-description="Support OSSGrid"
           data-message=""
-          data-color="#2563eb"
+          data-color="#22c55e"
           data-position="Right"
           data-x_margin="18"
           data-y_margin="18"

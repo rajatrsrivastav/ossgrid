@@ -1,0 +1,7 @@
+[
+  { "name": "cncf/mentoring", "url": "https://github.com/cncf/mentoring", "why": "The source of truth for LFX and CNCF GSoC project lists." },
+  { "name": "gsocorganizations.dev", "url": "https://www.gsocorganizations.dev", "why": "Every GSoC org since 2016 with filters by tech and topic." },
+  { "name": "GSoC timeline", "url": "https://developers.google.com/open-source/gsoc/timeline", "why": "Official dates for org announcements, applications and coding." },
+  { "name": "LFX Mentorship docs", "url": "https://docs.linuxfoundation.org/lfx/mentorship", "why": "Eligibility, stipends and how the portal works." },
+  { "name": "sks444/awesome-gsoc-prepration", "url": "https://github.com/sks444/awesome-gsoc-prepration", "why": "A long list of past proposals and prep notes." }
+]

@@ -1,94 +1,88 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, HelpCircle } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Section } from "./landing/Section";
+import { SectionHeading } from "./landing/SectionHeading";
+import { lfxCalendar } from "@/data/programs";
+import { cn } from "@/lib/utils";
 
-interface FAQItem {
-  question: string;
-  answer: string;
-}
+const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
 
-const FAQS: FAQItem[] = [
+const FAQS = [
   {
-    question: "How does LFX Mentorship differ from Google Summer of Code (GSoC)?",
-    answer:
-      "While both are premier open-source mentorship programs with paid stipends, LFX Mentorship is run directly by The Linux Foundation and CNCF. It runs 3 cohorts per year (Spring, Summer, Fall) instead of one, and is open to all developers worldwide aged 18+, regardless of student status.",
+    q: "How is LFX Mentorship different from Google Summer of Code?",
+    a: "Both pay a stipend for a term of mentored open-source work. LFX is run by the Linux Foundation, has three terms a year, and is open to anyone 18 or older. GSoC is run by Google, happens once a year, and targets new contributors.",
   },
   {
-    question: "How much is the stipend, and how is it paid?",
-    answer:
-      "Stipends typically range from $1,000 to $6,600 USD per mentee depending on your geographical location (calculated using Purchasing Power Parity) and whether the term is full-time (12 weeks, 40 hrs/wk) or part-time (24 weeks, 20 hrs/wk). It is disbursed in milestone payments based on mentor approval.",
+    q: "How much is the LFX stipend?",
+    a: `${usd(lfxCalendar.stipend.minUsd)} to ${usd(lfxCalendar.stipend.maxUsd)} per term. ${lfxCalendar.stipend.note} Full-time terms are ${lfxCalendar.durationWeeks.fullTime} weeks and part-time terms are ${lfxCalendar.durationWeeks.partTime} weeks. Checked ${lfxCalendar.lastVerified}.`,
   },
   {
-    question: "Do I have to be a university or CS student to apply?",
-    answer:
-      "No! Anyone 18 years or older who is legally eligible to participate and not currently employed by the sponsoring foundation or mentor organization may apply. Self-taught developers, bootcamp grads, and career-changers are actively encouraged.",
+    q: "Do I need to be a student?",
+    a: `No. ${lfxCalendar.eligibility} Self-taught developers and career changers apply and get in every term.`,
   },
   {
-    question: "How many projects can I apply to in one term?",
-    answer:
-      "You can submit up to 3 project applications per term on the official LFX Mentorship portal (mentorship.lfx.linuxfoundation.org). If accepted to more than one, you can only participate in one project per term.",
+    q: "How many projects can I apply to?",
+    a: `Up to ${lfxCalendar.applicationsPerTerm} per term on the LFX portal. If more than one accepts you, you can only take one.`,
   },
   {
-    question: "What is the single best way to maximize my chance of being accepted?",
-    answer:
-      "Pre-application engagement! Successful mentees almost always introduce themselves in the project's community channel (Slack, Discord, or GitHub Discussions) 2 to 4 weeks before the application deadline and submit at least 1 or 2 small pull requests (fixing documentation, tests, or good first issues).",
+    q: "What matters most for getting accepted?",
+    a: "Showing up in the project's chat weeks before the deadline and getting one or two real fixes merged. Mentors pick people they have already worked with.",
   },
   {
-    question: "Is this website (OSSGrid) the official application portal?",
-    answer:
-      "OSSGrid is a purpose-built community explorer and intelligence platform built to make discovering organizations, comparing technologies, and tracking historical project data effortless. Official applications are submitted at mentorship.lfx.linuxfoundation.org.",
+    q: "Is OSSGrid the official application site?",
+    a: "No. OSSGrid is a community-built index of the public project files. You apply on the official LFX portal or the GSoC site.",
   },
 ];
 
 export default function FirstTimerFAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const reduceMotion = useReducedMotion();
 
   return (
-    <section className="w-full mb-12 rounded-3xl p-6 sm:p-10 border border-[var(--border-card)] bg-[var(--bg-secondary)] shadow-lg">
-      <div className="flex items-center gap-2.5 mb-2">
-        <HelpCircle size={20} className="text-blue-600 dark:text-blue-400" />
-        <h2 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">
-          Frequently Asked Questions for Newcomers
-        </h2>
-      </div>
-      <p className="text-xs sm:text-sm text-[var(--text-secondary)] mb-6 max-w-2xl">
-        Everything you need to know about eligibility, compensation, deadlines, and the selection process.
-      </p>
+    <Section id="faq">
+      <SectionHeading eyebrow="FAQ" title="Common questions" align="center" description="Short answers. The official docs have the rest." />
 
-      <div className="space-y-3">
-        {FAQS.map((faq, idx) => {
+      <div className="mx-auto w-full max-w-3xl divide-y divide-[var(--border)] rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-card)]">
+        {FAQS.map((item, idx) => {
           const isOpen = openIndex === idx;
+          const panelId = `faq-panel-${idx}`;
           return (
-            <div
-              key={idx}
-              className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] overflow-hidden transition-all"
-            >
-              <button
-                onClick={() => setOpenIndex(isOpen ? null : idx)}
-                className={`w-full flex items-center justify-between p-4 sm:p-5 text-left text-sm sm:text-base font-semibold transition-colors ${
-                  isOpen
-                    ? "text-blue-600 dark:text-blue-400"
-                    : "text-[var(--text-primary)] hover:text-[var(--text-secondary)]"
-                }`}
-                aria-expanded={isOpen}
-              >
-                <span>{faq.question}</span>
-                {isOpen ? (
-                  <ChevronUp size={18} className="text-blue-600 dark:text-blue-400 flex-shrink-0 ml-4" />
-                ) : (
-                  <ChevronDown size={18} className="text-[var(--text-muted)] flex-shrink-0 ml-4" />
+            <div key={item.q}>
+              <h3>
+                <button
+                  type="button"
+                  onClick={() => setOpenIndex(isOpen ? null : idx)}
+                  className="flex w-full items-center justify-between gap-6 px-5 py-4 text-left md:px-6"
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
+                >
+                  <span className={cn("text-base font-medium", isOpen ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]")}>{item.q}</span>
+                  <span className="icon-btn icon-btn-bordered h-8 w-8 shrink-0" aria-hidden="true">
+                    {isOpen ? <Minus size={15} /> : <Plus size={15} />}
+                  </span>
+                </button>
+              </h3>
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    id={panelId}
+                    initial={reduceMotion ? false : { height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
+                    transition={{ duration: 0.22, ease: "easeOut" }}
+                    className="overflow-hidden"
+                  >
+                    <p className="prose-measure px-5 pb-5 text-sm leading-relaxed text-[var(--text-secondary)] md:px-6">{item.a}</p>
+                  </motion.div>
                 )}
-              </button>
-              {isOpen && (
-                <div className="px-4 pb-4 sm:px-5 sm:pb-5 text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed border-t border-[var(--border-card)] pt-3">
-                  {faq.answer}
-                </div>
-              )}
+              </AnimatePresence>
             </div>
           );
         })}
       </div>
-    </section>
+    </Section>
   );
 }

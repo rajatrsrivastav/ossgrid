@@ -5,35 +5,25 @@ import Link from "next/link";
 import { Organization, LfxOrganizationDto } from "@/lib/types";
 import LfxClient from "@/components/lfx/LfxClient";
 import { safeJsonLd, DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { getSiteStats } from "@/lib/stats";
+
+const stats = getSiteStats();
+const lfxTitle = `LFX Mentorship organizations — ${stats.orgLabel} orgs, ${stats.projectLabel} projects`;
+const lfxDescription = `Browse ${stats.orgLabel} Linux Foundation and CNCF organizations and ${stats.projectLabel} LFX Mentorship projects from ${stats.yearMin} to ${stats.yearMax}. Filter by technology, year and mentor.`;
 
 export const metadata: Metadata = {
-  title: "LFX Mentorship Explorer — 100+ Linux Foundation & CNCF Organizations",
-  description:
-    "Explore 950+ open-source mentorship projects, skills, mentors, and stipend details across 100+ organizations in the Linux Foundation (LFX) Mentorship program.",
-  alternates: {
-    canonical: "https://www.ossgrid.tech/lfx",
-  },
+  title: lfxTitle,
+  description: lfxDescription,
+  alternates: { canonical: "https://www.ossgrid.tech/lfx" },
   openGraph: {
     type: "website",
     siteName: "OSSGrid",
-    title: "LFX Mentorship Explorer — 100+ Linux Foundation & CNCF Organizations",
-    description:
-      "Explore 950+ open-source mentorship projects, skills, mentors, and stipend details across 100+ organizations in the Linux Foundation (LFX) Mentorship program.",
+    title: lfxTitle,
+    description: lfxDescription,
     url: "https://www.ossgrid.tech/lfx",
-    images: [
-      {
-        ...DEFAULT_OG_IMAGE,
-        alt: "OSSGrid LFX Mentorship Explorer",
-      },
-    ],
+    images: [{ ...DEFAULT_OG_IMAGE, alt: "OSSGrid LFX Mentorship organizations" }],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "LFX Mentorship Explorer — 100+ Linux Foundation & CNCF Organizations",
-    description:
-      "Explore 950+ open-source mentorship projects, skills, mentors, and stipend details across 100+ organizations in the Linux Foundation (LFX) Mentorship program.",
-    images: ["/og-image.jpg"],
-  },
+  twitter: { card: "summary_large_image", title: lfxTitle, description: lfxDescription, images: ["/og-image.jpg"] },
 };
 
 function getOrganizations(): LfxOrganizationDto[] {
@@ -76,7 +66,7 @@ const breadcrumbJsonLd = {
     {
       "@type": "ListItem",
       position: 2,
-      name: "LFX Mentorship Explorer",
+      name: "LFX Mentorship organizations",
       item: "https://www.ossgrid.tech/lfx",
     },
   ],
@@ -87,9 +77,8 @@ const collectionJsonLd = {
   "@type": "CollectionPage",
   "@id": "https://www.ossgrid.tech/lfx#collection",
   url: "https://www.ossgrid.tech/lfx",
-  name: "LFX Mentorship Explorer",
-  description:
-    "Explore 950+ open-source mentorship projects, skills, mentors, and stipend details across 100+ organizations in the Linux Foundation (LFX) Mentorship program.",
+  name: "LFX Mentorship organizations",
+  description: lfxDescription,
   isPartOf: {
     "@type": "WebSite",
     "@id": "https://www.ossgrid.tech/#website",
@@ -116,7 +105,7 @@ export default function LfxPage() {
       {/* Static crawler index for search engines without JavaScript */}
       <noscript>
         <div className="sr-only p-4">
-          <h2>All Linux Foundation & CNCF Mentorship Organizations</h2>
+          <h2>All LFX Mentorship organizations</h2>
           <ul>
             {organizations.map((org) => (
               <li key={org.id}>

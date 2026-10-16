@@ -1,119 +1,73 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Sparkles, Layers, Users, type LucideIcon } from "lucide-react";
+import { Layers, Users, FileText, type LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface OrgSectionNavProps {
   projectCount: number;
   mentorCount: number;
-  yearCount?: number;
 }
 
 interface NavTab {
   id: string;
   label: string;
   icon: LucideIcon;
-  count?: number | string;
+  count?: number;
 }
 
-export default function OrgSectionNav({
-  projectCount,
-  mentorCount,
-}: OrgSectionNavProps) {
-  const [activeSection, setActiveSection] = useState<string>("overview");
+export default function OrgSectionNav({ projectCount, mentorCount }: OrgSectionNavProps) {
+  const [activeSection, setActiveSection] = useState("overview");
   const isClickScrolling = useRef(false);
-  const clickTimeout = useRef<NodeJS.Timeout | null>(null);
+  const clickTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const tabs: NavTab[] = useMemo(() => {
     const list: NavTab[] = [
-      { id: "overview", label: "Overview", icon: Sparkles },
+      { id: "overview", label: "Overview", icon: FileText },
       { id: "projects", label: "Projects", icon: Layers, count: projectCount },
     ];
-
-    if (mentorCount > 0) {
-      list.push({
-        id: "mentors",
-        label: "Mentors",
-        icon: Users,
-        count: mentorCount,
-      });
-    }
-
+    if (mentorCount > 0) list.push({ id: "mentors", label: "Mentors", icon: Users, count: mentorCount });
     return list;
   }, [projectCount, mentorCount]);
 
   const scrollToSection = (id: string, updateHash = true) => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior: ScrollBehavior = reduce ? "auto" : "smooth";
     if (id === "overview") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior });
     } else {
       const el = document.getElementById(id);
       if (el) {
-        // 56px main header + 48px sticky nav + 12px breathing room = 116px
-        const topOffset = 116;
-        const targetY = el.getBoundingClientRect().top + window.scrollY - topOffset;
-        window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+        const targetY = el.getBoundingClientRect().top + window.scrollY - 120;
+        window.scrollTo({ top: Math.max(0, targetY), behavior });
       }
     }
-
     setActiveSection(id);
-    if (updateHash && typeof window !== "undefined") {
-      window.history.pushState(null, "", `#${id}`);
-    }
-
+    if (updateHash) window.history.pushState(null, "", `#${id}`);
     isClickScrolling.current = true;
     if (clickTimeout.current) clearTimeout(clickTimeout.current);
-    clickTimeout.current = setTimeout(() => {
-      isClickScrolling.current = false;
-    }, 750);
+    clickTimeout.current = setTimeout(() => { isClickScrolling.current = false; }, 750);
   };
 
-  // Scroll spy to highlight active section while scrolling
   useEffect(() => {
     const handleScroll = () => {
       if (isClickScrolling.current) return;
-
-      // When near bottom of page, activate the last tab (typically participation)
-      const isAtBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 60;
-      if (isAtBottom) {
-        const lastTab = tabs[tabs.length - 1];
-        if (lastTab) setActiveSection(lastTab.id);
-        return;
-      }
-
-      // Near top of page, activate overview
-      if (window.scrollY < 120) {
-        setActiveSection("overview");
-        return;
-      }
-
-      // Scan sections from bottom to top to find the current active section
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60;
+      if (atBottom) { setActiveSection(tabs[tabs.length - 1].id); return; }
+      if (window.scrollY < 120) { setActiveSection("overview"); return; }
       for (let i = tabs.length - 1; i >= 0; i--) {
-        const tab = tabs[i];
-        const el = document.getElementById(tab.id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 140) {
-            setActiveSection(tab.id);
-            break;
-          }
-        }
+        const el = document.getElementById(tabs[i].id);
+        if (el && el.getBoundingClientRect().top <= 140) { setActiveSection(tabs[i].id); break; }
       }
     };
-
     let ticking = false;
     const onScroll = () => {
       if (!ticking) {
-        window.requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
-        });
+        window.requestAnimationFrame(() => { handleScroll(); ticking = false; });
         ticking = true;
       }
     };
-
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
@@ -121,113 +75,43 @@ export default function OrgSectionNav({
     };
   }, [tabs]);
 
-  // Keep active tab visible in horizontal container on mobile
   useEffect(() => {
-    if (!scrollContainerRef.current) return;
-    const activeBtn = scrollContainerRef.current.querySelector(
-      `[data-section-id="${activeSection}"]`
-    ) as HTMLElement | null;
-    if (activeBtn) {
-      const container = scrollContainerRef.current;
-      const btnLeft = activeBtn.offsetLeft;
-      const btnRight = btnLeft + activeBtn.offsetWidth;
-      const containerLeft = container.scrollLeft;
-      const containerRight = containerLeft + container.clientWidth;
-
-      if (btnLeft < containerLeft || btnRight > containerRight) {
-        activeBtn.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "nearest",
-        });
-      }
-    }
+    const btn = scrollContainerRef.current?.querySelector<HTMLElement>(`[data-section-id="${activeSection}"]`);
+    btn?.scrollIntoView({ block: "nearest", inline: "nearest" });
   }, [activeSection]);
 
-  // Handle direct hash navigation on initial load (e.g. /organization/cncf#mentors)
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hash) {
-      const hash = window.location.hash.replace("#", "");
-      if (tabs.some((t) => t.id === hash)) {
-        setTimeout(() => {
-          scrollToSection(hash, false);
-        }, 120);
-      }
+    const hash = window.location.hash.replace("#", "");
+    if (hash && tabs.some((t) => t.id === hash)) {
+      const t = setTimeout(() => scrollToSection(hash, false), 120);
+      return () => clearTimeout(t);
     }
   }, [tabs]);
 
   return (
-    <nav
-      aria-label="Organization sections"
-      className="sticky top-14 z-30 w-full border-b border-[var(--border-card)] bg-[var(--bg-primary)]/85 backdrop-blur-md transition-colors"
-      style={{
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-      }}
-    >
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10">
-        <div
-          ref={scrollContainerRef}
-          className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none py-2 -mx-1 px-1"
-        >
+    <nav aria-label="Sections" className="sticky top-16 z-30 w-full border-b border-[var(--border)] bg-[var(--bg-base)]/85 backdrop-blur-md">
+      <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <div ref={scrollContainerRef} className="scrollbar-none -mx-1 flex items-center gap-1 overflow-x-auto px-1 py-2">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeSection === tab.id;
-
             return (
               <a
                 key={tab.id}
                 href={`#${tab.id}`}
                 data-section-id={tab.id}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection(tab.id);
-                }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-                  isActive
-                    ? "shadow-xs"
-                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] border border-transparent font-medium"
-                }`}
-                style={
-                  isActive
-                    ? {
-                        backgroundColor: "var(--nav-tab-active-bg)",
-                        borderColor: "var(--nav-tab-active-border)",
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        color: "var(--nav-tab-active-text)",
-                      }
-                    : undefined
-                }
+                onClick={(e) => { e.preventDefault(); scrollToSection(tab.id); }}
                 aria-current={isActive ? "true" : undefined}
-              >
-                <Icon
-                  size={13}
-                  style={{
-                    color: isActive
-                      ? "var(--nav-tab-active-text)"
-                      : "var(--text-muted)",
-                  }}
-                />
-                <span>{tab.label}</span>
-                {tab.count !== undefined && (
-                  <span
-                    className="px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold leading-none transition-colors"
-                    style={{
-                      backgroundColor: isActive
-                        ? "var(--nav-tab-active-badge-bg)"
-                        : "var(--bg-badge)",
-                      color: isActive
-                        ? "var(--nav-tab-active-badge-text)"
-                        : "var(--text-muted)",
-                      border: isActive
-                        ? "1px solid var(--nav-tab-active-border)"
-                        : undefined,
-                    }}
-                  >
-                    {tab.count}
-                  </span>
+                className={cn(
+                  "flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] border px-3 text-xs font-medium transition-colors",
+                  isActive
+                    ? "border-[var(--accent-ring)] bg-[var(--accent-soft)] text-[var(--accent)]"
+                    : "border-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]"
                 )}
+              >
+                <Icon size={13} aria-hidden="true" />
+                {tab.label}
+                {tab.count !== undefined && <span className="num text-[var(--text-muted)]">{tab.count}</span>}
               </a>
             );
           })}

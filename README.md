@@ -1,8 +1,6 @@
 # 🌐 OSSGrid
 
-> **A frictionless, high-performance web dashboard for exploring organizations, projects, and tech stacks across major open-source mentorship programs.**
-
-This is a fast, public, no-login-required dashboard for exploring the open-source mentorship ecosystem (including LFX, GSoC, Outreachy, and more).
+> **A free, no-login index of open-source mentorship programs.** Browse every LFX Mentorship organization and project by technology, year and mentor. GSoC is next.
 
 [![Sync Data](https://github.com/rajatrsrivastav/ossgrid/actions/workflows/sync-data.yml/badge.svg)](https://github.com/rajatrsrivastav/ossgrid/actions/workflows/sync-data.yml)
 
@@ -10,7 +8,7 @@ This is a fast, public, no-login-required dashboard for exploring the open-sourc
 
 - 🔍 **Fuzzy Search** — Instantly search across organizations, projects, technologies, and mentor names.
 - 🎯 **Multi-facet Filtering** — Filter by term, year, category, technology stack, and quick shortcuts.
-- 🌗 **Dark/Light Mode** — Beautiful glassmorphism design with seamless theme switching.
+- 🌗 **Dark/Light Mode** — Token-based design system, see `DESIGN.md`.
 - 🔗 **Shareable URLs** — Filters sync to URL query parameters for shareable filtered views.
 - 📱 **Fully Responsive** — Optimized grid layout from mobile to desktop.
 - ⚡ **100% Static** — Pre-built JSON datasets loaded client-side for instant performance.
@@ -18,9 +16,9 @@ This is a fast, public, no-login-required dashboard for exploring the open-sourc
 
 ## 📊 Data
 
-Currently tracking programs like **LFX Mentorship**, featuring:
-- **102 organizations** across historical and upcoming terms (2019–2026)
-- **953 projects** with verified source provenance, mentors, skills, and issue links
+Currently tracking **LFX Mentorship**. Counts below are read from `public/data/organizations.json` at build time and shown rounded down in the UI; run `npm run audit:data` for exact numbers.
+- Every organization that has taken part since 2019
+- Every project with source provenance, mentors, skills and issue links
 - Technologies spanning Go, Rust, C++, Kubernetes, eBPF, Python, and more
 
 ## 🛠 Tech Stack
@@ -73,4 +71,6 @@ We welcome contributions! Please note:
 | `npm run audit:data` | Verify schema integrity, links, and source coverage |
 | `npm run check:data` | Check byte-for-byte reproducibility against pinned upstream commit |
 | `npm run sync:data` | Regenerate datasets from pinned upstream source |
+| `npm run check:copy` | Fail on hype or filler words in UI copy (see `DESIGN.md` §8) |
+| `npm run typecheck` | TypeScript check without emitting |
 

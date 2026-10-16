@@ -40,6 +40,10 @@ jobs:
         id: lint
         run: npm run lint
 
+      - name: 3b. UI copy check (banned words)
+        id: copy
+        run: npm run check:copy
+
       - name: 4. Production Build Verification
         id: build
         run: npm run build
