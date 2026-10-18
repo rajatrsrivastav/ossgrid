@@ -12,6 +12,7 @@ export interface ExplorerOrg {
   /** Detail page for this org. */
   href: string;
   logoUrl: string;
+  repositoryUrl?: string;
   description: string;
   category: string;
   /** Years the org took part, any order. */

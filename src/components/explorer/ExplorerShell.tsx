@@ -163,8 +163,6 @@ export default function ExplorerShell({ config, organizations, loading, intro, o
         variant="full"
         searchQuery={searchInput}
         onSearchChange={onSearchChange}
-        onMenuToggle={() => setFiltersOpen((o) => !o)}
-        isMobileMenuOpen={filtersOpen}
         onCommandPaletteOpen={() => setCmdOpen(true)}
         searchPlaceholder={config.searchPlaceholder}
         searchAriaLabel={config.searchAriaLabel}

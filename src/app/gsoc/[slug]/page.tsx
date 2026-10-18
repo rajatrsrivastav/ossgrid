@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ExternalLink, ArrowLeft, Layers, Lightbulb, Calendar, MessageSquare, BookOpen, ListChecks } from "lucide-react";
 import type { GsocProject } from "@/lib/types";
 import Header from "@/components/Header";
+import GitHubRepoActions from "@/components/GitHubRepoActions";
 import { cn } from "@/lib/utils";
 import { safeJsonLd } from "@/lib/seo";
 import { gsocCalendar } from "@/data/programs";
@@ -110,6 +111,7 @@ function ProjectCard({ project }: { project: GsocProject }) {
         </div>
       </div>
       {project.summary && <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[var(--text-secondary)]">{project.summary}</p>}
+      {project.codeUrl && <div className="mt-3"><GitHubRepoActions url={project.codeUrl} compact /></div>}
       {project.skills.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Skills">
           {project.skills.slice(0, 6).map((skill) => (

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, CheckCircle2 } from "lucide-react";
 import Header from "@/components/Header";
+import GitHubRepoActions from "@/components/GitHubRepoActions";
 import ContributionLoop from "@/components/guide/ContributionLoop";
 import { safeJsonLd, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { GUIDE_SOURCE, READINESS, COMMUNITY_FIRST, ISSUE_ADVICE, PR_CONVERSATIONS, SELECTION_SIGNALS, PROGRAM_CHECKLISTS, RESOURCES } from "@/data/guide";
@@ -201,6 +202,7 @@ export default function GuidePage() {
                       <span className="flex items-center justify-between gap-2 text-sm font-semibold text-[var(--text-primary)]">{r.name} <ExternalLink size={12} className="shrink-0 text-[var(--text-muted)]" aria-hidden="true" /></span>
                       <span className="mt-1 block text-xs text-[var(--text-secondary)]">{r.why}</span>
                     </a>
+                    <div className="mt-2 px-1"><GitHubRepoActions url={r.url} compact /></div>
                   </li>
                 ))}
               </ul>

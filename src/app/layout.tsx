@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Inter, JetBrains_Mono, Instrument_Sans } from "next/font/google";
 import ThemeProvider from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
@@ -149,18 +148,6 @@ export default function RootLayout({
           <Footer />
         </ThemeProvider>
         <Analytics />
-        <Script
-          data-name="BMC-Widget"
-          src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
-          data-id="rajatrsrivastav"
-          data-description="Support OSSGrid"
-          data-message=""
-          data-color="#22c55e"
-          data-position="Right"
-          data-x_margin="18"
-          data-y_margin="18"
-          strategy="lazyOnload"
-        />
       </body>
     </html>
   );

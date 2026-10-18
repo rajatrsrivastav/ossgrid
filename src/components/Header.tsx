@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Search } from "lucide-react";
+import { Coffee, Menu, X, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import LogoMark from "./LogoMark";
 import ThemeToggle from "./ThemeToggle";
@@ -14,9 +14,6 @@ const links = headerLinks();
 interface HeaderProps {
   /** "simple" = marketing pages; "full" = explorer with search */
   variant?: "full" | "simple";
-  onMenuToggle?: () => void;
-  isMobileMenuOpen?: boolean;
-  onOpenAbout?: () => void;
   searchQuery?: string;
   onSearchChange?: (q: string) => void;
   onCommandPaletteOpen?: () => void;
@@ -26,8 +23,6 @@ interface HeaderProps {
 
 export default function Header({
   variant = "simple",
-  onMenuToggle,
-  isMobileMenuOpen,
   searchQuery = "",
   onSearchChange,
   onCommandPaletteOpen,
@@ -43,6 +38,30 @@ export default function Header({
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const closeMobileNav = () => { if (desktop.matches) setNavOpen(false); };
+    desktop.addEventListener("change", closeMobileNav);
+    return () => desktop.removeEventListener("change", closeMobileNav);
+  }, []);
+
+  useEffect(() => {
+    if (!navOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setNavOpen(false);
+        document.getElementById("mobile-nav-toggle")?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [navOpen]);
 
   const isExplorer = variant === "full";
 
@@ -67,12 +86,12 @@ export default function Header({
 
           {/* Marketing nav */}
           {!isExplorer && (
-            <nav aria-label="Primary" className="ml-6 hidden items-center gap-1 lg:flex">
+            <nav aria-label="Primary" className="ml-4 hidden items-center gap-1 lg:flex">
               {links.map((l) => (
                 <Link
                   key={l.href}
                   href={l.href}
-                  className="rounded-[var(--radius-control)] px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]"
+                  className="rounded-[var(--radius-control)] px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
                 >
                   {l.label}
                 </Link>
@@ -95,25 +114,27 @@ export default function Header({
 
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
+            <a
+              href="https://buymeacoffee.com/rajatrsrivastav"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Support OSSGrid on Buy Me a Coffee"
+              title="Support OSSGrid on Buy Me a Coffee"
+              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[var(--radius-control)] border border-[var(--border)] px-2 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+            >
+              <Coffee size={15} aria-hidden="true" />
+              <span className="hidden lg:inline">Support</span>
+            </a>
             {!isExplorer && (
-              <Link href="/#programs" className="btn btn-primary btn-sm hidden sm:inline-flex">
-                Browse programs
-              </Link>
+              <div className="hidden lg:block">
+                <Link href="/#programs" className="btn btn-primary btn-sm">Browse programs</Link>
+              </div>
             )}
-            {isExplorer ? (
+            <div className="lg:hidden">
               <button
                 type="button"
-                className="icon-btn icon-btn-bordered lg:hidden"
-                onClick={onMenuToggle}
-                aria-label={isMobileMenuOpen ? "Close filters" : "Open filters"}
-                aria-expanded={isMobileMenuOpen}
-              >
-                {isMobileMenuOpen ? <X size={17} /> : <Menu size={17} />}
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="icon-btn icon-btn-bordered lg:hidden"
+                id="mobile-nav-toggle"
+                className="icon-btn icon-btn-bordered"
                 onClick={() => setNavOpen((o) => !o)}
                 aria-label={navOpen ? "Close menu" : "Open menu"}
                 aria-expanded={navOpen}
@@ -121,7 +142,7 @@ export default function Header({
               >
                 {navOpen ? <X size={17} /> : <Menu size={17} />}
               </button>
-            )}
+            </div>
           </div>
         </div>
 
@@ -132,12 +153,12 @@ export default function Header({
           </div>
         )}
 
-        {/* Marketing nav (mobile) */}
-        {!isExplorer && navOpen && (
+        {/* Shared navigation on narrow screens; filters have their own toolbar control. */}
+        {navOpen && (
           <nav
             id="mobile-nav"
             aria-label="Primary"
-            className="border-t border-[var(--border)] bg-[var(--bg-base)] px-4 py-3 lg:hidden"
+            className="border-t border-[var(--border)] bg-[var(--bg-base)] max-h-[calc(100dvh-4rem)] overflow-y-auto px-4 py-3 lg:hidden"
           >
             <ul className="flex flex-col gap-1">
               {links.map((l) => (

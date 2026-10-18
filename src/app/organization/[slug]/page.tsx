@@ -9,6 +9,8 @@ import { ExternalLink, ArrowLeft, Users, Layers, TrendingUp, Calendar } from "lu
 import { Organization, Project } from "@/lib/types";
 import OrgChartWrapper from "@/components/OrgChartWrapper";
 import Header from "@/components/Header";
+import GitHubRepoActions from "@/components/GitHubRepoActions";
+import { projectRepositoryUrl } from "@/lib/github-repos";
 import OrgSectionNav from "@/components/OrgSectionNav";
 import { sanitizeDescription, cn } from "@/lib/utils";
 import { safeJsonLd } from "@/lib/seo";
@@ -259,6 +261,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
               {techsSorted.length > 4 && <li className="chip chip-quiet chip-mono"><span>+{techsSorted.length - 4}</span></li>}
             </ul>
           </div>
+          {org.github && <div className="mt-4"><GitHubRepoActions url={org.github} /></div>}
         </div>
       </div>
 
@@ -335,6 +338,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                                           )}
                                         </div>
                                       </div>
+                                      {projectRepositoryUrl(project) && <div className="mt-3"><GitHubRepoActions url={projectRepositoryUrl(project)} compact /></div>}
                                       {desc && <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[var(--text-secondary)]">{desc}</p>}
                                       {project.skills.length > 0 && (
                                         <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Skills">

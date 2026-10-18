@@ -1,5 +1,6 @@
 "use client";
 
+import GitHubRepoActions from "./GitHubRepoActions";
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -158,6 +159,8 @@ export default function OrganizationCard({ org, years, accentVar = "--program-lf
           View details <ArrowUpRight size={13} aria-hidden="true" />
         </span>
       </div>
+
+      {org.repositoryUrl && <div className="mt-3"><GitHubRepoActions url={org.repositoryUrl} compact /></div>}
 
       {/* Outbound links sit above the stretched card link so they stay clickable. */}
       {org.links && org.links.length > 0 && (

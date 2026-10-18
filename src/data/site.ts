@@ -34,6 +34,8 @@ export function footerLinks(): NavLink[] {
     ...livePrograms().map((p) => ({ label: `${p.shortName} organizations`, href: p.dashboardPath! })),
     ...enabledTools().filter((t) => t.id !== "guide").map((t) => ({ label: t.label, href: t.href })),
     { label: "Contributor playbook", href: guide?.enabled ? guide.href : "/#playbook" },
+    { label: "Contributors", href: "/contributors" },
+    { label: "Start Contributing", href: "/contribute" },
     { label: "Programs", href: "/#programs" },
     { label: "Source on GitHub", href: "https://github.com/rajatrsrivastav/ossgrid", external: true },
   ];
