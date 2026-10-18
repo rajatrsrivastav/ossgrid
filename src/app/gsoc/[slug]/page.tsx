@@ -182,7 +182,8 @@ export default async function GsocOrganizationPage({ params }: { params: Promise
       <Header variant="simple" />
 
       {/* Identity */}
-      <div id="overview" className="scroll-mt-28 border-b border-[var(--border)] bg-[var(--bg-raised)]">
+      <main id="main" className="flex w-full flex-1 flex-col">
+      <div id="overview" className="cine cine-masthead font-ui scroll-mt-28 !pt-6" data-art="gsoc">
         <div className="mx-auto w-full max-w-[1440px] px-4 pb-8 pt-6 sm:px-6 lg:px-8">
           <nav aria-label="Breadcrumb" className="mb-6 text-xs text-[var(--text-muted)]">
             <ol className="flex items-center gap-2">
@@ -208,7 +209,7 @@ export default async function GsocOrganizationPage({ params }: { params: Promise
                   {activeThisYear ? "Accepted in" : "Last accepted"} <span className="num">{org.latestYear}</span>
                 </span>
               </div>
-              <h1 className="display text-3xl font-semibold text-[var(--text-primary)] md:text-4xl lg:text-5xl">{org.name}</h1>
+              <h1 className="masthead-title">{org.name}</h1>
               <p className="prose-measure mt-3 text-sm leading-relaxed text-[var(--text-secondary)] lg:text-base">{org.description || `${org.name} is a Google Summer of Code mentoring organization.`}</p>
             </div>
 
@@ -248,7 +249,7 @@ export default async function GsocOrganizationPage({ params }: { params: Promise
 
       <div className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col items-start gap-8 lg:flex-row">
-          <main className="min-w-0 flex-1 space-y-14">
+          <div className="min-w-0 flex-1 space-y-14">
             <section id="projects" aria-labelledby="projects-heading" className="scroll-mt-28">
               <SectionTitle icon={Layers} count={org.projectCount}><span id="projects-heading">Projects by year</span></SectionTitle>
               {byYear.length === 0 ? (
@@ -337,7 +338,7 @@ export default async function GsocOrganizationPage({ params }: { params: Promise
                 </ul>
               </section>
             )}
-          </main>
+          </div>
 
           <aside className="w-full shrink-0 space-y-4 lg:sticky lg:top-28 lg:w-[340px] xl:w-[380px]">
             <div className="card p-5">
@@ -404,6 +405,7 @@ export default async function GsocOrganizationPage({ params }: { params: Promise
           </aside>
         </div>
       </div>
+      </main>
     </div>
   );
 }

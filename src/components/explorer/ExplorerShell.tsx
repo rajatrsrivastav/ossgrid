@@ -48,8 +48,10 @@ interface ExplorerShellProps {
   config: ProgramConfig;
   organizations: ExplorerOrg[];
   loading: boolean;
-  /** Program-specific intro (H1, facts, schedule). Rendered above the grid. */
+  /** Program-specific intro (schedule etc.). Rendered above the grid. */
   intro: (ctx: ExplorerIntroContext) => React.ReactNode;
+  /** Full-bleed opening band (title, facts), rendered above the padded content. */
+  masthead?: (ctx: ExplorerIntroContext) => React.ReactNode;
   /** Program-specific overlays (about modal etc.). */
   overlays?: React.ReactNode;
   /** Pre-built Fuse index for the current organizations, when the program ships one. */
@@ -58,7 +60,7 @@ interface ExplorerShellProps {
   unit?: string;
 }
 
-export default function ExplorerShell({ config, organizations, loading, intro, overlays, searchIndex: providedIndex, unit = "project" }: ExplorerShellProps) {
+export default function ExplorerShell({ config, organizations, loading, intro, masthead, overlays, searchIndex: providedIndex, unit = "project" }: ExplorerShellProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -168,6 +170,8 @@ export default function ExplorerShell({ config, organizations, loading, intro, o
         searchAriaLabel={config.searchAriaLabel}
       />
 
+      <main id="main" className="flex w-full flex-1 flex-col">
+      {masthead?.({ organizations, loading, filters })}
       <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
         {intro({ organizations, loading, filters })}
 
@@ -268,6 +272,8 @@ export default function ExplorerShell({ config, organizations, loading, intro, o
           </div>
         </section>
       </div>
+
+      </main>
 
       {/* Mobile filter drawer */}
       {filtersOpen && (

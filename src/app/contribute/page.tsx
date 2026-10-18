@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Header from "@/components/Header";
+import PageMasthead from "@/components/PageMasthead";
 import GitHubRepoActions from "@/components/GitHubRepoActions";
 import { githubRepo } from "@/lib/github-repos";
 import { ossgridRepo } from "@/data/contributors";
@@ -26,10 +27,14 @@ export default async function ContributePage({ searchParams }: { searchParams: P
   const ossgrid = githubRepo(`https://github.com/${ossgridRepo}`)!;
   return <>
     <Header />
-    <main className="mx-auto w-full max-w-[1100px] flex-1 px-4 py-12 sm:px-6 lg:px-8">
-      <p className="eyebrow mb-3">Open source</p>
-      <h1 className="display text-3xl font-semibold text-[var(--text-primary)] md:text-4xl">Start contributing</h1>
-      <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--text-secondary)]">A clear path from finding a project to submitting work that maintainers can review.</p>
+    <main className="flex w-full flex-1 flex-col">
+    <PageMasthead
+      crumbs={[{ label: "Home", href: "/" }, { label: "Start contributing" }]}
+      label="Open source"
+      title="Start contributing"
+      lede={<p>A clear path from finding a project to submitting work that maintainers can review. Contributing to OSSGrid itself and contributing to a project indexed on OSSGrid are different paths; both are covered below.</p>}
+    />
+    <div className="mx-auto w-full max-w-[1100px] flex-1 px-4 py-12 sm:px-6 lg:px-8">
 
       {selectedRepo && <section className="panel mt-8 p-5" aria-label="Selected repository">
         <p className="eyebrow mb-2">Your selected repository</p>
@@ -38,7 +43,7 @@ export default async function ContributePage({ searchParams }: { searchParams: P
         <p className="mt-3 text-xs text-[var(--text-muted)]">Check this repository’s README and CONTRIBUTING file for its own rules. Issue tracking and contribution guides vary by project.</p>
       </section>}
 
-      <ol className="mt-10 grid gap-4 md:grid-cols-2">
+      <ol aria-label="Contribution steps" className="grid gap-4 md:grid-cols-2">
         {steps.map((step, index) => <li key={step.title} className="card p-5">
           <span className="num text-xs font-medium text-[var(--text-muted)]">{`Step ${index + 1}`}</span>
           <h2 className="mt-2 text-lg font-semibold text-[var(--text-primary)]">{step.title}</h2>
@@ -60,6 +65,7 @@ export default async function ContributePage({ searchParams }: { searchParams: P
         </div>
         <p className="mt-4 text-sm text-[var(--text-secondary)]">The beginner-friendly issue list may be empty; browse other open issues or ask maintainers for a suitable task. For OSSGrid bugs, use the repository’s <a href={`${ossgrid.url}/issues/new?template=bug_report.yml`} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">bug report template</a>. For improvements, explain the user problem and expected behavior in a focused issue or pull request.</p>
       </section>
+    </div>
     </main>
   </>;
 }

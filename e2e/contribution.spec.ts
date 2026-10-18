@@ -44,9 +44,10 @@ test("footer and contributor directory keep creator and external contributors di
   await expect(footer.getByRole("link", { name: "Rajat Srivastav" })).toHaveAttribute("href", "https://x.com/rajatrsrivastav");
   await expect(footer.locator("details, img")).toHaveCount(0);
   await expect(footer.getByRole("link", { name: "Contributors", exact: true })).toHaveAttribute("href", "/contributors");
-  await expect(footer.getByRole("link", { name: "Start Contributing", exact: true })).toHaveAttribute("href", "/contribute");
+  // DESIGN.md v4: link labels are sentence case.
+  await expect(footer.getByRole("link", { name: "Start contributing", exact: true })).toHaveAttribute("href", "/contribute");
   await page.goto("/contribute");
-  await expect(page.locator("main ol > li")).toHaveCount(6);
+  await expect(page.getByRole("list", { name: "Contribution steps" }).locator(":scope > li")).toHaveCount(6);
   await expect(page.getByRole("link", { name: "Past contributors", exact: true })).toHaveAttribute("href", "/contributors#past-contributors");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });

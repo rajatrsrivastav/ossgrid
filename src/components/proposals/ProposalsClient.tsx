@@ -2,13 +2,14 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, FileText, SearchX } from "lucide-react";
+import { ExternalLink, FileText, SearchX } from "lucide-react";
 import Fuse from "fuse.js";
 import type { ProposalRecord } from "@/lib/types";
 import type { ExplorerFilterState, FacetDefinition } from "@/lib/explorer/types";
 import { activeFilterCount, allFacetOptions, filterOrgs } from "@/lib/explorer/filter";
 import { useFilterState } from "@/hooks/useFilterState";
 import Header from "@/components/Header";
+import PageMasthead from "@/components/PageMasthead";
 import FacetSidebar from "@/components/explorer/FacetSidebar";
 import { cn } from "@/lib/utils";
 
@@ -68,20 +69,19 @@ export default function ProposalsClient({ proposals, orgNames }: ProposalsClient
         searchPlaceholder="Search proposals by title, org or author"
         searchAriaLabel="Search proposals by title, organization or author"
       />
-      <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
-        <section className="mb-8 max-w-3xl">
-          <Link href="/" className="mb-4 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-            <ArrowLeft size={13} aria-hidden="true" /> Home
-          </Link>
-          <p className="eyebrow mb-2">Proposals library</p>
-          <h1 className="display text-3xl font-semibold text-[var(--text-primary)] md:text-4xl">Public GSoC proposals, {yearMin} to {yearMax}</h1>
-          <p className="mt-3 text-base leading-relaxed text-[var(--text-secondary)]">
-            {proposals.length.toLocaleString("en-US")} proposals that contributors chose to publish, indexed from {repos.length} community archives on GitHub. Every row links to the original file; OSSGrid never stores a copy.
-          </p>
-          <p className="mt-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-raised)] px-4 py-3 text-sm text-[var(--text-primary)]">
-            Read these to learn structure: how a problem is framed, how a schedule is laid out, what a mentor could check each week. Do not copy them. Programs screen for it, and your own merged work matters more.
-          </p>
-        </section>
+      <main id="main" className="flex w-full flex-1 flex-col">
+      <PageMasthead
+        art="gsoc"
+        crumbs={[{ label: "Home", href: "/" }, { label: "Proposals library" }]}
+        label="Proposals library"
+        title={<>Public GSoC proposals, {yearMin} to {yearMax}</>}
+        lede={<p>{proposals.length.toLocaleString("en-US")} proposals that contributors chose to publish, indexed from {repos.length} community archives on GitHub. Every row links to the original file; OSSGrid never stores a copy.</p>}
+      >
+        <p className="max-w-2xl border-l-2 border-[var(--cine-line-strong)] pl-4 text-sm leading-relaxed text-[var(--cine-fg)]">
+          Read these to learn structure: how a problem is framed, how a schedule is laid out, what a mentor could check each week. Do not copy them. Programs screen for it, and your own merged work matters more.
+        </p>
+      </PageMasthead>
+      <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-8 sm:px-6 lg:px-8">
 
         <div className="flex flex-col items-start gap-4 lg:flex-row">
           <aside className="panel sticky top-20 hidden w-[280px] shrink-0 overflow-y-auto p-3 lg:block" style={{ maxHeight: "calc(100vh - 6rem)" }} aria-label="Filters">
@@ -109,7 +109,7 @@ export default function ProposalsClient({ proposals, orgNames }: ProposalsClient
                   <li key={p.id} className="card relative flex items-start gap-3 px-4 py-3 has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-[var(--accent)]">
                     <FileText size={16} className="mt-0.5 shrink-0 text-[var(--text-muted)]" aria-hidden="true" />
                     <span className="min-w-0 flex-1">
-                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="block text-sm font-semibold text-[var(--text-primary)] hover:underline">
+                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="block min-h-6 py-0.5 text-sm font-semibold text-[var(--text-primary)] hover:underline">
                         {p.title} <ExternalLink size={12} className="ml-0.5 inline text-[var(--text-muted)]" aria-hidden="true" />
                       </a>
                       <span className="num mt-0.5 block text-xs text-[var(--text-muted)]">
@@ -130,6 +130,8 @@ export default function ProposalsClient({ proposals, orgNames }: ProposalsClient
           </div>
         </div>
       </div>
+
+      </main>
 
       {filtersOpen && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Filters">

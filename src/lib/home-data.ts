@@ -114,20 +114,20 @@ export function getHomeData() {
   ];
 
   // Network labels: the largest visible nodes, positioned from the render's own camera projection.
-  const pickLabels = (file: string, count: number, edge = 6): NetworkLabel[] => {
+  const pickLabels = (file: string, count: number, edge = 6, gapX = 13, gapY = 7): NetworkLabel[] => {
     const raw = readText(file);
     if (!raw) return [];
     const meta = JSON.parse(raw) as { nodes: { name: string; href: string; x: number; top: number; visible: boolean; projects: number; program: "gsoc" | "lfx" }[] };
     const chosen: NetworkLabel[] = [];
     for (const n of [...meta.nodes].filter((n) => n.visible && n.x > edge && n.x < 100 - edge).sort((a, b) => b.projects - a.projects)) {
       // Keep labels apart so they never overlap.
-      if (chosen.some((c) => Math.abs(c.x - n.x) < 13 && Math.abs(c.y - n.top) < 7)) continue;
+      if (chosen.some((c) => Math.abs(c.x - n.x) < gapX && Math.abs(c.y - n.top) < gapY)) continue;
       chosen.push({ name: n.name, href: n.href, x: n.x, y: n.top, program: n.program });
       if (chosen.length === count) break;
     }
     return chosen;
   };
-  const network = { desktop: pickLabels("art/network.json", 7), mobile: pickLabels("art/network-mobile.json", 4, 24), orgCount: combined.orgCount };
+  const network = { desktop: pickLabels("art/network.json", 7), mobile: pickLabels("art/network-mobile.json", 3, 24, 40, 9), orgCount: combined.orgCount };
 
   const contributors = mergeContributors(snapshot.contributors);
   const community = { count: contributors.length, faces: contributors.slice(0, 10).map((c) => ({ login: c.login, name: c.name, avatarUrl: c.avatarUrl, profileUrl: c.profileUrl })) };

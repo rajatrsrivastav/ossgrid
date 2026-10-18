@@ -7,13 +7,14 @@
 
 @theme inline {
   /* Fonts (loaded with next/font in layout.tsx) */
-  --font-heading: var(--font-instrument), "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* v4: display serif and geometric UI sans site-wide (CRED_INSPIRED_DESIGN.md). */
+  --font-heading: var(--font-newsreader), Georgia, serif;
+  --font-sans: var(--font-manrope), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), "JetBrains Mono", ui-monospace, monospace;
 
-  --tracking-display: -0.035em;
+  --tracking-display: -0.022em;
   --tracking-tight: -0.015em;
-  --leading-display: 1.05;
+  --leading-display: 1.0;
   --leading-body: 1.55;
 
   /* Type scale: 12 / 14 / 16 / 18 / 20 / 24 / 32 / 40 */
@@ -27,11 +28,12 @@
   --font-size-4xl: 2.5rem;
 
   /* Radius tiers */
-  --radius-chip: 6px;
-  --radius-control: 8px;
-  --radius-card: 12px;
-  --radius-panel: 16px;
-  --radius-hero: 24px;
+  /* v4: tighter, editorial radii. */
+  --radius-chip: 3px;
+  --radius-control: 4px;
+  --radius-card: 6px;
+  --radius-panel: 8px;
+  --radius-hero: 12px;
   --radius-pill: 9999px;
   /* Tailwind radius utilities map onto the tiers */
   --radius-sm: 6px;
@@ -122,7 +124,7 @@
 
   --chart-1: #22c55e;
   --chart-2: #4ade80;
-  --chart-3: #a78bfa;
+  --chart-3: #9a9aa2; /* v4: neutral silver instead of purple */
   --chart-4: #f59e0b;
 
   /* Compatibility aliases (older components). Prefer the role tokens above. */
@@ -200,7 +202,7 @@
 
   --chart-1: #15803d;
   --chart-2: #4ade80;
-  --chart-3: #7c3aed;
+  --chart-3: #6b675f;
   --chart-4: #b45309;
 }
 
@@ -245,12 +247,13 @@ button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
 /* ---------------------------------------------------------------------------
    Text roles
    --------------------------------------------------------------------------- */
+/* v4: a quiet sentence-case label, not a tracked uppercase eyebrow. */
 .eyebrow {
-  font-family: var(--font-mono);
-  font-size: var(--font-size-xs);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
   font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--text-muted);
 }
 
@@ -262,6 +265,9 @@ button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
 
 .display {
   font-family: var(--font-heading);
+  font-optical-sizing: auto;
+  font-variation-settings: "opsz" 72;
+  font-weight: 700;
   letter-spacing: var(--tracking-display);
   line-height: var(--leading-display);
   text-wrap: balance;
@@ -338,12 +344,13 @@ button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
 .btn-sm { height: 32px; padding: 0 12px; font-size: var(--font-size-xs); gap: 6px; }
 .btn-lg { height: 48px; padding: 0 22px; font-size: var(--font-size-base); }
 
+/* v4: the primary action is ink on paper (or paper on ink); green stays a rare accent. */
 .btn-primary {
-  background: var(--accent);
-  color: var(--accent-fg);
-  border-color: var(--accent);
+  background: var(--text-primary);
+  color: var(--bg-base);
+  border-color: var(--text-primary);
 }
-.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-primary:hover { background: color-mix(in srgb, var(--text-primary) 86%, var(--bg-base)); border-color: transparent; }
 
 .btn-secondary {
   background: var(--bg-raised);
@@ -775,7 +782,8 @@ header.cine .icon-btn-bordered { border-color: transparent; background: transpar
 /* Mission: words brighten as the paragraph scrolls through the viewport (CSS scroll timeline). */
 .cine-story { font-size: clamp(1.35rem, 2.15vw, 2.05rem); line-height: 1.32; max-width: 34ch; letter-spacing: -0.012em; font-weight: 500; color: var(--cine-fg); }
 @supports (animation-timeline: view()) {
-  .cine-story .w { opacity: 0.22; animation: cineWord linear both; animation-timeline: view(); animation-range: entry 40% cover 46%; }
+  /* Starts at 50 % so even the dimmed state keeps ~4.6:1 contrast (WCAG AA). */
+  .cine-story .w { opacity: 0.5; animation: cineWord linear both; animation-timeline: view(); animation-range: entry 40% cover 46%; }
 }
 @keyframes cineWord { to { opacity: 1; } }
 
@@ -826,6 +834,9 @@ header.cine .icon-btn-bordered { border-color: transparent; background: transpar
 .cine-network img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
 .cine-node {
   position: absolute;
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
   transform: translate(-50%, calc(-100% - 10px));
   white-space: nowrap;
   font-size: 0.8rem;
@@ -842,4 +853,49 @@ header.cine .icon-btn-bordered { border-color: transparent; background: transpar
 
 @media (prefers-reduced-motion: reduce) {
   .cine-story .w, .cine-exhibit__art img { animation: none !important; opacity: 1 !important; clip-path: none !important; transform: none !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   Internal page masthead (Phase 3): an always-dark opening band with a large serif
+   title. Program pages fade their exhibit art in behind the copy.
+   --------------------------------------------------------------------------- */
+.cine {
+  --bg-card: #111214;
+  --bg-raised: #0d0e10;
+  --bg-input: #16171b;
+  --shadow-card: none;
+}
+.cine-masthead {
+  position: relative;
+  isolation: isolate;
+  background: var(--cine-bg);
+  border-bottom: 1px solid var(--cine-line);
+  padding-block: clamp(36px, 7vh, 88px) clamp(36px, 6vh, 72px);
+}
+.cine-masthead[data-art]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: linear-gradient(90deg, rgba(5, 5, 6, 0.97) 0%, rgba(5, 5, 6, 0.8) 42%, rgba(5, 5, 6, 0.3) 100%), linear-gradient(to top, rgba(5, 5, 6, 0.9), rgba(5, 5, 6, 0) 40%), var(--masthead-art);
+  background-size: cover;
+  background-position: center 62%;
+}
+.cine-masthead[data-art="gsoc"] { --masthead-art: image-set(url("/art/exhibit-gsoc-1600.avif") type("image/avif"), url("/art/exhibit-gsoc-1600.webp") type("image/webp")); }
+.cine-masthead[data-art="lfx"] { --masthead-art: image-set(url("/art/exhibit-lfx-1600.avif") type("image/avif"), url("/art/exhibit-lfx-1600.webp") type("image/webp")); }
+@media (max-width: 640px) {
+  .cine-masthead[data-art]::before { background-image: linear-gradient(to bottom, rgba(5, 5, 6, 0.55), rgba(5, 5, 6, 0.95) 70%), var(--masthead-art); background-position: center top; }
+  .cine-masthead[data-art="gsoc"] { --masthead-art: image-set(url("/art/exhibit-gsoc-mobile-780.avif") type("image/avif"), url("/art/exhibit-gsoc-mobile-780.webp") type("image/webp")); }
+  .cine-masthead[data-art="lfx"] { --masthead-art: image-set(url("/art/exhibit-lfx-mobile-780.avif") type("image/avif"), url("/art/exhibit-lfx-mobile-780.webp") type("image/webp")); }
+}
+.masthead-title {
+  font-family: var(--font-heading);
+  font-optical-sizing: auto;
+  font-variation-settings: "opsz" 72;
+  font-weight: 720;
+  font-size: clamp(2.5rem, 5.4vw, 5.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.024em;
+  color: var(--cine-fg);
+  text-wrap: balance;
 }

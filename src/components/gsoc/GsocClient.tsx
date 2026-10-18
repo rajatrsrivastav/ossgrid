@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import Link from "next/link";
-import { ArrowLeft, ExternalLink, Info } from "lucide-react";
+import { ExternalLink, Info } from "lucide-react";
 import type Fuse from "fuse.js";
 import type { GsocOrganization } from "@/lib/types";
 import type { ExplorerOrg } from "@/lib/explorer/types";
@@ -10,6 +9,7 @@ import { makeGsocConfig, gsocToExplorerOrg, gsocCurrentYear } from "@/lib/explor
 import { createExplorerIndex, createExplorerIndexFromPrebuilt } from "@/lib/explorer/filter";
 import { gsocCalendar } from "@/data/programs";
 import ExplorerShell from "@/components/explorer/ExplorerShell";
+import PageMasthead from "@/components/PageMasthead";
 import GsocAboutModal from "@/components/gsoc/GsocAboutModal";
 
 const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
@@ -66,30 +66,13 @@ export default function GsocClient({ stats }: GsocClientProps) {
       loading={loading}
       searchIndex={searchIndex}
       overlays={<GsocAboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />}
-      intro={() => (
-        <>
-          <section className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl">
-              <Link href="/" className="mb-4 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-                <ArrowLeft size={13} aria-hidden="true" /> All programs
-              </Link>
-              <p className="eyebrow mb-2">Google Summer of Code</p>
-              <h1 className="display text-3xl font-semibold text-[var(--text-primary)] md:text-4xl">
-                Google Summer of Code organizations
-              </h1>
-              <p className="mt-3 text-base leading-relaxed text-[var(--text-secondary)]">
-                Every organization accepted into GSoC from {stats.yearMin} to {stats.yearMax}, with the projects it ran each year, its technologies and its ideas list. Pick orgs that keep coming back, read their past projects, then start contributing before applications open.
-              </p>
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                <button type="button" onClick={() => setAboutOpen(true)} className="btn btn-secondary btn-sm">
-                  <Info size={13} aria-hidden="true" /> How GSoC works
-                </button>
-                <a href={gsocCalendar.portalUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
-                  Official GSoC site <ExternalLink size={12} aria-hidden="true" />
-                </a>
-              </div>
-            </div>
-
+      masthead={() => (
+        <PageMasthead
+          art="gsoc"
+          crumbs={[{ label: "Home", href: "/" }, { label: "Programs", href: "/#programs" }, { label: "Google Summer of Code" }]}
+          title="Google Summer of Code organizations"
+          lede={<p>Every organization accepted into GSoC from {stats.yearMin} to {stats.yearMax}, with the projects it ran each year, its technologies and its ideas list. Pick orgs that keep coming back, read their past projects, then start contributing before applications open.</p>}
+          aside={
             <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-4 lg:min-w-[520px]">
               {[
                 { label: "Organizations", value: String(stats.orgCount) },
@@ -103,10 +86,22 @@ export default function GsocClient({ stats }: GsocClientProps) {
                 </div>
               ))}
             </dl>
-          </section>
-
+          }
+        >
+          <div className="flex flex-wrap items-center gap-2">
+            <button type="button" onClick={() => setAboutOpen(true)} className="btn btn-secondary btn-sm">
+              <Info size={13} aria-hidden="true" /> How GSoC works
+            </button>
+            <a href={gsocCalendar.portalUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
+              Official GSoC site <ExternalLink size={12} aria-hidden="true" />
+            </a>
+          </div>
+        </PageMasthead>
+      )}
+      intro={() => (
+        <>
           {/* Yearly cycle */}
-          <section aria-labelledby="cycle-heading" className="mb-10">
+          <section aria-labelledby="cycle-heading" className="mb-10 mt-4">
             <div className="mb-3 flex items-baseline justify-between gap-3">
               <h2 id="cycle-heading" className="text-lg font-semibold text-[var(--text-primary)]">The yearly cycle</h2>
               <p className="text-xs text-[var(--text-muted)]">

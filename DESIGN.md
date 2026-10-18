@@ -1,6 +1,8 @@
-# DESIGN.md — OSSGrid design system v3
+# DESIGN.md — OSSGrid design system v4
 
 Single source of truth for how OSSGrid looks and reads. Tokens live in `src/app/globals.css`. If a component needs a value that is not a token, add the token first.
+
+**v4 (October 2026)** applies the cinematic direction in `CRED_INSPIRED_DESIGN.md`: a near-black art-led home story, a display serif, ink primary buttons, tighter radii, and an always-dark masthead on every internal page. The review evidence is in `design/visual-review.md`.
 
 ## 1. Principles
 
@@ -39,10 +41,11 @@ Rules: no gradients. Program colour appears in three places only: the 2 px left 
 
 ## 3. Type
 
-- Instrument Sans for display headings (`.display`), Inter for UI, JetBrains Mono with `tnum` for numbers, dates, counts and code (`.num`). Mono is never used for sentences.
+- **Newsreader** (optical size 72, weight 700–760) for display headings (`.display`, `.masthead-title`, `.cine-title`, `.cine-h2`). **Manrope** for UI and prose. JetBrains Mono with `tnum` for numbers, dates, counts and code (`.num`). Mono is never used for sentences.
+- Home and story headlines are lowercase and short (one to three deliberate lines); internal page titles keep normal capitalisation because they name things.
 - Scale: 12 / 14 / 16 / 18 / 20 / 24 / 32 / 40. Headline on the landing page may go to 64 px.
 - Weights: 400 body, 500 labels, 600 card titles and buttons, 600 section H2. No 800 or 900.
-- Section eyebrow (`.eyebrow`): 12 px, mono, uppercase, `letter-spacing: .08em`, `--text-muted`. The only uppercase style.
+- Labels (`.eyebrow`): 14 px sentence case in the UI sans, `--text-muted`. No tracked uppercase labels.
 - Line length: `.prose-measure` caps prose at 68ch.
 - Minimum UI text size is 12 px. 10 px is not used anywhere.
 
@@ -50,11 +53,11 @@ Rules: no gradients. Program colour appears in three places only: the 2 px left 
 
 | Tier | Radius | Class | Examples |
 |---|---|---|---|
-| Chip | 6 px | `.chip`, `kbd.key` | Tech tags, year labels |
-| Control | 8 px | `.btn`, `.field`, `.icon-btn`, facet rows | Buttons, inputs, toggles |
-| Card | 12 px | `.card` | Org, program, project, term cards |
-| Panel | 16 px | `.panel`, `.cmd-palette` | Sidebar, modals, toolbar, FAQ list |
-| Hero | 24 px | `rounded-[var(--radius-hero)]` | Landing preview frame only |
+| Chip | 3 px | `.chip`, `kbd.key` | Tech tags, year labels |
+| Control | 4 px | `.btn`, `.field`, `.icon-btn`, facet rows | Buttons, inputs, toggles (cinematic buttons `.cine-btn` use 2 px) |
+| Card | 6 px | `.card` | Org, program, project, term cards |
+| Panel | 8 px | `.panel`, `.cmd-palette` | Sidebar, modals, toolbar, FAQ list |
+| Hero | 12 px | `rounded-[var(--radius-hero)]` | Reserved |
 | Pill | 9999 px | `.pill` | Status badges only |
 
 Dark mode: no drop shadows on cards; depth is surface step + `--border` + `--highlight-inset`. Shadows only on overlays (`--shadow-lg`, `--shadow-modal`). Light mode: `--shadow-card` on cards, `--shadow-lg` on overlays. No glow blobs, no blur circles, no ring+shadow stacks.
@@ -74,7 +77,11 @@ Dark mode: no drop shadows on cards; depth is surface step + `--border` + `--hig
 - **Empty state**: 24 px muted icon, one sentence saying exactly what did not match, one sentence of advice, one button.
 - **Loading**: skeletons that match card geometry. No spinners.
 - **Error**: plain sentence, "Try again", link to the issue tracker.
-- **Buttons**: `.btn-primary` (solid accent, dark text in dark mode), `.btn-secondary` (bordered), `.btn-ghost`. Sizes `.btn-sm` 32 px, default 40 px, `.btn-lg` 48 px. Never scale on hover.
+- **Buttons**: `.btn-primary` is ink on paper (light) or paper on ink (dark), never green; `.btn-secondary` (bordered), `.btn-ghost`. On always-dark surfaces use `.cine-btn--solid` and `.cine-btn--line` (52 px). Sizes `.btn-sm` 32 px, default 40 px, `.btn-lg` 48 px. Never scale on hover. Green is a rare accent: focus rings, active facets, a few lit details in artwork.
+- **Masthead** (`PageMasthead`): every internal page opens with an always-dark band: breadcrumb, sentence-case label, `.masthead-title`, lede, actions, optional facts strip. GSoC and LFX pages fade their exhibit art in behind the copy (`data-art`).
+- **Home story** (`src/components/home/`): hero, mission, program exhibits, featured organizations, programs directory, network, playbook, FAQ, community, closing CTA. Art-led chapters use `.cine` (always dark); the directory, playbook and FAQ follow the theme.
+- **Artwork**: original renders from `scripts/art/` (three.js offline), shipped as AVIF/WebP. Shapes come from real data; live HTML carries all text. Never use third-party artwork.
+- **Footer**: always dark; three link groups from the registry (Programs, Resources, Community), data attribution, and a non-collapsible bottom line "Built with ❤️ by Rajat Srivastav" linking to https://x.com/rajatrsrivastav. No contributor names in the footer.
 
 ## 7. Motion
 

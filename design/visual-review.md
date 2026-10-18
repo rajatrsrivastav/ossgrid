@@ -1,7 +1,7 @@
 # Visual review log: CRED-inspired redesign
 
 Spec: `CRED_INSPIRED_DESIGN.md` (repo root). Brief: `CLAUDE_OSSGRID_CINEMATIC_REDESIGN_PROMPT.md`.
-Status: **Phases 0, 1 and 2 complete (hero approved 2026-10-18). Phase 3 (internal pages) not started.**
+Status: **Phases 0 to 3 complete (hero approved 2026-10-18, home story approved 2026-10-19).**
 
 ## Tools actually used
 
@@ -126,3 +126,43 @@ Story paragraph at 34ch and ~2 rem; header stays cinematic with a dark backdrop 
 - Reduced motion: scroll-driven word and image reveals are off; content fully visible.
 - Gates: lint, typecheck, check:copy, test:data 34/34, audit:data, build, Playwright 24/24 (landing test now asserts every chapter, the exhibit routes, the community link and every network/featured link pattern).
 - Home route JS: 241 kB gzipped (unchanged; all art is AVIF/WebP, 4–44 kB per size, lazy-loaded below the hero).
+
+
+## Phase 3: internal pages (after home story approval)
+
+Routes reviewed at 1440×900 and 390×844, dark and light: `/gsoc`, `/gsoc/[slug]`, `/lfx`, `/organization/[slug]`, `/proposals`, `/guide`, `/programs/[id]`, `/contributors`, `/contribute`, 404.
+
+### Before (`phase3/b0-overview.webp`)
+Every internal page still wore the v3 dashboard look: sans headings around 36 px, green primary buttons, tracked uppercase mono eyebrows, 12–16 px card radii. `/contributors` listed the creator as the first card in the contributor grid.
+
+### System pass (DESIGN.md v4)
+Display serif and Manrope site-wide; ink-on-paper primary buttons (green only as a rare accent); radii 3/4/6/8 px; sentence-case labels; purple chart series replaced with silver; dark grouped footer from the registry with the non-collapsible founder credit.
+
+### Round 1 (`phase3/r1-overview.webp`): largest differences
+1. Page openings were small headings on plain background; the home story opens with monumental serif and art.
+2. The GSoC and LFX exhibit art existed but was unused on their own pages.
+3. Organization pages opened with a raised dashboard panel.
+4. Guide, proposals, program previews, contributors and contribute all repeated the small-heading pattern.
+5. The organization chart still used a purple series.
+
+### Round 2 (`phase3/r2-overview.webp`, `phase3/r2-light-mobile.webp`): after fixes
+`PageMasthead` gives every internal page an always-dark opening band with a large serif title; GSoC, LFX, proposals and organization pages fade their exhibit art in behind the copy. Facts strips sit inside the masthead. Light mode pairs the dark masthead with paper content, matching the home rhythm.
+
+### Product rules checked
+- `/contributors`: OSSGrid contributors only (snapshot plus GitHub refresh), Akhilesh Kumar included once; the creator is credited on a separate labelled line, not in the directory.
+- `/contribute`: separates contributing to OSSGrid from contributing to indexed projects; six-step path; selected-repo actions.
+- Repository actions (from main, restyled only): View Repository, Contribute (contributing guide or README), Report Issue only when issues are enabled, View Contributors, all from the real GitHub URL.
+- Footer: no contributor names, groups from the registry, bottom line "Built with ❤️ by Rajat Srivastav" linking to https://x.com/rajatrsrivastav, nothing collapsible.
+
+### Accessibility
+- One `main` per page, starting with its masthead; h1 inside `main` on all ten routes (three pages previously had no `main`, seven had the h1 outside it).
+- New `e2e/a11y.spec.ts` runs axe (WCAG 2.0/2.1/2.2 A and AA rules) on ten routes at both viewports; serious and critical violations fail the build. Found and fixed: dimmed mission words below AA contrast, network labels too close on mobile, proposal title links under the 24 px target size.
+
+### Checks
+- Gates: lint, typecheck, check:copy, test:data 34/34, audit:data, build.
+- Playwright: 44 tests (smoke, contribution, repository actions, accessibility) at desktop and mobile, run twice: 88/88.
+- Route JS gzipped: home 241 kB, /gsoc and /lfx 216 kB, /proposals 200 kB, /guide 188 kB, /contributors 192 kB.
+
+### Known differences that remain
+- Explorer organization cards and filter sidebars keep their v3 structure (now in v4 type, colour and radii); a deeper redesign of the dense directory would trade away scanning speed.
+- The 404 and error pages use the v4 tokens but no masthead.
