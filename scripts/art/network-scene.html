@@ -1,0 +1,119 @@
+<!doctype html>
+<!-- Contribution network artwork: chrome spheres for the largest GSoC and LFX organizations
+     (radius from projects), joined where two orgs share technologies, over a reflective floor.
+     Exposes projected node positions so the page can place live, linked labels on top. -->
+<html><head><meta charset="utf-8" />
+<style>html,body{margin:0;background:#050506;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{ "imports": { "three": "/node_modules/three/build/three.module.js", "three/addons/": "/node_modules/three/examples/jsm/", "d3-force": "/node_modules/d3-force/src/index.js", "d3-quadtree": "/node_modules/d3-quadtree/src/index.js", "d3-dispatch": "/node_modules/d3-dispatch/src/index.js", "d3-timer": "/node_modules/d3-timer/src/index.js" } }</script>
+</head><body>
+<script type="module">
+import { THREE, W, H, variant, prng, makeRenderer, gradientSky, radialTexture, environment, finish, project } from "/scripts/art/kit.js";
+import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from "d3-force";
+
+const rand = prng(2024);
+const gsoc = await fetch("/public/data/gsoc/organizations.json").then((r) => r.json());
+const lfx = await fetch("/public/data/organizations.json").then((r) => r.json());
+const nodes = [
+  ...gsoc.sort((a, b) => b.projectCount - a.projectCount).slice(0, 34).map((o) => ({ id: `gsoc:${o.slug}`, name: o.name, href: `/gsoc/${o.slug}`, projects: o.projectCount, tech: new Set(o.technologies.map((t) => t.toLowerCase())), program: "gsoc" })),
+  ...lfx.sort((a, b) => b.projectCount - a.projectCount).slice(0, 12).map((o) => ({ id: `lfx:${o.id}`, name: o.name, href: `/organization/${o.id}`, projects: o.projectCount, tech: new Set(o.technologies.map((t) => t.toLowerCase())), program: "lfx" })),
+];
+const links = [];
+for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+  let shared = 0; for (const t of nodes[i].tech) if (nodes[j].tech.has(t)) shared++;
+  if (shared >= 4) links.push({ source: nodes[i].id, target: nodes[j].id, shared });
+}
+links.sort((a, b) => b.shared - a.shared);
+const kept = links.slice(0, 90);
+
+const sim = forceSimulation(nodes.map((n) => ({ ...n, x: (rand() - 0.5) * 20, y: (rand() - 0.5) * 20 })))
+  .force("link", forceLink(kept).id((d) => d.id).distance(9).strength(0.05))
+  .force("charge", forceManyBody().strength(-140))
+  .force("collide", forceCollide().radius((d) => 0.9 + Math.sqrt(d.projects) * 0.11))
+  .force("center", forceCenter(0, 0))
+  .stop();
+for (let i = 0; i < 400; i++) sim.tick();
+const placed = sim.nodes();
+// Normalise the layout into a fixed footprint so the camera frames the whole cluster.
+const xs = placed.map((n) => n.x), ys = placed.map((n) => n.y);
+const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+const span = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
+const WIDTH = variant === "mobile" ? 10 : 24, DEPTH = variant === "mobile" ? 10 : 8;
+for (const n of placed) { n.x = ((n.x - cx) / span) * WIDTH; n.y = ((n.y - cy) / span) * DEPTH; }
+const byId = new Map(placed.map((n) => [n.id, n]));
+
+const renderer = makeRenderer({ exposure: 1.0 });
+const scene = new THREE.Scene();
+scene.background = gradientSky([[0, "#020203"], [0.55, "#07080a"], [0.75, "#0e1115"], [1, "#050506"]]);
+scene.fog = new THREE.FogExp2(0x050607, 0.03);
+environment(renderer, scene, 0.45);
+
+// Glossy black floor: picks up soft highlights and shadows without mirror artefacts.
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: 0x020203, metalness: 0.4, roughness: 0.38, envMapIntensity: 0.12 }));
+floor.rotation.x = -Math.PI / 2;
+floor.receiveShadow = true;
+scene.add(floor);
+
+const chrome = new THREE.MeshPhysicalMaterial({ color: 0xd8dadd, metalness: 1, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.08 });
+const chromeLfx = new THREE.MeshPhysicalMaterial({ color: 0xb9c7c1, metalness: 1, roughness: 0.16, clearcoat: 1, clearcoatRoughness: 0.1 });
+const points = [];
+// Radii from projects; then push apart any spheres that overlap on the floor plane.
+for (const n of placed) n.r = 0.16 + Math.sqrt(n.projects) * 0.045;
+for (let pass = 0; pass < 60; pass++) {
+  for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) {
+    const a = placed[i], b = placed[j];
+    const dx = b.x - a.x, dz = b.y - a.y, d = Math.hypot(dx, dz) || 0.001, min = a.r + b.r + 0.35;
+    if (d < min) { const push = (min - d) / 2; a.x -= (dx / d) * push; a.y -= (dz / d) * push; b.x += (dx / d) * push; b.y += (dz / d) * push; }
+  }
+}
+for (const n of placed) {
+  const r = n.r;
+  const y = r + 0.25 + rand() * 2.4;
+  n.pos = new THREE.Vector3(n.x, y, n.y - 2);
+  const s = new THREE.Mesh(new THREE.SphereGeometry(r, 96, 64), n.program === "lfx" ? chromeLfx : chrome);
+  s.position.copy(n.pos);
+  s.castShadow = true;
+  scene.add(s);
+  points.push({ id: n.id, position: n.pos, radius: r });
+}
+const linkMat = new THREE.MeshStandardMaterial({ color: 0x0c2a1a, emissive: 0x1ac66e, emissiveIntensity: 1.4, transparent: true, opacity: 0.7 });
+for (const l of kept) {
+  const a = byId.get(typeof l.source === "object" ? l.source.id : l.source).pos, b = byId.get(typeof l.target === "object" ? l.target.id : l.target).pos;
+  const len = a.distanceTo(b);
+  const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, len, 6), linkMat);
+  cyl.position.copy(a).add(b).multiplyScalar(0.5);
+  cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize());
+  scene.add(cyl);
+}
+
+// Strip lights overhead give the chrome its long highlights; a low back glow outlines the cluster.
+for (const [x, z, w] of [[-8, -2, 18], [6, -10, 14], [0, 8, 22]]) {
+  const strip = new THREE.Mesh(new THREE.PlaneGeometry(w, 0.6), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide }));
+  strip.position.set(x, 16, z); strip.rotation.x = Math.PI / 2;
+  scene.add(strip);
+}
+const key = new THREE.DirectionalLight(0xe8eef4, 1.2);
+key.position.set(-8, 14, 6);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+Object.assign(key.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, near: 1, far: 60 });
+scene.add(key);
+const back = new THREE.Mesh(new THREE.PlaneGeometry(90, 30), new THREE.MeshBasicMaterial({ map: radialTexture("rgba(120,150,170,0.45)", "rgba(40,60,70,0.15)"), transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
+back.position.set(0, 6, -50);
+scene.add(back);
+
+const camera = new THREE.PerspectiveCamera(variant === "mobile" ? 52 : 30, W / H, 0.1, 400);
+if (variant === "mobile") { camera.position.set(0, 3.2, 15); camera.lookAt(0, 1.4, -2); }
+else { camera.position.set(0, 2.9, 21); camera.lookAt(0, 1.5, -2); }
+
+await finish(renderer, scene, camera, { bloom: [0.45, 0.4, 0.92], bokeh: { focus: 22, aperture: 0.0009, maxblur: 0.006 } });
+const projected = project(camera, points);
+window.__meta = {
+  nodes: placed.map((n) => {
+    const p = projected.find((q) => q.id === n.id);
+    return { id: n.id, name: n.name, href: n.href, program: n.program, projects: n.projects, x: p.x, y: p.y, top: p.top, visible: p.visible };
+  }),
+  links: kept.length,
+};
+window.__done = true;
+</script>
+</body></html>

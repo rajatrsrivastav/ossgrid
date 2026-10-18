@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { FeaturedOrg } from "./HomePageClient";
+import type { StagedOrg } from "@/lib/home-data";
 import { getProgram } from "@/data/programs";
 
 export interface HeroCounts {
@@ -14,7 +14,7 @@ export interface HeroCounts {
 interface CinematicHeroProps {
   counts: HeroCounts;
   /** Real organizations staged in the scene, already ordered. */
-  staged: FeaturedOrg[];
+  staged: StagedOrg[];
   /** Blurred inline placeholders shown until the artwork loads. */
   lqip: { desktop: string; mobile: string };
 }

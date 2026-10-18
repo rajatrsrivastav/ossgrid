@@ -29,8 +29,8 @@ export function SectionHeading({
       )}
       {...props}
     >
-      {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-      <Tag className="display text-3xl font-semibold text-[var(--text-primary)] md:text-4xl">{title}</Tag>
+      {eyebrow && <p className="font-ui text-sm text-[var(--text-muted)]">{eyebrow}</p>}
+      <Tag className="font-display text-[clamp(2.2rem,4.6vw,4.25rem)] font-bold leading-[1] tracking-[-0.022em] text-[var(--text-primary)]">{title}</Tag>
       {description && (
         <p className="prose-measure text-base leading-relaxed text-[var(--text-secondary)] md:text-lg">{description}</p>
       )}

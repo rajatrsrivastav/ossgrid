@@ -1,7 +1,7 @@
 # Visual review log: CRED-inspired redesign
 
 Spec: `CRED_INSPIRED_DESIGN.md` (repo root). Brief: `CLAUDE_OSSGRID_CINEMATIC_REDESIGN_PROMPT.md`.
-Status: **Phase 0 and Phase 1 complete. Waiting for visual approval before Phase 2.**
+Status: **Phases 0, 1 and 2 complete (hero approved 2026-10-18). Phase 3 (internal pages) not started.**
 
 ## Tools actually used
 
@@ -43,7 +43,8 @@ CRED captures live in `design/references/cred/` and are git-ignored: they are th
 |---|---|---|---|---|---|---|
 | `public/art/hero-grid-{1080,1600,2560}.{avif,webp}` | Rendered by `scripts/art/hero-scene.html` (three.js r170, MeshPhysical materials, RoomEnvironment reflections, exponential fog, bokeh, bloom), project-owned | Project-owned | Empty (decorative); meaning is carried by live HTML | 16:9 | 6–29 kB each; `fetchpriority=high`; inline 32 px blurred placeholder | Home hero, ≥641 px |
 | `public/art/hero-grid-mobile-{780,1170}.{avif,webp}` | Same scene, portrait camera | Project-owned | Empty | 1:2 | 8–20 kB | Home hero, ≤640 px |
-| GSoC / LFX exhibit art, contribution network | Not made yet | — | — | — | — | Phase 2 |
+| `public/art/exhibit-gsoc-*`, `exhibit-lfx-*` | `scripts/art/gsoc-scene.html`, `lfx-scene.html` via `scripts/art/render.mjs`; shapes from real per-year and per-term counts | Project-owned | Empty (program described beside it) | 16:10 master, shown 21:9 / 4:5 | 4–28 kB, lazy | Program exhibits |
+| `public/art/network-*` + `network*.json` | `scripts/art/network-scene.html`; d3-force layout of real orgs; projected label positions exported | Project-owned | Empty; live HTML labels name the orgs | 2880×1240, mobile 1170×1560 | 6–37 kB, lazy | Network chapter |
 
 Compromise disclosed: the hero art is a real 3D render, not photorealistic CGI. Without an image model or Blender, three.js in headless Chromium (software WebGL) is the strongest renderer available. It reads as dimensional art with real lighting, not as CSS gradients.
 
@@ -80,3 +81,48 @@ Rim light lowered and moved back, bloom threshold raised: the flare is now a dim
 - No horizontal overflow at 390, 768, 1024, 1440 or 1920 px. No console errors from the site (the Cloudflare beacon rejects localhost by design).
 - Gates: lint, typecheck, check:copy, test:data 34/34, audit:data, build (647 pages), Playwright 24/24.
 - Home route JS: 240 kB gzipped (unchanged; the art is images, three.js is dev-only).
+
+
+## Phase 2: home story (after hero approval)
+
+### Story map (CRED reference → OSSGrid chapter)
+
+| CRED (observed) | OSSGrid chapter | Original visual | Theme |
+|---|---|---|---|
+| Serif story paragraph whose words light up while scrolling | Mission: "great work begins / in the open." | Type only; words brighten with a CSS scroll timeline | Always dark |
+| Tall image-led feature tiles | Program exhibits: GSoC and LFX | `exhibit-gsoc` (11 monoliths, one per year, warm low sun) and `exhibit-lfx` (22-terrace ziggurat, one per term, cool light), heights from real counts | Always dark |
+| Product objects on black | Featured organizations | Real logos, a year strip per org (lit squares = years active), real recent project titles | Always dark |
+| (no CRED equivalent; usefulness) | Programs directory | Search into a dashboard; six registry programs as an editorial list with sourced facts | Follows theme |
+| Reflective spheres scene | Network | `network`: chrome spheres for the 46 largest GSoC/LFX orgs, links where 4+ technologies are shared; live labels placed from the render's projection | Always dark |
+| Proof / doorway | Playbook and FAQ (kept) | Existing content, headings moved to the display serif | Follows theme |
+| — | Community | Real OSSGrid contributors from the verified snapshot; explicit split from indexed projects | Always dark |
+| Closing statement | Final CTA | Type only | Always dark |
+
+Removed: logo marquee, dashboards strip, how-it-works cards, stats band (their information now lives in the exhibits, directory and mission).
+
+### Art iterations
+- **v1** (`phase2/art-v1.webp`): GSoC monoliths pure silhouettes with a specular floor blob; LFX rings read as a vinyl record with thick green bands; network camera inside the cluster, links slashing across the frame, mirror artefacts.
+- **v2** (`phase2/art-v2.webp`): warm fill and matte floor for GSoC; LFX rebuilt as a ziggurat with the newest term on top; network still oversized and clumped.
+- **v3–v4** (`phase2/network-v3.webp`, `network-v4*.webp`): smaller spheres with collision separation, spread layout, black floor, visible links.
+
+### Round 1 (`phase2/s1-*.webp`): largest differences
+1. Mission set two display-size elements side by side; CRED uses one at a time.
+2. Header fell back to the old green style once scrolled.
+3. Exhibits were text-led: tall text column, art floating with dead space, title clipped.
+4. LFX art had a hard horizon band; GSoC floor read as a flat orange plane.
+5. Showcase large tile stretched over three rows with an empty middle; network crop showed a third of empty floor; community grid had an empty cell; playbook and FAQ kept uppercase mono eyebrows.
+
+### Round 2 (`phase2/s2-*.webp`): after fixes
+Story paragraph at 34ch and ~2 rem; header stays cinematic with a dark backdrop when scrolled; exhibits are full-width 21:9 art with the program name set on the art and details in a row below; LFX sky blends into fog; showcase is a banner plus three tiles; network cropped to the cluster; "Your name here" cell links to /contribute; sentence-case section labels. Mobile network labels kept 24 % from the edges after one ran off screen.
+
+### Known differences that remain
+- The large showcase tile still stacks its details in one column on desktop rather than splitting into two.
+- The GSoC exhibit crop at 21:9 shows mostly the upper half of the monoliths.
+- Renders are three.js in software WebGL, not photoreal CGI (no image model or Blender available).
+- Playbook and FAQ internals (cards, green buttons) keep the site-wide style until Phase 3.
+
+### Phase 2 checks
+- No horizontal overflow and no site console errors at 1440×900 and 390×844, dark and light.
+- Reduced motion: scroll-driven word and image reveals are off; content fully visible.
+- Gates: lint, typecheck, check:copy, test:data 34/34, audit:data, build, Playwright 24/24 (landing test now asserts every chapter, the exhibit routes, the community link and every network/featured link pattern).
+- Home route JS: 241 kB gzipped (unchanged; all art is AVIF/WebP, 4–44 kB per size, lazy-loaded below the hero).

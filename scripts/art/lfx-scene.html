@@ -1,0 +1,75 @@
+<!doctype html>
+<!-- LFX exhibit artwork: a terraced amphitheatre, one ring per mentorship term since 2019,
+     ring height from projects that term, under cool overhead light. Rendered by scripts/art/render.mjs. -->
+<html><head><meta charset="utf-8" />
+<style>html,body{margin:0;background:#050506;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{ "imports": { "three": "/node_modules/three/build/three.module.js", "three/addons/": "/node_modules/three/examples/jsm/" } }</script>
+</head><body>
+<script type="module">
+import { THREE, W, H, variant, makeRenderer, gradientSky, radialTexture, environment, finish } from "/scripts/art/kit.js";
+
+const orgs = await fetch("/public/data/organizations.json").then((r) => r.json());
+const perTerm = new Map();
+for (const o of orgs) for (const p of o.projects) { const k = `${p.year}-${p.termIndex}`; perTerm.set(k, (perTerm.get(k) || 0) + 1); }
+const terms = [...perTerm.keys()].sort();
+const counts = terms.map((k) => perTerm.get(k));
+const max = Math.max(...counts);
+
+const renderer = makeRenderer({ exposure: 1.0 });
+const scene = new THREE.Scene();
+scene.background = gradientSky([[0, "#020404"], [0.35, "#060c0b"], [0.6, "#0b1716"], [1, "#0b1716"]]);
+scene.fog = new THREE.FogExp2(0x0b1716, 0.03);
+environment(renderer, scene, 0.18);
+
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: 0x090d0d, metalness: 0.8, roughness: 0.45 }));
+floor.rotation.x = -Math.PI / 2;
+floor.receiveShadow = true;
+scene.add(floor);
+
+// A stepped ziggurat: newest term at the centre and highest; each older term is one terrace lower and further out.
+const steel = new THREE.MeshPhysicalMaterial({ color: 0x1a2221, metalness: 0.82, roughness: 0.4, clearcoat: 0.25, clearcoatRoughness: 0.4 });
+const edge = new THREE.MeshStandardMaterial({ color: 0x0b2a1c, emissive: 0x1ac66e, emissiveIntensity: 2.2, metalness: 0.2, roughness: 0.5 });
+const n = terms.length;
+terms.forEach((t, i) => {
+  const step = n - 1 - i; // 0 = newest (centre)
+  const inner = step === 0 ? 0 : 0.9 + step * 0.55, outer = 1.45 + step * 0.55;
+  const h = 0.25 + i * 0.22 + (counts[i] / max) * 0.9;
+  const shape = new THREE.Shape(); shape.absarc(0, 0, outer, 0, Math.PI * 2, false);
+  if (inner > 0) { const hole = new THREE.Path(); hole.absarc(0, 0, inner, 0, Math.PI * 2, true); shape.holes.push(hole); }
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.03, bevelSegments: 2, curveSegments: 160 });
+  geo.rotateX(-Math.PI / 2);
+  const ring = new THREE.Mesh(geo, steel);
+  ring.castShadow = ring.receiveShadow = true;
+  scene.add(ring);
+  // Latest three terms get a thin lit lip, the only accent.
+  if (i >= terms.length - 3) {
+    const lipShape = new THREE.Shape(); lipShape.absarc(0, 0, outer + 0.015, 0, Math.PI * 2, false);
+    const lipHole = new THREE.Path(); lipHole.absarc(0, 0, outer - 0.01, 0, Math.PI * 2, true); lipShape.holes.push(lipHole);
+    const lip = new THREE.Mesh(new THREE.ExtrudeGeometry(lipShape, { depth: 0.02, bevelEnabled: false, curveSegments: 160 }).rotateX(-Math.PI / 2), edge);
+    lip.position.y = h + 0.035;
+    scene.add(lip);
+  }
+});
+
+// Cool overhead key, slightly off axis, for long ring shadows; faint mint fill from the lips.
+const key = new THREE.DirectionalLight(0xe4f1ee, 2.2);
+key.position.set(-14, 22, -10);
+key.castShadow = true;
+key.shadow.mapSize.set(4096, 4096);
+Object.assign(key.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 120 });
+key.shadow.bias = -0.0004;
+scene.add(key);
+scene.add(new THREE.HemisphereLight(0x1d2b29, 0x050707, 0.4));
+const pool = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.MeshBasicMaterial({ map: radialTexture("rgba(170,235,210,0.5)", "rgba(40,120,90,0.15)"), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+pool.rotation.x = -Math.PI / 2; pool.position.y = 0.01; pool.scale.setScalar(3.5);
+scene.add(pool);
+
+const camera = new THREE.PerspectiveCamera(variant === "mobile" ? 48 : 32, W / H, 0.1, 400);
+if (variant === "mobile") { camera.position.set(0, 7.5, 24); camera.lookAt(0, 2.6, 0); }
+else { camera.position.set(6, 6.2, 27); camera.lookAt(0, 2.4, 0); }
+
+await finish(renderer, scene, camera, { bloom: [0.5, 0.5, 0.88], bokeh: { focus: 26, aperture: 0.0012, maxblur: 0.006 } });
+window.__meta = { terms, counts };
+window.__done = true;
+</script>
+</body></html>

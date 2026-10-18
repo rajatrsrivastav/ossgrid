@@ -1,62 +1,39 @@
 "use client";
 
 import Header from "@/components/Header";
-import CinematicHero, { type HeroCounts } from "@/components/home/CinematicHero";
-import { LogoMarquee, type MarqueeOrg } from "@/components/landing/LogoMarquee";
-import { Programs } from "@/components/landing/ProgramsFeatures";
-import { DashboardsStrip } from "@/components/landing/DashboardsStrip";
-import { HowItWorks } from "@/components/landing/HowItWorks";
-import { StatsStrip } from "@/components/landing/StatsStrip";
+import CinematicHero from "@/components/home/CinematicHero";
+import Mission from "@/components/home/story/Mission";
+import Exhibits from "@/components/home/story/Exhibits";
+import Showcase from "@/components/home/story/Showcase";
+import ProgramsDirectory from "@/components/home/story/ProgramsDirectory";
+import NetworkScene from "@/components/home/story/NetworkScene";
+import Community from "@/components/home/story/Community";
+import FinalCta from "@/components/home/story/FinalCta";
 import FirstTimerGuide from "@/components/FirstTimerGuide";
 import FirstTimerFAQ from "@/components/FirstTimerFAQ";
-import type { ProgramStats } from "@/lib/stats";
-import { PROGRAMS, type ProgramId } from "@/data/programs";
+import type { HomeData } from "@/lib/home-data";
 
-export interface FeaturedOrg {
-  id: string;
-  name: string;
-  href: string;
-  logoUrl: string;
-  category: string;
-  projectCount: number;
-  technologies: string[];
-  years: number;
-  program: ProgramId;
-}
-
-export interface CombinedStats {
-  orgCount: number;
-  projectCount: number;
-  orgLabel: string;
-  projectLabel: string;
-  liveCount: number;
-  yearMin: number;
-  yearMax: number;
-}
-
-interface HomePageClientProps {
-  programStats: ProgramStats[];
-  combined: CombinedStats;
-  marquee: MarqueeOrg[];
-  buildDate: string;
-  hero: { counts: HeroCounts; staged: FeaturedOrg[]; lqip: { desktop: string; mobile: string } };
-  proposals: { count: number; orgCount: number; repos: number };
-}
-
-export default function HomePageClient({ programStats, combined, marquee, buildDate, proposals, hero }: HomePageClientProps) {
-  const nf = new Intl.NumberFormat("en-US");
+/**
+ * Home story, in order: hero, mission, program exhibits, featured organizations, the practical
+ * directory, the network scene, playbook, FAQ, community and a closing call to action.
+ * Art-led sections are always dark (.cine); the directory, playbook and FAQ follow the theme.
+ */
+export default function HomePageClient({ data }: { data: HomeData }) {
+  const span = Array.from({ length: data.combined.yearMax - data.combined.yearMin + 1 }, (_, i) => data.combined.yearMin + i);
   return (
     <>
       <Header variant="simple" overlay />
       <main className="-mt-16 flex w-full flex-1 flex-col bg-[var(--bg-base)]">
-        <CinematicHero counts={hero.counts} staged={hero.staged} lqip={hero.lqip} />
-        <LogoMarquee orgs={marquee} />
-        <Programs programStats={programStats} />
-        <DashboardsStrip programStats={programStats} extraTiles={[{ href: "/proposals", title: "Proposals library", count: `${nf.format(proposals.count)} proposals · ${proposals.orgCount} orgs`, verb: "Read proposals" }, { href: "/guide", title: "Contributor playbook", count: `${PROGRAMS.length} program checklists`, verb: "Read the playbook" }]} />
-        <HowItWorks combined={combined} />
-        <StatsStrip programStats={programStats} buildDate={buildDate} extraGroups={[{ id: "proposals", title: "Proposals library", columns: [{ value: proposals.count, label: "Proposals" }, { value: proposals.orgCount, label: "Organizations covered" }, { value: proposals.repos, label: "Archives" }] }]} />
-        <FirstTimerGuide latestYear={combined.yearMax} />
+        <CinematicHero counts={data.hero.counts} staged={data.hero.staged} lqip={data.hero.lqip} />
+        <Mission {...data.mission} />
+        <Exhibits exhibits={data.exhibits} />
+        <Showcase orgs={data.showcase} span={span} />
+        <ProgramsDirectory programStats={data.programStats} />
+        <NetworkScene {...data.network} />
+        <FirstTimerGuide latestYear={data.combined.yearMax} />
         <FirstTimerFAQ />
+        <Community {...data.community} />
+        <FinalCta />
       </main>
     </>
   );

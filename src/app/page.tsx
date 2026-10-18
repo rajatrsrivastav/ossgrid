@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import fs from "fs";
-import path from "path";
-import HomePageClient, { FeaturedOrg } from "@/components/home/HomePageClient";
-import type { MarqueeOrg } from "@/components/landing/LogoMarquee";
+import HomePageClient from "@/components/home/HomePageClient";
 import { safeJsonLd, DEFAULT_OG_IMAGE } from "@/lib/seo";
-import { getProgramStats, getCombinedStats } from "@/lib/stats";
-import { getProposalStats } from "@/lib/proposals-data";
+import { getHomeData } from "@/lib/home-data";
 import { PROGRAMS, livePrograms } from "@/data/programs";
-import type { GsocOrganization, Organization } from "@/lib/types";
 
 const live = livePrograms();
 const programList = live.map((p) => p.shortName).join(", ");
@@ -33,49 +28,12 @@ const homeJsonLd = {
   about: [{ "@type": "Thing", name: "Open Source Software Mentorship" }, ...PROGRAMS.map((p) => ({ "@type": "Thing", name: p.name, url: p.officialUrl }))],
 };
 
-function readJson<T>(rel: string): T {
-  return JSON.parse(fs.readFileSync(path.join(process.cwd(), "public", rel), "utf8"));
-}
-
-function getLandingData(): { featured: Record<string, FeaturedOrg[]>; marquee: MarqueeOrg[] } {
-  const lfx = readJson<Organization[]>("data/organizations.json");
-  const gsoc = readJson<GsocOrganization[]>("data/gsoc/organizations.json");
-  const lfxSorted = [...lfx].sort((a, b) => b.projectCount - a.projectCount);
-  const gsocSorted = [...gsoc].sort((a, b) => b.projectCount - a.projectCount);
-  const featured: Record<string, FeaturedOrg[]> = {
-    lfx: lfxSorted.slice(0, 3).map((o) => ({ id: o.id, name: o.name, href: `/organization/${o.id}`, logoUrl: o.logoUrl, category: o.category, projectCount: o.projectCount, technologies: o.technologies.slice(0, 3), years: o.years.length, program: "lfx" })),
-    gsoc: gsocSorted.slice(0, 3).map((o) => ({ id: o.slug, name: o.name, href: `/gsoc/${o.slug}`, logoUrl: o.logoUrl, category: o.category, projectCount: o.projectCount, technologies: o.technologies.slice(0, 3), years: o.years.length, program: "gsoc" })),
-  };
-  // Mix the two programs so neither reads as the main one.
-  const marquee: MarqueeOrg[] = [];
-  for (let i = 0; i < 12; i++) {
-    const g = gsocSorted[i], l = lfxSorted[i];
-    if (g) marquee.push({ name: g.name, logoUrl: g.logoUrl, program: "gsoc" });
-    if (l) marquee.push({ name: l.name, logoUrl: l.logoUrl.startsWith("data:") ? "" : l.logoUrl, program: "lfx" });
-  }
-  return { featured, marquee };
-}
-
-function readLqip(variant: "desktop" | "mobile"): string {
-  try { return fs.readFileSync(path.join(process.cwd(), "public", "art", `hero-grid-${variant}-lqip.txt`), "utf8").trim(); } catch { return ""; }
-}
-
 export default function HomePage() {
-  const programStats = getProgramStats();
-  const combined = getCombinedStats();
-  const { featured, marquee } = getLandingData();
-  const buildDate = new Date().toISOString().slice(0, 10);
-  const proposals = getProposalStats();
-  const gsocStats = programStats.find((p) => p.id === "gsoc")!;
-  const lfxStats = programStats.find((p) => p.id === "lfx")!;
-  const heroCounts = { gsocOrgs: gsocStats.orgCount, gsocSince: gsocStats.yearMin, lfxOrgs: lfxStats.orgCount, lfxSince: lfxStats.yearMin, projects: combined.projectCount };
-  // Staged in the hero: the largest org from each live program plus the next GSoC org.
-  const staged = [featured.gsoc[0], featured.lfx[0], featured.gsoc[1]].filter(Boolean);
-  const lqip = { desktop: readLqip("desktop"), mobile: readLqip("mobile") };
+  const data = getHomeData();
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(homeJsonLd) }} />
-      <HomePageClient programStats={programStats} combined={combined} marquee={marquee} buildDate={buildDate} proposals={proposals} hero={{ counts: heroCounts, staged, lqip }} />
+      <HomePageClient data={data} />
     </>
   );
 }

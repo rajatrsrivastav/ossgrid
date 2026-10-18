@@ -29,6 +29,16 @@ test("landing page renders programs and a link to the LFX explorer", async ({ pa
     expect(href).toMatch(/^\/(gsoc|organization)\/[a-z0-9-]+$/);
   }
   await expect(page.locator('button[aria-controls="mobile-nav"]')).toHaveCount(1);
+  // Home story: every chapter present, real routes, live labels on the network art.
+  for (const id of ["mission", "live-programs", "featured", "programs", "network", "playbook", "faq", "community"]) {
+    await expect(page.locator(`#${id}`)).toBeAttached();
+  }
+  await expect(page.locator("#live-programs").getByRole("link", { name: "Browse GSoC organizations" })).toHaveAttribute("href", "/gsoc");
+  await expect(page.locator("#live-programs").getByRole("link", { name: "Browse LFX organizations" })).toHaveAttribute("href", "/lfx");
+  await expect(page.locator("#community").getByRole("link", { name: "Start contributing" })).toHaveAttribute("href", "/contribute");
+  for (const href of await page.locator("#network a.cine-node, #featured a").evaluateAll((els) => els.map((e) => e.getAttribute("href")))) {
+    expect(href).toMatch(/^\/(gsoc|organization)\/[a-z0-9-]+$/);
+  }
   await expect(page.getByRole("link", { name: /Browse LFX orgs/i }).first()).toHaveAttribute("href", "/lfx");
   expect(errors).toEqual([]);
   await expect(page).toHaveScreenshot("home.png", { fullPage: false });

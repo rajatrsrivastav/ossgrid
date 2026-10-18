@@ -67,7 +67,8 @@ export default function Header({
   }, [navOpen]);
 
   const isExplorer = variant === "full";
-  const onArt = overlay && !scrolled && !navOpen;
+  // On the home story the header stays cinematic; it only gains a dark backdrop once scrolled.
+  const onArt = overlay;
 
   return (
     <div className="sticky top-0 z-40">
@@ -75,9 +76,11 @@ export default function Header({
         className={cn(
           "w-full border-b transition-colors duration-200",
           onArt && "cine font-ui",
-          scrolled || isExplorer || navOpen
-            ? "border-[var(--border)] bg-[var(--bg-base)]/85 backdrop-blur-md"
-            : "border-transparent bg-transparent"
+          overlay
+            ? scrolled || navOpen ? "border-[var(--border)] bg-[#050506]/80 backdrop-blur-md" : "border-transparent bg-transparent"
+            : scrolled || isExplorer || navOpen
+              ? "border-[var(--border)] bg-[var(--bg-base)]/85 backdrop-blur-md"
+              : "border-transparent bg-transparent"
         )}
       >
         <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center gap-3 px-4 sm:px-6 lg:px-8">
