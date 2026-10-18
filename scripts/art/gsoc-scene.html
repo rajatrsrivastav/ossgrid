@@ -1,0 +1,70 @@
+<!doctype html>
+<!-- GSoC exhibit artwork: one monolith per program year (2016 onward), height from accepted
+     organizations that year, lit by a warm low summer sun. Rendered by scripts/art/render.mjs. -->
+<html><head><meta charset="utf-8" />
+<style>html,body{margin:0;background:#050506;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{ "imports": { "three": "/node_modules/three/build/three.module.js", "three/addons/": "/node_modules/three/examples/jsm/" } }</script>
+</head><body>
+<script type="module">
+import { THREE, W, H, variant, makeRenderer, gradientSky, radialTexture, environment, finish } from "/scripts/art/kit.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+
+const orgs = await fetch("/public/data/gsoc/organizations.json").then((r) => r.json());
+const perYear = new Map();
+for (const o of orgs) for (const y of o.years) perYear.set(y, (perYear.get(y) || 0) + 1);
+const years = [...perYear.keys()].sort((a, b) => a - b);
+const counts = years.map((y) => perYear.get(y));
+const min = Math.min(...counts), max = Math.max(...counts);
+
+const renderer = makeRenderer({ exposure: 1.0 });
+const scene = new THREE.Scene();
+scene.background = gradientSky([[0, "#060403"], [0.45, "#120b06"], [0.62, "#2a1608"], [0.7, "#24150a"], [1, "#0d0906"]]);
+scene.fog = new THREE.FogExp2(0x1d1209, 0.028);
+environment(renderer, scene, 0.12);
+
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: 0x110d0a, metalness: 0.05, roughness: 0.95 }));
+floor.rotation.x = -Math.PI / 2;
+floor.receiveShadow = true;
+scene.add(floor);
+
+// Monoliths along a gentle diagonal, receding left to right.
+const stone = new THREE.MeshPhysicalMaterial({ color: 0x1c1915, metalness: 0.55, roughness: 0.48, clearcoat: 0.2, clearcoatRoughness: 0.5 });
+const latest = new THREE.MeshPhysicalMaterial({ color: 0x2a1c0e, metalness: 0.6, roughness: 0.38, emissive: 0xf59e0b, emissiveIntensity: 0.05 });
+years.forEach((y, i) => {
+  const h = 3.2 + ((counts[i] - min) / (max - min)) * 4.2;
+  const geo = new RoundedBoxGeometry(1.15, h, 0.55, 3, 0.06);
+  const m = new THREE.Mesh(geo, i === years.length - 1 ? latest : stone);
+  m.position.set(-9 + i * 1.95, h / 2, -2 - i * 1.6);
+  m.rotation.y = -0.38;
+  m.castShadow = m.receiveShadow = true;
+  scene.add(m);
+});
+
+// Low warm sun from the right, behind the row: long shadows towards the camera, bright rims.
+const sun = new THREE.DirectionalLight(0xffb15c, 3.4);
+sun.position.set(26, 5.5, -30);
+sun.castShadow = true;
+sun.shadow.mapSize.set(4096, 4096);
+Object.assign(sun.shadow.camera, { left: -40, right: 40, top: 30, bottom: -30, near: 1, far: 140 });
+sun.shadow.bias = -0.0004;
+scene.add(sun);
+scene.add(new THREE.HemisphereLight(0x3a2a1c, 0x0a0806, 0.35));
+// Faint warm fill from the camera side so the faces of the monoliths read, not just silhouettes.
+const fill = new THREE.DirectionalLight(0xffd2a0, 0.45);
+fill.position.set(-14, 6, 20);
+scene.add(fill);
+
+// The sun itself: a glow on the horizon behind the row.
+const glow = new THREE.Mesh(new THREE.PlaneGeometry(70, 40), new THREE.MeshBasicMaterial({ map: radialTexture("rgba(255,190,110,0.85)", "rgba(245,120,30,0.22)"), transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
+glow.position.set(30, 9, -90);
+scene.add(glow);
+
+const camera = new THREE.PerspectiveCamera(variant === "mobile" ? 46 : 30, W / H, 0.1, 400);
+if (variant === "mobile") { camera.position.set(-3, 2.6, 15); camera.lookAt(2, 3.6, -10); }
+else { camera.position.set(-6, 2.4, 17); camera.lookAt(3, 3.4, -10); }
+
+await finish(renderer, scene, camera, { bloom: [0.55, 0.6, 0.82], bokeh: { focus: 20, aperture: 0.0012, maxblur: 0.006 } });
+window.__meta = { years, counts };
+window.__done = true;
+</script>
+</body></html>

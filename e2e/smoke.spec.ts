@@ -7,7 +7,8 @@ import { test, expect, type Page } from "@playwright/test";
 const ORG_SLUG = "kubeedge";
 
 async function settle(page: Page) {
-  await page.waitForLoadState("networkidle");
+  // Third-party widgets (analytics, support button) can keep the network busy; idle is best-effort.
+  await page.waitForLoadState("networkidle", { timeout: 10_000 }).catch(() => {});
   // Freeze CSS animations and scroll-reveals so screenshots are stable.
   await page.addStyleTag({ content: "*, *::before, *::after { animation: none !important; transition: none !important; }" });
   await page.evaluate(() => window.scrollTo(0, 0));
@@ -20,7 +21,68 @@ test("landing page renders programs and a link to the LFX explorer", async ({ pa
   await settle(page);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.locator("#programs")).toBeVisible();
-  await expect(page.getByRole("link", { name: /Browse LFX orgs/i }).first()).toHaveAttribute("href", "/lfx");
+  // Cinematic hero: live headline, two real routes, panels linking to real organization pages.
+  await expect(page.locator("#hero-title")).toHaveText(/find your place\s*in open source\./);
+  await expect(page.locator("#hero").getByRole("link", { name: "Explore programs" })).toHaveAttribute("href", "/#programs");
+  await expect(page.locator("#hero").getByRole("link", { name: "Discover organizations" })).toHaveAttribute("href", "/#explore");
+  for (const href of await page.locator("#hero .cine-panel").evaluateAll((els) => els.map((e) => e.getAttribute("href")))) {
+    expect(href).toMatch(/^\/(gsoc|organization)\/[a-z0-9-]+$/);
+  }
+  await expect(page.locator('button[aria-controls="mobile-nav"]')).toHaveCount(1);
+  // Home story: every chapter present, in order, with real routes.
+  const ids = ["hero", "mission", "programs", "explore", "ecosystem", "playbook", "faq"];
+  const tops = await Promise.all(ids.map((id) => page.locator(`#${id}`).evaluate((el) => el.getBoundingClientRect().top + window.scrollY)));
+  expect([...tops].sort((x, y) => x - y)).toEqual(tops);
+  await expect(page.locator("#programs").getByRole("link", { name: "Browse GSoC organizations" })).toHaveAttribute("href", "/gsoc");
+  await expect(page.locator("#programs").getByRole("link", { name: "Browse LFX organizations" })).toHaveAttribute("href", "/lfx");
+  await expect(page.locator("#programs").getByRole("list", { name: "Programs coming soon" }).getByRole("link")).not.toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Start contributing" }).last()).toHaveAttribute("href", "/contribute");
+  for (const href of await page.locator("#explore .cine-tile a, #ecosystem a.eco__node").evaluateAll((els) => els.map((e) => e.getAttribute("href")))) {
+    expect(href).toMatch(/^\/(gsoc|organization)\/[a-z0-9-]+$/);
+  }
+  // Explore: search lands on the chosen dashboard with the query.
+  await page.locator("#explore").getByRole("searchbox").fill("kubernetes");
+  await page.locator("#explore fieldset label", { hasText: "LFX" }).click();
+  await expect(page.locator("#explore").getByRole("radio", { name: "LFX" })).toBeChecked();
+  await page.locator("#explore").getByRole("button", { name: "Search" }).click();
+  await expect(page).toHaveURL(/\/lfx\?q=kubernetes/);
+  await page.goBack();
+  await settle(page);
+  // Ecosystem: a technology filter dims non-matching spheres; arrow keys move focus.
+  const nodes = page.locator("#ecosystem a.eco__node");
+  expect(await nodes.count()).toBeGreaterThan(30);
+  await page.locator("#ecosystem").getByRole("button", { name: "Python", exact: true }).click();
+  expect(await page.locator("#ecosystem a.eco__node--dim").count()).toBeGreaterThan(0);
+  await page.locator("#ecosystem").getByRole("button", { name: "Python", exact: true }).click();
+  await page.locator('#ecosystem a.eco__node[tabindex="0"]').focus();
+  await expect(page.locator("#ecosystem [role=status]")).toBeVisible();
+  const first = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+  // The first tab stop is the largest organization; move left, away from the right edge.
+  await page.keyboard.press("ArrowLeft");
+  expect(await page.evaluate(() => document.activeElement?.getAttribute("aria-label"))).not.toBe(first);
+  // Playbook and FAQ: disclosure opens and Escape closes the open answer.
+  const steps = page.locator("#playbook").getByRole("button", { name: "Show the steps" }).first();
+  await steps.click();
+  await expect(page.locator("#playbook").getByRole("button", { name: "Hide the steps" })).toHaveAttribute("aria-expanded", "true");
+  const q2 = page.locator("#faq").getByRole("button", { name: "How is LFX different from GSoC?" });
+  await q2.click();
+  await expect(q2).toHaveAttribute("aria-expanded", "true");
+  await page.keyboard.press("Escape");
+  await expect(q2).toHaveAttribute("aria-expanded", "false");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  // Hero scroll sequence: the stage pins while the track scrolls, and the canvas draws frames.
+  if (await page.evaluate(() => matchMedia("(prefers-reduced-motion: no-preference)").matches)) {
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await expect(page.locator("#hero .hero__canvas")).toHaveAttribute("data-drawn", "true", { timeout: 15_000 });
+    const pinned = await page.evaluate(async () => {
+      window.scrollTo({ top: window.innerHeight * 0.6, behavior: "instant" });
+      await new Promise((r) => setTimeout(r, 300));
+      return document.querySelector(".hero__stage")!.getBoundingClientRect().top;
+    });
+    expect(Math.abs(pinned)).toBeLessThan(2);
+  }
+  // The screenshot uses the still poster (frame 0) so it does not depend on animation timing.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   expect(errors).toEqual([]);
   await expect(page).toHaveScreenshot("home.png", { fullPage: false });
 });

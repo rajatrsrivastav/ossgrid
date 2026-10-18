@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
-import { Plus, Minus } from "lucide-react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Section } from "./landing/Section";
-import { SectionHeading } from "./landing/SectionHeading";
+import { Plus } from "lucide-react";
 import { PROGRAMS, livePrograms, lfxCalendar, gsocCalendar } from "@/data/programs";
 import { TOOL_PAGES } from "@/data/site";
 import { cn } from "@/lib/utils";
@@ -14,7 +11,7 @@ const fmt = (iso: string) => new Date(iso + "T00:00:00Z").toLocaleDateString("en
 
 function Source({ href, date }: { href: string; date: string }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[var(--text-primary)]" title={`Checked ${date}`}>
+    <a href={href} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[var(--cine-fg)]" title={`Checked ${date}`}>
       source
     </a>
   );
@@ -35,7 +32,7 @@ function useFaqs() {
         <>
           If you can give a summer and you are new to open source, start with {gsoc.name}: {gsoc.facts.eligibility.value.toLowerCase()} <Source href={gsoc.facts.eligibility.sourceUrl} date={gsoc.facts.eligibility.lastVerified} />.
           If you want a term at any time of year, {lfx.name} runs {lfx.facts.cadence.value.toLowerCase()} <Source href={lfx.facts.cadence.sourceUrl} date={lfx.facts.cadence.lastVerified} />.
-          {" "}{outreachy.name} is for {outreachy.facts.eligibility.value.toLowerCase()} <Source href={outreachy.facts.eligibility.sourceUrl} date={outreachy.facts.eligibility.lastVerified} />. Compare all of them in the Programs section above.
+          {" "}{outreachy.name} is for {outreachy.facts.eligibility.value.toLowerCase()} <Source href={outreachy.facts.eligibility.sourceUrl} date={outreachy.facts.eligibility.lastVerified} />. Compare all of them in the programs chapter above.
         </>
       ),
     },
@@ -63,7 +60,7 @@ function useFaqs() {
         <ul className="list-disc space-y-1 pl-5">
           {PROGRAMS.map((p) => (
             <li key={p.id}>
-              <span className="font-medium text-[var(--text-primary)]">{p.name}:</span> {p.facts.eligibility.value}. <Source href={p.facts.eligibility.sourceUrl} date={p.facts.eligibility.lastVerified} />
+              <span className="font-medium text-[var(--cine-fg)]">{p.name}:</span> {p.facts.eligibility.value}. <Source href={p.facts.eligibility.sourceUrl} date={p.facts.eligibility.lastVerified} />
             </li>
           ))}
         </ul>
@@ -83,7 +80,7 @@ function useFaqs() {
           q: "Where can I read accepted proposals?",
           a: (
             <>
-              On the <Link href={proposals.href} className="underline underline-offset-4 text-[var(--text-primary)]">proposals page</Link>, which indexes public archives of GSoC proposals and links to the original files. Read them for structure; never copy them.
+              On the <Link href={proposals.href} className="underline underline-offset-4 text-[var(--cine-fg)]">proposals page</Link>, which indexes public archives of GSoC proposals and links to the original files. Read them for structure; never copy them.
             </>
           ),
         }]
@@ -100,7 +97,7 @@ function useFaqs() {
           {PROGRAMS.map((p, i) => (
             <span key={p.id}>
               {i > 0 && (i === PROGRAMS.length - 1 ? " and " : ", ")}
-              <a href={p.officialUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[var(--text-primary)]">{p.name}</a>
+              <a href={p.officialUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[var(--cine-fg)]">{p.name}</a>
             </span>
           ))}
           . {live.length} of them are indexed here today.
@@ -111,53 +108,59 @@ function useFaqs() {
   return items;
 }
 
+/** Common questions: serif heading, wide rows with separators, every fact sourced. Escape closes the open answer. */
 export default function FirstTimerFAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
-  const reduceMotion = useReducedMotion();
   const faqs = useFaqs();
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
 
   return (
-    <Section id="faq">
-      <SectionHeading eyebrow="FAQ" title="Common questions" align="center" description="Short answers with a source on every fact. The official docs have the rest." />
+    <section id="faq" aria-labelledby="faq-title" className="cine cine-section">
+      <div className="cine-wrap font-ui grid gap-12 lg:grid-cols-[1fr_1.6fr] lg:gap-20">
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <h2 id="faq-title" className="font-display cine-h2">common questions.</h2>
+          <p className="cine-lede mt-6">Short answers with a source on every fact. The official docs have the rest.</p>
+        </div>
 
-      <div className="mx-auto w-full max-w-3xl divide-y divide-[var(--border)] rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-card)]">
-        {faqs.map((item, idx) => {
-          const isOpen = openIndex === idx;
-          const panelId = `faq-panel-${idx}`;
-          return (
-            <div key={item.q}>
-              <h3>
-                <button
-                  type="button"
-                  onClick={() => setOpenIndex(isOpen ? null : idx)}
-                  className="flex w-full items-center justify-between gap-6 px-5 py-4 text-left md:px-6"
-                  aria-expanded={isOpen}
-                  aria-controls={panelId}
-                >
-                  <span className={cn("text-base font-medium", isOpen ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]")}>{item.q}</span>
-                  <span className="icon-btn icon-btn-bordered h-8 w-8 shrink-0" aria-hidden="true">
-                    {isOpen ? <Minus size={15} /> : <Plus size={15} />}
-                  </span>
-                </button>
-              </h3>
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    id={panelId}
-                    initial={reduceMotion ? false : { height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
-                    transition={{ duration: 0.22, ease: "easeOut" }}
-                    className="overflow-hidden"
+        <div
+          className="border-t border-[var(--cine-line-strong)]"
+          onKeyDown={(e) => {
+            if (e.key === "Escape" && openIndex !== null) {
+              buttons.current[openIndex]?.focus();
+              setOpenIndex(null);
+            }
+          }}
+        >
+          {faqs.map((item, idx) => {
+            const isOpen = openIndex === idx;
+            const panelId = `faq-panel-${idx}`;
+            const buttonId = `faq-button-${idx}`;
+            return (
+              <div key={item.q} className="border-b border-[var(--cine-line)]">
+                <h3>
+                  <button
+                    ref={(el) => { buttons.current[idx] = el; }}
+                    id={buttonId}
+                    type="button"
+                    onClick={() => setOpenIndex(isOpen ? null : idx)}
+                    className="group flex w-full items-center justify-between gap-6 py-6 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cine-accent)] md:py-7"
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
                   >
-                    <div className="prose-measure px-5 pb-5 text-sm leading-relaxed text-[var(--text-secondary)] md:px-6">{item.a}</div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          );
-        })}
+                    <span className={cn("text-[1.125rem] font-semibold leading-snug transition-colors md:text-[1.3rem]", isOpen ? "text-[var(--cine-fg)]" : "text-[var(--cine-fg-2)] group-hover:text-[var(--cine-fg)]")}>{item.q}</span>
+                    <Plus size={20} className={cn("shrink-0 text-[var(--cine-fg-2)] transition-transform duration-300", isOpen && "rotate-45 text-[var(--cine-fg)]")} aria-hidden="true" />
+                  </button>
+                </h3>
+                <div id={panelId} role="region" aria-labelledby={buttonId} className="disclose" data-open={isOpen} inert={!isOpen}>
+                  <div>
+                    <div className="faq-answer max-w-[44rem] pb-7 text-base leading-relaxed text-[var(--cine-fg-2)] md:text-[1.05rem]">{item.a}</div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </Section>
+    </section>
   );
 }

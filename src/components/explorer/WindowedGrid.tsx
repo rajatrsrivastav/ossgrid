@@ -32,7 +32,7 @@ export default function WindowedGrid({ items, renderItem }: WindowedGridProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {items.slice(0, visibleCount).map((org) => renderItem(org))}
       </div>
       {visibleCount < items.length && <div ref={sentinelRef} aria-hidden="true" />}

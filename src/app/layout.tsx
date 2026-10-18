@@ -1,16 +1,10 @@
-import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Instrument_Sans } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { JetBrains_Mono, Newsreader, Manrope } from "next/font/google";
 import ThemeProvider from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
 import { safeJsonLd } from "@/lib/seo";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains",
@@ -18,12 +12,27 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-const instrumentSans = Instrument_Sans({
-  variable: "--font-instrument",
+// Cinematic display serif (optical size axis for very large settings) and a geometric UI sans.
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  axes: ["opsz"],
   display: "swap",
 });
+
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#050506" },
+    { media: "(prefers-color-scheme: light)", color: "#f7f6f3" },
+  ],
+  colorScheme: "dark light",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.ossgrid.tech"),
@@ -62,21 +71,12 @@ export const metadata: Metadata = {
     title: "OSSGrid: GSoC, LFX and open-source mentorship orgs in one place",
     description:
       "A free index of open-source mentorship programs. Browse LFX Mentorship and Google Summer of Code organizations by technology, year and project history.",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "OSSGrid — Open Source Mentorship Explorer",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "OSSGrid: GSoC, LFX and open-source mentorship orgs in one place",
     description:
       "A free index of open-source mentorship programs. Browse LFX Mentorship and Google Summer of Code organizations by technology, year and project history.",
-    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
@@ -89,11 +89,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
-  },
+  applicationName: "OSSGrid",
+  category: "education",
+  formatDetection: { telephone: false, email: false, address: false },
   ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
     ? {
         verification: {
@@ -113,6 +111,13 @@ const globalJsonLd = {
       "name": "OSSGrid",
       "description": "Open Source Mentorship & Ecosystem Explorer",
       "inLanguage": "en-US",
+      "publisher": { "@id": "https://www.ossgrid.tech/#organization" },
+      // Lets search engines offer a search box for the site; the GSoC dashboard reads ?q=.
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": "https://www.ossgrid.tech/gsoc?q={search_term_string}" },
+        "query-input": "required name=search_term_string",
+      },
     },
     {
       "@type": "Organization",
@@ -133,11 +138,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} ${instrumentSans.variable} h-full antialiased`}
+      className={`${jetbrainsMono.variable} ${newsreader.variable} ${manrope.variable} h-full antialiased`}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: safeJsonLd(globalJsonLd) }}

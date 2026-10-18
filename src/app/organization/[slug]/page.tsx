@@ -44,14 +44,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!org) return { title: "Organization not found" };
   const desc = `${org.name} has run ${org.projectCount} LFX Mentorship ${org.projectCount === 1 ? "project" : "projects"} over ${org.years.length} ${org.years.length === 1 ? "year" : "years"}. Projects, mentors and technologies (${org.technologies.slice(0, 5).join(", ")}).`;
   const canonicalUrl = `https://www.ossgrid.tech/organization/${slug}`;
-  const ogImage = org.logoUrl || "/og-image.jpg";
   const title = `${org.name} — LFX Mentorship projects and mentors`;
   return {
     title,
     description: desc,
     alternates: { canonical: canonicalUrl },
-    openGraph: { title, description: desc, url: canonicalUrl, type: "website", siteName: "OSSGrid", images: [{ url: ogImage, alt: `${org.name} logo` }] },
-    twitter: { card: "summary_large_image", title, description: desc, images: [ogImage] },
+    openGraph: { title, description: desc, url: canonicalUrl, type: "website", siteName: "OSSGrid" },
+    twitter: { card: "summary_large_image", title, description: desc },
   };
 }
 
@@ -194,8 +193,9 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
       <Header variant="simple" />
 
       {/* Identity */}
-      <div id="overview" className="scroll-mt-28 border-b border-[var(--border)] bg-[var(--bg-raised)]">
-        <div className="mx-auto w-full max-w-[1440px] px-4 pb-8 pt-6 sm:px-6 lg:px-8">
+      <main id="main" className="flex w-full flex-1 flex-col">
+      <div id="overview" className="cine cine-masthead font-ui scroll-mt-28 !pt-6" data-art="lfx">
+        <div className="mx-auto w-full max-w-[1600px] px-4 pb-8 pt-6 sm:px-6 lg:px-8">
           <nav aria-label="Breadcrumb" className="mb-6 text-xs text-[var(--text-muted)]">
             <ol className="flex items-center gap-2">
               <li><Link href="/" className="hover:text-[var(--text-primary)]">Home</Link></li>
@@ -222,7 +222,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                   </span>
                 )}
               </div>
-              <h1 className="display text-3xl font-semibold text-[var(--text-primary)] md:text-4xl lg:text-5xl">{org.name}</h1>
+              <h1 className="masthead-title">{org.name}</h1>
               <p className="prose-measure mt-3 text-sm leading-relaxed text-[var(--text-secondary)] lg:text-base">{cleanDesc}</p>
             </div>
 
@@ -267,9 +267,9 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
 
       <OrgSectionNav projectCount={org.projectCount} mentorCount={allMentors.length} />
 
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col items-start gap-8 lg:flex-row">
-          <main className="min-w-0 flex-1 space-y-14">
+          <div className="min-w-0 flex-1 space-y-14">
             {/* Projects */}
             <section id="projects" aria-labelledby="projects-heading" className="scroll-mt-28">
               <SectionTitle icon={Layers} count={org.projectCount}><span id="projects-heading">Projects</span></SectionTitle>
@@ -411,7 +411,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
                 </ul>
               </section>
             )}
-          </main>
+          </div>
 
           {/* Sidebar */}
           <aside className="w-full shrink-0 space-y-4 lg:sticky lg:top-28 lg:w-[340px] xl:w-[380px]">
@@ -496,6 +496,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
           </aside>
         </div>
       </div>
+      </main>
     </div>
   );
 }

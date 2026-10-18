@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ProposalsClient from "@/components/proposals/ProposalsClient";
-import { safeJsonLd, DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { safeJsonLd } from "@/lib/seo";
 import { getProposals, getProposalStats } from "@/lib/proposals-data";
 import { getGsocOrganizations } from "@/lib/gsoc-data";
 import { roundedPlus } from "@/lib/stats";
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: "https://www.ossgrid.tech/proposals" },
-  openGraph: { type: "website", siteName: "OSSGrid", title, description, url: "https://www.ossgrid.tech/proposals", images: [{ ...DEFAULT_OG_IMAGE, alt: "OSSGrid proposals library" }] },
-  twitter: { card: "summary_large_image", title, description, images: ["/og-image.jpg"] },
+  openGraph: { type: "website", siteName: "OSSGrid", title, description, url: "https://www.ossgrid.tech/proposals" },
+  twitter: { card: "summary_large_image", title, description },
 };
 
 const breadcrumbJsonLd = {

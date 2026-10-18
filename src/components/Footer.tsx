@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Eye } from "lucide-react";
 import { PROGRAMS, livePrograms } from "@/data/programs";
-import { footerLinks, trademarkLine } from "@/data/site";
+import { footerGroups, trademarkLine } from "@/data/site";
 
 
 
@@ -62,51 +62,56 @@ export default function Footer() {
     views !== null ? `${views.toLocaleString()} views` : hasError ? "Views unavailable" : "… views";
 
   return (
-    <footer className="relative z-10 mt-auto w-full border-t border-[var(--border)] bg-[var(--bg-base)]">
-      <div className="mx-auto grid w-full max-w-[1440px] gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.4fr_1fr] lg:px-8">
+    <footer className="cine font-ui relative z-10 mt-auto w-full border-t border-[var(--cine-line)] bg-[var(--cine-bg)]">
+      <div className="cine-wrap grid gap-12 py-16 lg:grid-cols-[1.3fr_2fr] lg:py-20">
         <div className="max-w-sm">
-          <p className="text-sm font-semibold text-[var(--text-primary)]">OSSGrid</p>
-          <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
+          <p className="font-display text-[2rem] font-bold leading-none tracking-[-0.02em] text-[var(--cine-fg)]">OSSGrid</p>
+          <p className="mt-4 text-sm leading-relaxed text-[var(--cine-fg-2)]">
             A free, community-built index of open-source mentorship programs. No login, no tracking of you, just the data.
-          </p>
-          <p className="mt-4 text-xs text-[var(--text-muted)]">
-            {livePrograms().map((p) => (
-              <span key={p.id}>
-                {p.shortName} data from{" "}
-                {p.dataSources.map((s, i) => (
-                  <span key={s.url}>
-                    {i > 0 && (i === p.dataSources.length - 1 ? " and " : ", ")}
-                    <a href={s.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[var(--text-primary)]">{s.label}</a>
-                  </span>
-                ))}
-                .{" "}
-              </span>
-            ))}
-            {trademarkLine(PROGRAMS)}
           </p>
         </div>
 
-        <nav aria-label="Footer" className="text-sm">
-          <p className="eyebrow mb-3">Site</p>
-          <ul className="flex flex-col gap-2">
-            {footerLinks().map((l) => (
-              <li key={l.href}>
-                {l.external ? (
-                  <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">{l.label}</a>
-                ) : (
-                  <Link href={l.href} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">{l.label}</Link>
-                )}
-              </li>
-            ))}
-          </ul>
+        <nav aria-label="Footer" className="grid grid-cols-2 gap-8 text-sm sm:grid-cols-3">
+          {footerGroups().map((group) => (
+            <div key={group.title}>
+              <p className="mb-4 text-[var(--cine-fg-3)]">{group.title}</p>
+              <ul className="flex flex-col gap-2.5">
+                {group.links.map((l) => (
+                  <li key={l.href}>
+                    {l.external ? (
+                      <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-[var(--cine-fg-2)] hover:text-[var(--cine-fg)]">{l.label}</a>
+                    ) : (
+                      <Link href={l.href} className="text-[var(--cine-fg-2)] hover:text-[var(--cine-fg)]">{l.label}</Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
-
-
       </div>
 
-      <div className="border-t border-[var(--border)]">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center justify-between gap-3 px-4 py-4 text-xs text-[var(--text-muted)] sm:px-6 lg:px-8">
-          <span>Built with ❤️ by <a href="https://x.com/rajatrsrivastav" target="_blank" rel="noopener noreferrer" className="text-[var(--text-secondary)] underline underline-offset-4 hover:text-[var(--text-primary)]">Rajat Srivastav</a></span>
+      <div className="cine-wrap pb-8">
+        <p className="max-w-4xl text-xs leading-relaxed text-[var(--cine-fg-3)]">
+          {livePrograms().map((p) => (
+            <span key={p.id}>
+              {p.shortName} data from{" "}
+              {p.dataSources.map((s, i) => (
+                <span key={s.url}>
+                  {i > 0 && (i === p.dataSources.length - 1 ? " and " : ", ")}
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[var(--cine-fg)]">{s.label}</a>
+                </span>
+              ))}
+              .{" "}
+            </span>
+          ))}
+          {trademarkLine(PROGRAMS)}
+        </p>
+      </div>
+
+      <div className="border-t border-[var(--cine-line)]">
+        <div className="cine-wrap flex flex-wrap items-center justify-between gap-3 py-5 text-xs text-[var(--cine-fg-3)]">
+          <p>Built with ❤️ by <a href="https://x.com/rajatrsrivastav" target="_blank" rel="noopener noreferrer" className="text-[var(--cine-fg-2)] underline underline-offset-4 hover:text-[var(--cine-fg)]">Rajat Srivastav</a></p>
           <span className="num inline-flex items-center gap-1.5">
             <Eye size={13} aria-hidden="true" />
             {viewsDisplay}

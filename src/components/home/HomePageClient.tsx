@@ -1,65 +1,33 @@
 "use client";
 
 import Header from "@/components/Header";
-import LandingHero from "@/components/LandingHero";
-import { LogoMarquee, type MarqueeOrg } from "@/components/landing/LogoMarquee";
-import { Programs } from "@/components/landing/ProgramsFeatures";
-import { DashboardsStrip } from "@/components/landing/DashboardsStrip";
-import { HowItWorks } from "@/components/landing/HowItWorks";
-import { StatsStrip } from "@/components/landing/StatsStrip";
-import FirstTimerGuide from "@/components/FirstTimerGuide";
+import CinematicHero from "@/components/home/CinematicHero";
+import Programs from "@/components/home/story/Programs";
+import Explore from "@/components/home/story/Explore";
+import Ecosystem from "@/components/home/story/Ecosystem";
+import Playbook from "@/components/home/story/Playbook";
+import FinalCta from "@/components/home/story/FinalCta";
 import FirstTimerFAQ from "@/components/FirstTimerFAQ";
-import type { ProgramStats } from "@/lib/stats";
-import { PROGRAMS, type ProgramId } from "@/data/programs";
+import type { HomeData } from "@/lib/home-data";
 
-export interface FeaturedOrg {
-  id: string;
-  name: string;
-  href: string;
-  logoUrl: string;
-  category: string;
-  projectCount: number;
-  technologies: string[];
-  years: number;
-  program: ProgramId;
-}
-
-export interface CombinedStats {
-  orgCount: number;
-  projectCount: number;
-  orgLabel: string;
-  projectLabel: string;
-  liveCount: number;
-  yearMin: number;
-  yearMax: number;
-}
-
-interface HomePageClientProps {
-  programStats: ProgramStats[];
-  combined: CombinedStats;
-  /** Featured orgs per live program, in hero CTA order. */
-  featured: Record<string, FeaturedOrg[]>;
-  marquee: MarqueeOrg[];
-  /** Program ids in CTA order (nearest application window first). */
-  ctaOrder: ProgramId[];
-  buildDate: string;
-  proposals: { count: number; orgCount: number; repos: number };
-}
-
-export default function HomePageClient({ programStats, combined, featured, marquee, ctaOrder, buildDate, proposals }: HomePageClientProps) {
-  const nf = new Intl.NumberFormat("en-US");
+/**
+ * Home story, in order: hero (with the mission rising over it on scroll), the two programs as scroll chapters, explore
+ * organizations, the ecosystem network, the playbook, common questions and a closing call to
+ * action. Every section uses the .cine tokens, which follow the light or dark theme.
+ */
+export default function HomePageClient({ data }: { data: HomeData }) {
+  const span = Array.from({ length: data.combined.yearMax - data.combined.yearMin + 1 }, (_, i) => data.combined.yearMin + i);
   return (
     <>
-      <Header variant="simple" />
-      <main className="flex w-full flex-1 flex-col bg-[var(--bg-base)]">
-        <LandingHero combined={combined} featured={featured} ctaOrder={ctaOrder} />
-        <LogoMarquee orgs={marquee} />
-        <Programs programStats={programStats} />
-        <DashboardsStrip programStats={programStats} extraTiles={[{ href: "/proposals", title: "Proposals library", count: `${nf.format(proposals.count)} proposals · ${proposals.orgCount} orgs`, verb: "Read proposals" }, { href: "/guide", title: "Contributor playbook", count: `${PROGRAMS.length} program checklists`, verb: "Read the playbook" }]} />
-        <HowItWorks combined={combined} />
-        <StatsStrip programStats={programStats} buildDate={buildDate} extraGroups={[{ id: "proposals", title: "Proposals library", columns: [{ value: proposals.count, label: "Proposals" }, { value: proposals.orgCount, label: "Organizations covered" }, { value: proposals.repos, label: "Archives" }] }]} />
-        <FirstTimerGuide latestYear={combined.yearMax} />
+      <Header variant="simple" overlay />
+      <main id="main" className="-mt-16 flex w-full flex-1 flex-col bg-[var(--bg-base)]">
+        <CinematicHero counts={data.hero.counts} staged={data.hero.staged} lqip={data.hero.lqip} mission={data.mission} />
+        <Programs exhibits={data.exhibits} chapters={data.chapters} />
+        <Explore insights={data.explore.insights} topTech={data.explore.topTech} showcase={data.showcase} span={span} />
+        <Ecosystem {...data.ecosystem} orgCount={data.combined.orgCount} />
+        <Playbook />
         <FirstTimerFAQ />
+        <FinalCta community={data.community} />
       </main>
     </>
   );

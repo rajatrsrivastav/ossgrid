@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, ArrowRight } from "lucide-react";
+import { ExternalLink, ArrowRight } from "lucide-react";
 import Header from "@/components/Header";
+import PageMasthead from "@/components/PageMasthead";
 import { PROGRAMS, factRows, getProgram, livePrograms } from "@/data/programs";
 import { safeJsonLd } from "@/lib/seo";
 
@@ -43,25 +44,15 @@ export default async function ProgramPreviewPage({ params }: { params: Promise<{
     <div className="min-h-screen bg-[var(--bg-base)]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbLd) }} />
       <Header variant="simple" />
-      <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
-        <nav aria-label="Breadcrumb" className="mb-6 text-xs text-[var(--text-muted)]">
-          <ol className="flex items-center gap-2">
-            <li><Link href="/" className="hover:text-[var(--text-primary)]">Home</Link></li>
-            <li aria-hidden="true">/</li>
-            <li><Link href="/#programs" className="inline-flex items-center gap-1 hover:text-[var(--text-primary)]"><ArrowLeft size={12} aria-hidden="true" /> Programs</Link></li>
-            <li aria-hidden="true">/</li>
-            <li aria-current="page" className="text-[var(--text-secondary)]">{program.name}</li>
-          </ol>
-        </nav>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="pill pill-muted">Coming soon</span>
-          <span className="text-xs text-[var(--text-muted)]">Run by {program.runBy}</span>
-        </div>
-        <h1 className="display mt-3 text-3xl font-semibold text-[var(--text-primary)] md:text-4xl">{program.name}</h1>
-        <p className="prose-measure mt-3 text-base leading-relaxed text-[var(--text-secondary)]">{program.oneLiner}</p>
-
-        <dl className="mt-6 grid grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2">
+      <main id="main" className="flex w-full flex-1 flex-col">
+      <PageMasthead
+        crumbs={[{ label: "Home", href: "/" }, { label: "Programs", href: "/#programs" }, { label: program.name }]}
+        label={`Coming soon · run by ${program.runBy}`}
+        title={program.name}
+        lede={<p>{program.oneLiner}</p>}
+      />
+      <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
+        <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2">
           {factRows(program).map((f) => (
             <div key={f.id} className="bg-[var(--bg-card)] px-4 py-3">
               <dt className="text-xs text-[var(--text-muted)]">{f.label}</dt>
@@ -113,6 +104,7 @@ export default async function ProgramPreviewPage({ params }: { params: Promise<{
             ))}
           </ul>
         </section>
+      </div>
       </main>
     </div>
   );

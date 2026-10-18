@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import Link from "next/link";
-import { ArrowLeft, ExternalLink, Info } from "lucide-react";
+import { ExternalLink, Info } from "lucide-react";
 import type { LfxOrganizationDto } from "@/lib/types";
 import { lfxConfig, lfxToExplorerOrg } from "@/lib/explorer/lfx";
 import { lfxCalendar } from "@/data/programs";
 import { cn } from "@/lib/utils";
 import ExplorerShell from "@/components/explorer/ExplorerShell";
+import PageMasthead from "@/components/PageMasthead";
 import AboutModal from "@/components/AboutModal";
 
 const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
@@ -42,31 +42,13 @@ export default function LfxClient({ initialOrganizations = [] }: LfxClientProps)
       organizations={organizations}
       loading={loading}
       overlays={<AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />}
-      intro={() => (
-        <>
-          {/* Intro */}
-          <section className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl">
-              <Link href="/" className="mb-4 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-                <ArrowLeft size={13} aria-hidden="true" /> All programs
-              </Link>
-              <p className="eyebrow mb-2">LFX Mentorship</p>
-              <h1 className="display text-3xl font-semibold text-[var(--text-primary)] md:text-4xl">
-                LFX Mentorship organizations
-              </h1>
-              <p className="mt-3 text-base leading-relaxed text-[var(--text-secondary)]">
-                Every organization that has offered an LFX Mentorship project{yearMin < 9999 ? ` since ${yearMin}` : ""}, with its projects, mentors and technologies. Filter by what you already know, then read the org page before you apply.
-              </p>
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                <button type="button" onClick={() => setAboutOpen(true)} className="btn btn-secondary btn-sm">
-                  <Info size={13} aria-hidden="true" /> How LFX works
-                </button>
-                <a href={lfxCalendar.portalUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
-                  Official LFX portal <ExternalLink size={12} aria-hidden="true" />
-                </a>
-              </div>
-            </div>
-
+      masthead={() => (
+        <PageMasthead
+          art="lfx"
+          crumbs={[{ label: "Home", href: "/" }, { label: "Programs", href: "/#programs" }, { label: "LFX Mentorship" }]}
+          title="LFX Mentorship organizations"
+          lede={<p>Every organization that has offered an LFX Mentorship project{yearMin < 9999 ? ` since ${yearMin}` : ""}, with its projects, mentors and technologies. Filter by what you already know, then read the org page before you apply.</p>}
+          aside={
             <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-4 lg:min-w-[520px]">
               {[
                 { label: "Organizations", value: loading ? "…" : String(dtos.length) },
@@ -75,15 +57,27 @@ export default function LfxClient({ initialOrganizations = [] }: LfxClientProps)
                 { label: "Stipend", value: `${usd(lfxCalendar.stipend.minUsd / 1000)}k–${(lfxCalendar.stipend.maxUsd / 1000).toFixed(1)}k` },
               ].map((s) => (
                 <div key={s.label} className="bg-[var(--bg-card)] px-4 py-3">
-                  <dt className="text-xs text-[var(--text-muted)]">{s.label}</dt>
-                  <dd className="num mt-0.5 text-xl font-semibold text-[var(--text-primary)]">{s.value}</dd>
+                  <dt className="text-sm text-[var(--text-secondary)]">{s.label}</dt>
+                  <dd className="font-display mt-1 whitespace-nowrap text-2xl font-bold leading-none tracking-[-0.01em] text-[var(--text-primary)]">{s.value}</dd>
                 </div>
               ))}
             </dl>
-          </section>
-
+          }
+        >
+          <div className="flex flex-wrap items-center gap-2">
+            <button type="button" onClick={() => setAboutOpen(true)} className="btn btn-secondary btn-sm">
+              <Info size={13} aria-hidden="true" /> How LFX works
+            </button>
+            <a href={lfxCalendar.portalUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
+              Official LFX portal <ExternalLink size={12} aria-hidden="true" />
+            </a>
+          </div>
+        </PageMasthead>
+      )}
+      intro={() => (
+        <>
           {/* Terms */}
-          <section aria-labelledby="terms-heading" className="mb-10">
+          <section aria-labelledby="terms-heading" className="mb-10 mt-4">
             <div className="mb-3 flex items-baseline justify-between gap-3">
               <h2 id="terms-heading" className="text-lg font-semibold text-[var(--text-primary)]">Term schedule</h2>
               <p className="text-xs text-[var(--text-muted)]">

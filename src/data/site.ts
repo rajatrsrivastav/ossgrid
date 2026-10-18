@@ -26,19 +26,39 @@ export function headerLinks(): NavLink[] {
   ];
 }
 
-/** Footer site links: Home, one per live program, tools, Programs, Source. */
-export function footerLinks(): NavLink[] {
+/** Footer link groups. Generated from the registry so a new live program appears automatically. */
+export function footerGroups(): { title: string; links: NavLink[] }[] {
   const guide = TOOL_PAGES.find((t) => t.id === "guide");
   return [
-    { label: "Home", href: "/" },
-    ...livePrograms().map((p) => ({ label: `${p.shortName} organizations`, href: p.dashboardPath! })),
-    ...enabledTools().filter((t) => t.id !== "guide").map((t) => ({ label: t.label, href: t.href })),
-    { label: "Contributor playbook", href: guide?.enabled ? guide.href : "/#playbook" },
-    { label: "Contributors", href: "/contributors" },
-    { label: "Start Contributing", href: "/contribute" },
-    { label: "Programs", href: "/#programs" },
-    { label: "Source on GitHub", href: "https://github.com/rajatrsrivastav/ossgrid", external: true },
+    {
+      title: "Programs",
+      links: [
+        ...livePrograms().map((p) => ({ label: `${p.shortName} organizations`, href: p.dashboardPath! })),
+        { label: "All programs", href: "/#programs" },
+      ],
+    },
+    {
+      title: "Resources",
+      links: [
+        ...enabledTools().filter((t) => t.id !== "guide").map((t) => ({ label: t.label, href: t.href })),
+        { label: "Contributor playbook", href: guide?.enabled ? guide.href : "/#playbook" },
+        { label: "FAQ", href: "/#faq" },
+      ],
+    },
+    {
+      title: "Community",
+      links: [
+        { label: "Contributors", href: "/contributors" },
+        { label: "Start contributing", href: "/contribute" },
+        { label: "Source on GitHub", href: "https://github.com/rajatrsrivastav/ossgrid", external: true },
+      ],
+    },
   ];
+}
+
+/** Flat list of every footer link (kept for callers that want one list). */
+export function footerLinks(): NavLink[] {
+  return footerGroups().flatMap((g) => g.links);
 }
 
 /** "GSoC data from a, b and c." for each live program, from its registry dataSources. */

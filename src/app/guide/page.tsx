@@ -1,23 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, CheckCircle2 } from "lucide-react";
+import { ExternalLink, CheckCircle2 } from "lucide-react";
 import Header from "@/components/Header";
+import PageMasthead from "@/components/PageMasthead";
 import GitHubRepoActions from "@/components/GitHubRepoActions";
 import ContributionLoop from "@/components/guide/ContributionLoop";
-import { safeJsonLd, DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { safeJsonLd } from "@/lib/seo";
 import { GUIDE_SOURCE, READINESS, COMMUNITY_FIRST, ISSUE_ADVICE, PR_CONVERSATIONS, SELECTION_SIGNALS, PROGRAM_CHECKLISTS, RESOURCES } from "@/data/guide";
 import { PROGRAMS, getProgram } from "@/data/programs";
 import { TOOL_PAGES } from "@/data/site";
 
-const title = "Contributor playbook: how people actually get into GSoC, LFX and other mentorships";
+const title = "How to get into GSoC and LFX: the contributor playbook";
 const description = "Readiness, picking a community before an issue, the contribution loop as a checklist, pull request threads worth reading, what selection looks at, and a checklist for every program OSSGrid tracks.";
 
 export const metadata: Metadata = {
   title: { absolute: `${title} | OSSGrid` },
   description,
   alternates: { canonical: "https://www.ossgrid.tech/guide" },
-  openGraph: { type: "article", siteName: "OSSGrid", title, description, url: "https://www.ossgrid.tech/guide", images: [{ ...DEFAULT_OG_IMAGE, alt: "OSSGrid contributor playbook" }] },
-  twitter: { card: "summary_large_image", title, description, images: ["/og-image.jpg"] },
+  openGraph: { type: "article", siteName: "OSSGrid", title, description, url: "https://www.ossgrid.tech/guide" },
+  twitter: { card: "summary_large_image", title, description },
 };
 
 const breadcrumbJsonLd = {
@@ -50,25 +51,21 @@ export default function GuidePage() {
     <div className="min-h-screen bg-[var(--bg-base)]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }} />
       <Header variant="simple" />
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-10 sm:px-6 lg:px-8">
-        <nav aria-label="Breadcrumb" className="mb-6 text-xs text-[var(--text-muted)]">
-          <ol className="flex items-center gap-2">
-            <li><Link href="/" className="inline-flex items-center gap-1 hover:text-[var(--text-primary)]"><ArrowLeft size={12} aria-hidden="true" /> Home</Link></li>
-            <li aria-hidden="true">/</li>
-            <li aria-current="page" className="text-[var(--text-secondary)]">Contributor playbook</li>
-          </ol>
-        </nav>
-
-        <header className="max-w-3xl">
-          <p className="eyebrow mb-2">Contributor playbook</p>
-          <h1 className="display text-3xl font-semibold text-[var(--text-primary)] md:text-5xl">You are not ready just because you want to start. Here is how to get ready.</h1>
-          <p className="prose-measure mt-4 text-base leading-relaxed text-[var(--text-secondary)] md:text-lg">
+      <main id="main" className="flex w-full flex-1 flex-col">
+      <PageMasthead
+        crumbs={[{ label: "Home", href: "/" }, { label: "Contributor playbook" }]}
+        label="Contributor playbook"
+        title="You are not ready just because you want to start. Here is how to get ready."
+        lede={
+          <p>
             Open source rewards preparation, not excitement. This page adapts, in our own words, {GUIDE_SOURCE.author}&rsquo;s post{" "}
-            <a href={GUIDE_SOURCE.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 text-[var(--text-primary)]">&ldquo;{GUIDE_SOURCE.title}&rdquo;</a>, and adds a checklist for every program OSSGrid tracks. Read the original; it has the full story.
+            <a href={GUIDE_SOURCE.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 text-[var(--cine-fg)]">&ldquo;{GUIDE_SOURCE.title}&rdquo;</a>, and adds a checklist for every program OSSGrid tracks. Read the original; it has the full story.
           </p>
-        </header>
+        }
+      />
+      <div className="mx-auto w-full max-w-[1600px] px-4 py-10 sm:px-6 lg:px-8">
 
-        <div className="mt-10 flex flex-col items-start gap-10 lg:flex-row">
+        <div className="mt-2 flex flex-col items-start gap-10 lg:flex-row">
           <nav aria-label="On this page" className="panel top-24 w-full shrink-0 p-3 lg:sticky lg:w-[240px]">
             <p className="eyebrow mb-2 px-2">On this page</p>
             <ol className="flex flex-wrap gap-1 lg:flex-col">
@@ -82,7 +79,7 @@ export default function GuidePage() {
             </ol>
           </nav>
 
-          <main className="min-w-0 flex-1 space-y-16">
+          <div className="min-w-0 flex-1 space-y-16">
             <section aria-labelledby="readiness">
               <H2 id="readiness">Readiness comes first</H2>
               <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -210,9 +207,10 @@ export default function GuidePage() {
                 Adapted from {GUIDE_SOURCE.author}&rsquo;s <a href={GUIDE_SOURCE.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[var(--text-primary)]">original post</a>. Program facts come from each program&rsquo;s official pages; {PROGRAMS.length} programs are tracked in the registry.
               </p>
             </section>
-          </main>
+          </div>
         </div>
       </div>
+      </main>
     </div>
   );
 }

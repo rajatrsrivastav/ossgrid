@@ -24,6 +24,8 @@
     "sync:contributors": "node --import tsx scripts/sync-contributors.ts"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "d3-force": "^3.0.0",
     "framer-motion": "^13.2.0",
     "fuse.js": "^7.5.0",
@@ -35,6 +37,7 @@
     "recharts": "^3.10.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
     "@playwright/test": "^1.56.1",
     "@tailwindcss/postcss": "^4",
     "@types/d3-force": "^3.0.10",
@@ -44,6 +47,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "tailwindcss": "^4",
+    "three": "^0.170.0",
     "tsx": "^4.23.13",
     "typescript": "^5"
   }

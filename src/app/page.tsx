@@ -1,26 +1,39 @@
 import type { Metadata } from "next";
-import fs from "fs";
-import path from "path";
-import HomePageClient, { FeaturedOrg } from "@/components/home/HomePageClient";
-import type { MarqueeOrg } from "@/components/landing/LogoMarquee";
-import { safeJsonLd, DEFAULT_OG_IMAGE } from "@/lib/seo";
-import { getProgramStats, getCombinedStats } from "@/lib/stats";
-import { orderByNextWindow } from "@/lib/program-windows";
-import { getProposalStats } from "@/lib/proposals-data";
-import { PROGRAMS, livePrograms } from "@/data/programs";
-import type { GsocOrganization, Organization } from "@/lib/types";
+import HomePageClient from "@/components/home/HomePageClient";
+import { safeJsonLd } from "@/lib/seo";
+import { getHomeData } from "@/lib/home-data";
+import { PROGRAMS, livePrograms, getProgram, lfxCalendar } from "@/data/programs";
+import { getCombinedStats } from "@/lib/stats";
 
 const live = livePrograms();
 const programList = live.map((p) => p.shortName).join(", ");
-const title = "OSSGrid: GSoC, LFX and open-source mentorship orgs in one place";
-const description = `A free index of open-source mentorship programs. Browse ${live.map((p) => p.name).join(" and ")} organizations, past projects and mentors by technology and year, and learn how selection actually works. ${PROGRAMS.length - live.length} more programs are on the way.`;
+const stats = getCombinedStats();
+const nf = new Intl.NumberFormat("en-US");
+// Titles carry the current program year: people search "GSoC 2026 organizations".
+const title = `GSoC ${stats.yearMax} & LFX Mentorship organizations and projects | OSSGrid`;
+const description = `Search ${nf.format(stats.orgCount)} Google Summer of Code and LFX Mentorship organizations and ${nf.format(stats.projectCount)} past projects by technology and year. Free, with a guide to getting selected.`;
+
+const gsocP = getProgram("gsoc")!;
+const lfxP = getProgram("lfx")!;
+/** Plain-text versions of the home FAQ, for structured data. Same facts and sources as the page. */
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    { q: "Which program should I start with?", a: `If you can give a summer and you are new to open source, start with ${gsocP.name} (${gsocP.facts.eligibility.value.toLowerCase()}). If you want a term at any time of year, ${lfxP.name} runs ${lfxP.facts.cadence.value.toLowerCase()}.` },
+    { q: "How is LFX different from GSoC?", a: `Both pay a stipend for a term of mentored open-source work. LFX is run by ${lfxP.runBy} and pays ${lfxP.facts.stipend.value}. GSoC is run by ${gsocP.runBy}, happens ${gsocP.facts.cadence.value.toLowerCase()} and pays ${gsocP.facts.stipend.value} depending on project size and country.` },
+    { q: "How many projects can I apply to?", a: `GSoC: up to three proposals, and only one can be accepted. LFX: up to ${lfxCalendar.applicationsPerTerm} applications per term, and you can only join one.` },
+    { q: "What matters most for getting accepted?", a: "Showing up in the project's chat weeks before the deadline and getting one or two real fixes merged. Mentors pick people they have already worked with." },
+    { q: "Is OSSGrid the official application site?", a: `No. OSSGrid is a community-built index. You apply on each program's official site: ${PROGRAMS.map((p) => p.name).join(", ")}.` },
+  ].map(({ q, a }) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+};
 
 export const metadata: Metadata = {
   title: { absolute: title },
   description,
   alternates: { canonical: "https://www.ossgrid.tech" },
-  openGraph: { type: "website", siteName: "OSSGrid", title, description, url: "https://www.ossgrid.tech", images: [DEFAULT_OG_IMAGE] },
-  twitter: { card: "summary_large_image", title, description, images: ["/og-image.jpg"] },
+  openGraph: { type: "website", siteName: "OSSGrid", title, description, url: "https://www.ossgrid.tech" },
+  twitter: { card: "summary_large_image", title, description },
 };
 
 const homeJsonLd = {
@@ -34,40 +47,13 @@ const homeJsonLd = {
   about: [{ "@type": "Thing", name: "Open Source Software Mentorship" }, ...PROGRAMS.map((p) => ({ "@type": "Thing", name: p.name, url: p.officialUrl }))],
 };
 
-function readJson<T>(rel: string): T {
-  return JSON.parse(fs.readFileSync(path.join(process.cwd(), "public", rel), "utf8"));
-}
-
-function getLandingData(): { featured: Record<string, FeaturedOrg[]>; marquee: MarqueeOrg[] } {
-  const lfx = readJson<Organization[]>("data/organizations.json");
-  const gsoc = readJson<GsocOrganization[]>("data/gsoc/organizations.json");
-  const lfxSorted = [...lfx].sort((a, b) => b.projectCount - a.projectCount);
-  const gsocSorted = [...gsoc].sort((a, b) => b.projectCount - a.projectCount);
-  const featured: Record<string, FeaturedOrg[]> = {
-    lfx: lfxSorted.slice(0, 3).map((o) => ({ id: o.id, name: o.name, href: `/organization/${o.id}`, logoUrl: o.logoUrl, category: o.category, projectCount: o.projectCount, technologies: o.technologies.slice(0, 3), years: o.years.length, program: "lfx" })),
-    gsoc: gsocSorted.slice(0, 3).map((o) => ({ id: o.slug, name: o.name, href: `/gsoc/${o.slug}`, logoUrl: o.logoUrl, category: o.category, projectCount: o.projectCount, technologies: o.technologies.slice(0, 3), years: o.years.length, program: "gsoc" })),
-  };
-  // Mix the two programs so neither reads as the main one.
-  const marquee: MarqueeOrg[] = [];
-  for (let i = 0; i < 12; i++) {
-    const g = gsocSorted[i], l = lfxSorted[i];
-    if (g) marquee.push({ name: g.name, logoUrl: g.logoUrl, program: "gsoc" });
-    if (l) marquee.push({ name: l.name, logoUrl: l.logoUrl.startsWith("data:") ? "" : l.logoUrl, program: "lfx" });
-  }
-  return { featured, marquee };
-}
-
 export default function HomePage() {
-  const programStats = getProgramStats();
-  const combined = getCombinedStats();
-  const { featured, marquee } = getLandingData();
-  const ctaOrder = orderByNextWindow(live).map((p) => p.id);
-  const buildDate = new Date().toISOString().slice(0, 10);
-  const proposals = getProposalStats();
+  const data = getHomeData();
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(homeJsonLd) }} />
-      <HomePageClient programStats={programStats} combined={combined} featured={featured} marquee={marquee} ctaOrder={ctaOrder} buildDate={buildDate} proposals={proposals} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }} />
+      <HomePageClient data={data} />
     </>
   );
 }

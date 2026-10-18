@@ -90,7 +90,7 @@ export default function OrgSectionNav({ projectCount, mentorCount }: OrgSectionN
 
   return (
     <nav aria-label="Sections" className="sticky top-16 z-30 w-full border-b border-[var(--border)] bg-[var(--bg-base)]/85 backdrop-blur-md">
-      <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8">
         <div ref={scrollContainerRef} className="scrollbar-none -mx-1 flex items-center gap-1 overflow-x-auto px-1 py-2">
           {tabs.map((tab) => {
             const Icon = tab.icon;

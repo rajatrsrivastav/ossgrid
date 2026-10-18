@@ -6,7 +6,11 @@ import { comingSoonPrograms } from "@/data/programs";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.ossgrid.tech";
-  const now = new Date();
+  // Pages change when the data does, so the data files' modification time is the honest date.
+  const mtime = (f: string) => (fs.existsSync(f) ? fs.statSync(f).mtime : new Date());
+  const lfxUpdated = mtime(path.join(process.cwd(), "public", "data", "organizations.json"));
+  const gsocUpdated = mtime(path.join(process.cwd(), "public", "data", "gsoc", "organizations.json"));
+  const now = new Date(Math.max(lfxUpdated.getTime(), gsocUpdated.getTime()));
 
   const filePath = path.join(process.cwd(), "public", "data", "organizations.json");
   if (!fs.existsSync(filePath)) {
@@ -68,13 +72,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     ...organizations.map((org) => ({
       url: `${baseUrl}/organization/${org.id}`,
-      lastModified: now,
+      lastModified: lfxUpdated,
       changeFrequency: "weekly" as const,
       priority: 0.8,
     })),
     ...gsocOrgs.map((org) => ({
       url: `${baseUrl}/gsoc/${org.slug}`,
-      lastModified: now,
+      lastModified: gsocUpdated,
       changeFrequency: "weekly" as const,
       priority: 0.7,
     })),

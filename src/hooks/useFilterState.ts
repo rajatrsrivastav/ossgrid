@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import type { ExplorerFilterState, ProgramConfig } from "@/lib/explorer/types";
 import { emptyFilterState } from "@/lib/explorer/filter";
 
@@ -63,18 +63,25 @@ export function useFilterState(config: UrlConfig) {
     return () => clearTimeout(timer);
   }, [config]);
 
+  // State updaters must stay pure: Next.js treats history.replaceState as a router update,
+  // so the URL is synced in an effect after a user-driven change, never inside setState.
+  const pendingSync = useRef(false);
+
   const setFilters = useCallback((next: ExplorerFilterState | ((prev: ExplorerFilterState) => ExplorerFilterState)) => {
-    setFiltersInternal((prev) => {
-      const resolved = typeof next === "function" ? next(prev) : next;
-      syncUrl(config, resolved);
-      return resolved;
-    });
-  }, [config]);
+    pendingSync.current = true;
+    setFiltersInternal((prev) => (typeof next === "function" ? next(prev) : next));
+  }, []);
 
   const clearFilters = useCallback(() => {
+    pendingSync.current = true;
     setFiltersInternal(empty);
-    syncUrl(config, empty);
-  }, [config, empty]);
+  }, [empty]);
+
+  useEffect(() => {
+    if (!pendingSync.current) return;
+    pendingSync.current = false;
+    syncUrl(config, filters);
+  }, [config, filters]);
 
   return { filters, setFilters, clearFilters, initialized };
 }
