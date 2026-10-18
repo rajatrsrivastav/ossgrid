@@ -20,7 +20,8 @@
     "audit:gsoc": "node --import tsx scripts/audit-gsoc-data.ts",
     "audit:programs": "node --import tsx scripts/audit-programs.ts",
     "sync:proposals": "node --import tsx scripts/fetch-proposals.ts",
-    "check:proposals": "node --import tsx scripts/fetch-proposals.ts --check"
+    "check:proposals": "node --import tsx scripts/fetch-proposals.ts --check",
+    "sync:contributors": "node --import tsx scripts/sync-contributors.ts"
   },
   "dependencies": {
     "d3-force": "^3.0.0",

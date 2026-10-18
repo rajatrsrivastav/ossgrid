@@ -22,6 +22,7 @@ export function lfxToExplorerOrg(org: LfxOrganizationDto): ExplorerOrg {
     name: org.name,
     href: `/organization/${org.id}`,
     logoUrl: org.logoUrl,
+    repositoryUrl: org.github,
     description: org.description,
     category: org.category,
     years: org.years,

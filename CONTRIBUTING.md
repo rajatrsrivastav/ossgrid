@@ -233,10 +233,10 @@ Consistent contributors who communicate well and ship quality changes will be pr
 
 | Contributor | GitHub | Role / Focus | Status |
 |---|---|---|---|
-| Rajat Srivastav | [@rajatrsrivastav](https://github.com/rajatrsrivastav) | Maintainer / Core | Active |
 | Anand Mishra | [@anand24mishra](https://github.com/anand24mishra) | Core / Frontend | Active |
 | Mitul Bhatia | [@mitul-bhatia](https://github.com/mitul-bhatia) | Contributor / Frontend | Active |
 | Omved Nagre | [@OmvedNagre](https://github.com/OmvedNagre) | Contributor / Frontend | Active |
+| Akhilesh Kumar | [@UserAkku](https://github.com/UserAkku) | Contributor | Active |
 
 ---
 
@@ -274,3 +274,11 @@ Every pull request is reviewed by CodeRabbit against the issue it closes, then a
 2. Build the pipeline under `scripts/` with a pin file, a raw cache in `scripts/.cache/`, fixtures and tests, an audit wired into `npm run audit:data`, and a scheduled workflow that opens a PR.
 3. Add a `ProgramConfig` under `src/lib/explorer/` and a route on `ExplorerShell`, with metadata, JSON-LD breadcrumb, noscript list and sitemap entries like `/gsoc`.
 4. Flip the registry entry to `live` with `dashboardPath` and `dataFile`. Header, landing, footer, sitemap and search update on their own; `npm run audit:programs` checks the route and data exist.
+
+## Directory recognition and synchronization
+
+The `/contributors` directory recognizes contributions to OSSGrid itself. Work on indexed third-party projects is recognized by those projects separately. The creator appears in the historical directory with a Creator label and is also credited in the footer; bot accounts are excluded.
+
+`src/data/contributors-history.json` stores verified all-time GitHub contributors. Run `npm run sync:contributors` to refresh it from `rajatrsrivastav/ossgrid` and review the diff. The script follows pagination, preserves historical entries, and leaves the saved file intact if GitHub fails or rate-limits the request. Optional `GITHUB_TOKEN` credentials stay on the server or in the local script environment. Never use a public environment variable for this token.
+
+Maintainers can recognize verified non-commit work in `src/data/contributors.ts`; include evidence of the contribution in the pull request. The website refreshes the saved directory from GitHub through a cached server endpoint and falls back to the checked-in history when unavailable. Inactivity does not remove someone from the historical directory.

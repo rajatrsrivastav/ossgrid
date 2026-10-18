@@ -83,19 +83,19 @@
    Dark (default). Neutral ink, depth from surface steps, no glow.
    --------------------------------------------------------------------------- */
 :root {
-  --bg-base:        #0b0c10;
-  --bg-raised:      #111318;
-  --bg-card:        #15181f;
-  --bg-card-hover:  #1a1e27;
-  --bg-input:       #191d26;
+  --bg-base:        #0d0e10;
+  --bg-raised:      #141618;
+  --bg-card:        #191b1e;
+  --bg-card-hover:  #202327;
+  --bg-input:       #1d2023;
 
-  --border:         rgba(255, 255, 255, 0.08);
-  --border-strong:  rgba(255, 255, 255, 0.14);
-  --highlight-inset: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --border:         rgba(255, 255, 255, 0.09);
+  --border-strong:  rgba(255, 255, 255, 0.17);
+  --highlight-inset: inset 0 1px 0 rgba(255, 255, 255, 0.035);
 
   --text-primary:   #f2f3f5;
-  --text-secondary: #a3a7b0;
-  --text-muted:     #80858f;
+  --text-secondary: #afb2b8;
+  --text-muted:     #8b9098;
 
   --accent:         #22c55e;
   --accent-hover:   #4ade80;
@@ -116,7 +116,7 @@
   --danger:         #f43f5e;
 
   --shadow-sm:      none;
-  --shadow-card:    none;
+  --shadow-card:    0 2px 12px rgba(0, 0, 0, 0.12);
   --shadow-lg:      0 24px 48px rgba(0, 0, 0, 0.45);
   --shadow-modal:   0 32px 64px rgba(0, 0, 0, 0.6);
 
@@ -285,6 +285,10 @@ button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
 .card-selected {
   box-shadow: inset 2px 0 0 var(--program-color, var(--accent)), var(--highlight-inset);
 }
+:root:not([data-theme="light"]) .card-selected {
+  box-shadow: var(--shadow-card), var(--highlight-inset);
+}
+
 
 .panel {
   background: var(--bg-raised);

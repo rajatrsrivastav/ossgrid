@@ -65,8 +65,6 @@ export default function ProposalsClient({ proposals, orgNames }: ProposalsClient
         variant="full"
         searchQuery={filters.search}
         onSearchChange={(q) => setFilters((prev: ExplorerFilterState) => ({ ...prev, search: q }))}
-        onMenuToggle={() => setFiltersOpen((o) => !o)}
-        isMobileMenuOpen={filtersOpen}
         searchPlaceholder="Search proposals by title, org or author"
         searchAriaLabel="Search proposals by title, organization or author"
       />
