@@ -172,7 +172,7 @@ export default function ExplorerShell({ config, organizations, loading, intro, m
 
       <main id="main" className="flex w-full flex-1 flex-col">
       {masthead?.({ organizations, loading, filters })}
-      <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
         {intro({ organizations, loading, filters })}
 
         {/* Grid */}
@@ -205,7 +205,7 @@ export default function ExplorerShell({ config, organizations, loading, intro, m
 
             <div className="w-full min-w-0 flex-1">
               {loading ? (
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                   {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
                 </div>
               ) : filteredOrgs.length === 0 ? (
@@ -219,7 +219,7 @@ export default function ExplorerShell({ config, organizations, loading, intro, m
                 windowed ? (
                   <WindowedGrid items={filteredOrgs} renderItem={(org) => renderCard(org)} />
                 ) : (
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                     {config.animateCards ? (
                       <AnimatedCardGrid items={filteredOrgs} renderCard={renderCard} />
                     ) : (

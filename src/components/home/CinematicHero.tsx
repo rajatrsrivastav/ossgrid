@@ -16,34 +16,33 @@ interface CinematicHeroProps {
   /** Real organizations staged in the scene, already ordered. */
   staged: StagedOrg[];
   /** Blurred inline placeholders shown until the artwork loads. */
-  lqip: { desktop: string; mobile: string };
+  lqip: { desktop: string; mobile: string; lightDesktop: string; lightMobile: string };
 }
 
 const nf = new Intl.NumberFormat("en-US");
 
 /**
- * Home hero. Always dark: the artwork is a pre-rendered contribution graph built as
+ * Home hero. The artwork (dark and light renders) is a pre-rendered contribution graph built as
  * architecture (scripts/art/render-hero.mjs). Text and actions are live HTML.
  */
 export default function CinematicHero({ counts, staged, lqip }: CinematicHeroProps) {
   return (
     <section id="hero" aria-labelledby="hero-title" className="cine cine-hero flex flex-col">
-      <picture className="cine-hero__art" style={{ backgroundImage: `url(${lqip.desktop})` }}>
-        <source media="(max-width: 640px)" type="image/avif" srcSet="/art/hero-grid-mobile-780.avif 780w, /art/hero-grid-mobile-1170.avif 1170w" sizes="100vw" />
-        <source media="(max-width: 640px)" type="image/webp" srcSet="/art/hero-grid-mobile-780.webp 780w, /art/hero-grid-mobile-1170.webp 1170w" sizes="100vw" />
-        <source type="image/avif" srcSet="/art/hero-grid-1080.avif 1080w, /art/hero-grid-1600.avif 1600w, /art/hero-grid-2560.avif 2560w" sizes="100vw" />
-        <source type="image/webp" srcSet="/art/hero-grid-1080.webp 1080w, /art/hero-grid-1600.webp 1600w, /art/hero-grid-2560.webp 2560w" sizes="100vw" />
-        {/* Plain <img> inside an art-directed <picture> with AVIF/WebP sources. */}
-        <img
-          src="/art/hero-grid-1600.webp"
-          alt=""
-          width={2560}
-          height={1440}
-          fetchPriority="high"
-          decoding="async"
-        />
-      </picture>
-      <style>{`@media (max-width: 640px){#hero .cine-hero__art{background-image:url(${lqip.mobile})!important}}`}</style>
+      {/* Two renders of the same scene; the theme decides which one shows. */}
+      {(["dark", "light"] as const).map((theme) => {
+        const base = theme === "dark" ? "hero-grid" : "hero-grid-light";
+        return (
+          <picture key={theme} className={`cine-hero__art art-${theme}`} data-art={theme} style={{ backgroundImage: `url(${theme === "dark" ? lqip.desktop : lqip.lightDesktop})` }}>
+            <source media="(max-width: 640px)" type="image/avif" srcSet={`/art/${base}-mobile-780.avif 780w, /art/${base}-mobile-1170.avif 1170w`} sizes="100vw" />
+            <source media="(max-width: 640px)" type="image/webp" srcSet={`/art/${base}-mobile-780.webp 780w, /art/${base}-mobile-1170.webp 1170w`} sizes="100vw" />
+            <source type="image/avif" srcSet={`/art/${base}-1080.avif 1080w, /art/${base}-1600.avif 1600w, /art/${base}-2560.avif 2560w`} sizes="100vw" />
+            <source type="image/webp" srcSet={`/art/${base}-1080.webp 1080w, /art/${base}-1600.webp 1600w, /art/${base}-2560.webp 2560w`} sizes="100vw" />
+            {/* Plain <img> inside an art-directed <picture> with AVIF/WebP sources. */}
+            <img src={`/art/${base}-1600.webp`} alt="" width={2560} height={1440} fetchPriority={theme === "dark" ? "high" : "auto"} loading={theme === "dark" ? "eager" : "lazy"} decoding="async" />
+          </picture>
+        );
+      })}
+      <style>{`@media (max-width: 640px){#hero .cine-hero__art[data-art=dark]{background-image:url(${lqip.mobile})!important}#hero .cine-hero__art[data-art=light]{background-image:url(${lqip.lightMobile})!important}}`}</style>
 
       <div className="relative mx-auto flex w-full max-w-[1320px] flex-1 flex-col items-center px-5 pt-28 text-center sm:px-8 md:pt-40 lg:pt-[24vh]">
         <div className="cine-scrim flex flex-col items-center">
@@ -61,7 +60,7 @@ export default function CinematicHero({ counts, staged, lqip }: CinematicHeroPro
 
         <div className="cine-in-2 mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
           <Link href="/#programs" className="cine-btn cine-btn--solid">Explore programs</Link>
-          <Link href="/gsoc" className="cine-btn cine-btn--line">Discover organizations</Link>
+          <Link href="/#explore" className="cine-btn cine-btn--line">Discover organizations</Link>
         </div>
 
         {/* Staged explorer: three real organizations from the index, sitting in the scene. */}

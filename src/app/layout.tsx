@@ -1,27 +1,14 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Instrument_Sans, Newsreader, Manrope } from "next/font/google";
+import { JetBrains_Mono, Newsreader, Manrope } from "next/font/google";
 import ThemeProvider from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
 import { safeJsonLd } from "@/lib/seo";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
-
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains",
   subsets: ["latin"],
-  display: "swap",
-});
-
-const instrumentSans = Instrument_Sans({
-  variable: "--font-instrument",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -147,7 +134,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} ${instrumentSans.variable} ${newsreader.variable} ${manrope.variable} h-full antialiased`}
+      className={`${jetbrainsMono.variable} ${newsreader.variable} ${manrope.variable} h-full antialiased`}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >

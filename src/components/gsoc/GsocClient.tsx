@@ -77,12 +77,12 @@ export default function GsocClient({ stats }: GsocClientProps) {
               {[
                 { label: "Organizations", value: String(stats.orgCount) },
                 { label: "Projects", value: stats.projectCount.toLocaleString("en-US") },
-                { label: `Orgs in ${currentYear}`, value: loading ? "…" : `${thisYearOrgs}${newThisYear ? ` (${newThisYear} new)` : ""}` },
+                { label: newThisYear ? `In ${currentYear}, ${newThisYear} new` : `Orgs in ${currentYear}`, value: loading ? "…" : String(thisYearOrgs) },
                 { label: "Stipend", value: `${usd(gsocCalendar.stipend.minUsd)}–${(gsocCalendar.stipend.maxUsd / 1000).toFixed(1)}k` },
               ].map((s) => (
                 <div key={s.label} className="bg-[var(--bg-card)] px-4 py-3">
-                  <dt className="text-xs text-[var(--text-muted)]">{s.label}</dt>
-                  <dd className="num mt-0.5 text-xl font-semibold text-[var(--text-primary)]">{s.value}</dd>
+                  <dt className="text-sm text-[var(--text-secondary)]">{s.label}</dt>
+                  <dd className="font-display mt-1 whitespace-nowrap text-2xl font-bold leading-none tracking-[-0.01em] text-[var(--text-primary)]">{s.value}</dd>
                 </div>
               ))}
             </dl>

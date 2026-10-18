@@ -166,3 +166,28 @@ Display serif and Manrope site-wide; ink-on-paper primary buttons (green only as
 ### Known differences that remain
 - Explorer organization cards and filter sidebars keep their v3 structure (now in v4 type, colour and radii); a deeper redesign of the dense directory would trade away scanning speed.
 - The 404 and error pages use the v4 tokens but no masthead.
+
+## Phase 4: one story, two themes, interactive scenes
+
+The brief asked for an audit against seven attached screenshots; none were attached, so the audit used fresh captures (`phase4/a0-*`, `phase4/b1-*`) at 390, 768, 1440 and 1920 px in both themes.
+
+### Audit findings (before)
+1. Light mode reached only three home sections; the hero, exhibits, network and every masthead stayed black.
+2. Content sat in a 1320 px column, leaving wide empty margins at 1920 px.
+3. The programs directory repeated the exhibits (same numbers, facts and buttons).
+4. The network was a static render with seven floating labels.
+5. Playbook and FAQ looked like dashboard widgets (tabs, bordered card list, small type).
+6. Theme defaulted to dark regardless of the system setting; Inter and Instrument Sans were still loaded.
+
+### Changes
+- **Order**: hero, mission, programs (scroll chapters plus programs on the way), explore organizations, ecosystem, playbook, FAQ, closing call to action with contributors, footer.
+- **Removed or merged**: exhibits and programs directory became one programs section; the featured organizations moved inside explore; community merged into the closing section; the static network art was replaced.
+- **Program chapters**: 40 frames per program and theme rendered offline (GSoC: a sun crossing eleven yearly monoliths sized by accepted organizations; LFX: 22 term rings sized by projects, lit in order, then pulled apart). The readout and bars show the year or term in the current frame.
+- **Ecosystem**: SVG network of the 56 largest organizations with filters, tooltips, keyboard and touch support.
+- **Type**: Newsreader and Manrope only; stat values moved from mono to serif; small text raised to 13 and 15 px.
+- **Themes**: `.cine` tokens switch to paper in light mode; light renders for the hero, chapters and mastheads; system preference on first visit.
+
+### Rounds
+1. `b1` captures: LFX tower ran under both text columns at 1024 px. Pinned mode now starts at 1280 px with stronger side scrims; narrower screens get the stacked still.
+2. Network labels collided and clipped at the frame edge: greedy label placement and edge clamping. Light-mode spheres had a dark specular spot: fixed white highlight and a darker rim from the program colour.
+3. Third insight repeated the Python chip: replaced with public proposals. Coming-soon rows misaligned: fixed columns. GSoC and LFX stat values wrapped in mono: serif, no wrapping.

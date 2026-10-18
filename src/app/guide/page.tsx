@@ -63,7 +63,7 @@ export default function GuidePage() {
           </p>
         }
       />
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1600px] px-4 py-10 sm:px-6 lg:px-8">
 
         <div className="mt-2 flex flex-col items-start gap-10 lg:flex-row">
           <nav aria-label="On this page" className="panel top-24 w-full shrink-0 p-3 lg:sticky lg:w-[240px]">

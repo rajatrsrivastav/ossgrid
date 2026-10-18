@@ -81,7 +81,7 @@ export default function ProposalsClient({ proposals, orgNames }: ProposalsClient
           Read these to learn structure: how a problem is framed, how a schedule is laid out, what a mentor could check each week. Do not copy them. Programs screen for it, and your own merged work matters more.
         </p>
       </PageMasthead>
-      <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-8 sm:px-6 lg:px-8">
 
         <div className="flex flex-col items-start gap-4 lg:flex-row">
           <aside className="panel sticky top-20 hidden w-[280px] shrink-0 overflow-y-auto p-3 lg:block" style={{ maxHeight: "calc(100vh - 6rem)" }} aria-label="Filters">

@@ -23,6 +23,10 @@ const SCENES = {
     { variant: "desktop", w: 2560, h: 1440, base: "hero-grid", widths: [2560, 1600, 1080], lqip: "hero-grid-desktop-lqip.txt" },
     { variant: "mobile", w: 1170, h: 2340, base: "hero-grid-mobile", widths: [1170, 780], lqip: "hero-grid-mobile-lqip.txt" },
   ] },
+  "hero-light": { page: "hero-scene.html", query: "theme=light", jobs: [
+    { variant: "desktop", w: 2560, h: 1440, base: "hero-grid-light", widths: [2560, 1600, 1080], lqip: "hero-grid-light-desktop-lqip.txt" },
+    { variant: "mobile", w: 1170, h: 2340, base: "hero-grid-light-mobile", widths: [1170, 780], lqip: "hero-grid-light-mobile-lqip.txt" },
+  ] },
   gsoc: { page: "gsoc-scene.html", jobs: [
     { variant: "desktop", w: 2400, h: 1500, base: "exhibit-gsoc", widths: [2400, 1600, 960] },
     { variant: "mobile", w: 1170, h: 1460, base: "exhibit-gsoc-mobile", widths: [1170, 780] },
@@ -59,7 +63,7 @@ for (const name of wanted) {
     page.on("pageerror", (e) => console.error(`${name} error:`, e.message));
     page.on("console", (m) => { if (m.type() === "error") console.error(`${name} console:`, m.text()); });
     const t = Date.now();
-    await page.goto(`http://localhost:${port}/scripts/art/${scene.page}?variant=${job.variant}&w=${job.w}&h=${job.h}`);
+    await page.goto(`http://localhost:${port}/scripts/art/${scene.page}?variant=${job.variant}&w=${job.w}&h=${job.h}${scene.query ? `&${scene.query}` : ""}`);
     await page.waitForFunction(() => window.__done === true, null, { timeout: 600_000 });
     const png = await page.locator("canvas").screenshot({ type: "png" });
     fs.writeFileSync(path.join(OUT, `.${job.base}-master.png`), png);

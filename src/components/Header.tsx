@@ -77,13 +77,13 @@ export default function Header({
           "w-full border-b transition-colors duration-200",
           onArt && "cine font-ui",
           overlay
-            ? scrolled || navOpen ? "border-[var(--border)] bg-[#050506]/80 backdrop-blur-md" : "border-transparent bg-transparent"
+            ? scrolled || navOpen ? "border-[var(--border)] bg-[color-mix(in_srgb,var(--cine-bg)_82%,transparent)] backdrop-blur-md" : "border-transparent bg-transparent"
             : scrolled || isExplorer || navOpen
               ? "border-[var(--border)] bg-[var(--bg-base)]/85 backdrop-blur-md"
               : "border-transparent bg-transparent"
         )}
       >
-        <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center gap-3 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-16 w-full max-w-[1600px] items-center gap-3 px-4 sm:px-6 lg:px-8">
           {/* Brand */}
           <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label="OSSGrid home">
             <span className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-control)] bg-[var(--text-primary)] text-[var(--bg-base)]">

@@ -37,7 +37,7 @@ export default function ContributorsClient({ initialContributors }: { initialCon
         <a href={`https://github.com/${ossgridRepo}/blob/main/CONTRIBUTING.md`} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">Contribution guidelines</a>
       </div>
     </PageMasthead>
-    <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-12 sm:px-6 lg:px-8">
       <section id="past-contributors" className="scroll-mt-24" aria-labelledby="history-heading">
         <h2 id="history-heading" className="text-xl font-semibold">Current and past contributors</h2>
         <p className="mt-2 text-sm text-[var(--text-secondary)]">Recognition stays here even when someone is no longer active. This directory combines OSSGrid’s all-time GitHub history with maintainer-recognized contributions.</p>

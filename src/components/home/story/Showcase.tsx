@@ -13,16 +13,7 @@ interface ShowcaseProps {
 /** Long-running organizations from both programs, as editorial tiles with real history. */
 export default function Showcase({ orgs, span }: ShowcaseProps) {
   return (
-    <section id="featured" aria-labelledby="featured-title" className="cine cine-section">
-      <div className="cine-wrap">
-        <div className="mb-[clamp(40px,6vh,80px)] grid gap-6 lg:grid-cols-[1.2fr_1fr] lg:items-end">
-          <h2 id="featured-title" className="font-display cine-h2">organizations that keep coming back.</h2>
-          <p className="font-ui cine-lede">
-            A steady org has mentors who know the program and maintainers who review quickly. Each square below is one year; a lit square means the org was in that year.
-          </p>
-        </div>
-
-        <ul className="cine-showcase font-ui">
+        <ul className="cine-showcase font-ui" aria-label="Organizations that keep coming back">
           {orgs.map((org, i) => {
             const program = getProgram(org.program)!;
             const large = i === 0;
@@ -32,7 +23,7 @@ export default function Showcase({ orgs, span }: ShowcaseProps) {
                   <span className={cn("flex shrink-0 items-center justify-center overflow-hidden rounded-[3px] bg-white", large ? "h-20 w-20 md:h-28 md:w-28" : "h-14 w-14")}>
                     <Image src={org.logoUrl || "/placeholder.svg"} alt="" width={112} height={112} unoptimized className="h-full w-full object-contain p-2" />
                   </span>
-                  <span className="text-right text-sm text-[var(--cine-fg-3)]">
+                  <span className="text-right text-sm leading-snug text-[var(--cine-fg-2)]">
                     {program.name}
                     <br />
                     {org.category}
@@ -43,7 +34,7 @@ export default function Showcase({ orgs, span }: ShowcaseProps) {
                   <h3 className={cn("font-display font-bold leading-[1.02] tracking-[-0.02em] text-[var(--cine-fg)]", large ? "text-[clamp(2rem,3.4vw,3.25rem)]" : "text-[1.75rem]")}>
                     <Link href={org.href} className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none">{org.name}</Link>
                   </h3>
-                  <p className="mt-2 text-sm text-[var(--cine-fg-2)]">{org.note}</p>
+                  <p className="mt-2 text-[0.95rem] text-[var(--cine-fg-2)]">{org.note}</p>
                 </div>
 
                 {large && org.description && <p className="max-w-[34rem] text-base leading-relaxed text-[var(--cine-fg-2)]">{truncate(sanitizeDescription(org.description, org.name), 220)}</p>}
@@ -59,20 +50,18 @@ export default function Showcase({ orgs, span }: ShowcaseProps) {
                     {org.recentProjects.slice(0, large ? 3 : 1).map((p) => (
                       <li key={p.title} className="flex items-baseline justify-between gap-4">
                         <span className="text-[var(--cine-fg)]">{p.title}</span>
-                        <span className="shrink-0 text-[var(--cine-fg-3)]">{p.year}</span>
+                        <span className="num shrink-0 text-[var(--cine-fg-2)]">{p.year}</span>
                       </li>
                     ))}
                   </ul>
                 )}
 
-                <p className="mt-auto flex items-baseline gap-2 text-sm text-[var(--cine-fg-3)]">
+                <p className="mt-auto flex items-baseline gap-2 text-[0.95rem] text-[var(--cine-fg-2)]">
                   <strong className="font-display text-2xl font-bold text-[var(--cine-fg)]">{org.projectCount}</strong> projects across {org.years} {org.years === 1 ? "year" : "years"}
                 </p>
               </li>
             );
           })}
         </ul>
-      </div>
-    </section>
   );
 }

@@ -20,7 +20,7 @@ interface PageMastheadProps {
 export default function PageMasthead({ title, lede, label, crumbs, art, children, aside }: PageMastheadProps) {
   return (
     <div className="cine cine-masthead font-ui" data-art={art}>
-      <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8">
         {crumbs && crumbs.length > 0 && (
           <nav aria-label="Breadcrumb" className="mb-8 text-sm text-[var(--cine-fg-3)]">
             <ol className="flex flex-wrap items-center gap-2">

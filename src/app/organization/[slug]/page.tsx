@@ -196,7 +196,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
       {/* Identity */}
       <main id="main" className="flex w-full flex-1 flex-col">
       <div id="overview" className="cine cine-masthead font-ui scroll-mt-28 !pt-6" data-art="lfx">
-        <div className="mx-auto w-full max-w-[1440px] px-4 pb-8 pt-6 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-[1600px] px-4 pb-8 pt-6 sm:px-6 lg:px-8">
           <nav aria-label="Breadcrumb" className="mb-6 text-xs text-[var(--text-muted)]">
             <ol className="flex items-center gap-2">
               <li><Link href="/" className="hover:text-[var(--text-primary)]">Home</Link></li>
@@ -268,7 +268,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ s
 
       <OrgSectionNav projectCount={org.projectCount} mentorCount={allMentors.length} />
 
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col items-start gap-8 lg:flex-row">
           <div className="min-w-0 flex-1 space-y-14">
             {/* Projects */}

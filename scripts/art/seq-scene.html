@@ -1,0 +1,173 @@
+<!doctype html>
+<!--
+  Scroll-sequence scenes for the home program chapters. One page builds the scene once and exposes
+  window.renderFrame(t) for t in [0, 1]; scripts/art/render-seq.mjs screenshots each frame.
+
+  ?scene=lfx  Terraced ziggurat, one ring per LFX term since 2019 (ring height from projects that term).
+              Terraces light up chronologically, the camera orbits, then the stack separates into an
+              exploded view of every term.
+  ?scene=gsoc One monolith per GSoC year since 2016 (height from accepted orgs that year). A low sun
+              crosses the row and each year's monolith lights as its year is reached.
+  ?theme=dark|light  Graphite on black, or porcelain and stone on warm paper.
+-->
+<html><head><meta charset="utf-8" />
+<style>html,body{margin:0;background:#050506;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{ "imports": { "three": "/node_modules/three/build/three.module.js", "three/addons/": "/node_modules/three/examples/jsm/" } }</script>
+</head><body>
+<script type="module">
+import { THREE, W, H, params, makeRenderer, gradientSky, radialTexture, environment } from "/scripts/art/kit.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+
+const sceneName = params.get("scene") || "lfx";
+const light = params.get("theme") === "light";
+const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+
+const renderer = makeRenderer({ exposure: light ? 0.82 : 1.0 });
+const scene = new THREE.Scene();
+let update = () => {};
+let camera;
+
+if (sceneName === "lfx") {
+  const orgs = await fetch("/public/data/organizations.json").then((r) => r.json());
+  const perTerm = new Map();
+  for (const o of orgs) for (const p of o.projects) { const k = `${p.year}-${p.termIndex}`; perTerm.set(k, (perTerm.get(k) || 0) + 1); }
+  const terms = [...perTerm.keys()].sort();
+  const counts = terms.map((k) => perTerm.get(k));
+  const max = Math.max(...counts);
+  const n = terms.length;
+
+  scene.background = light
+    ? gradientSky([[0, "#f4f2ed"], [0.55, "#ebe7df"], [1, "#e2ddd3"]])
+    : gradientSky([[0, "#020404"], [0.35, "#060c0b"], [0.6, "#0b1716"], [1, "#0b1716"]]);
+  scene.fog = new THREE.FogExp2(light ? 0xe6e2d9 : 0x0b1716, light ? 0.012 : 0.026);
+  environment(renderer, scene, light ? 0.28 : 0.22);
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: light ? 0xe4e0d7 : 0x090d0d, metalness: light ? 0.0 : 0.8, roughness: light ? 0.9 : 0.45 }));
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+
+  const body = new THREE.MeshPhysicalMaterial(light
+    ? { color: 0xb7b1a6, metalness: 0.0, roughness: 0.5, clearcoat: 0.3, clearcoatRoughness: 0.4 }
+    : { color: 0x1d2524, metalness: 0.8, roughness: 0.42, clearcoat: 0.12, clearcoatRoughness: 0.5 });
+  const accent = light ? 0x166534 : 0x1ac66e;
+  const group = new THREE.Group(); scene.add(group);
+  const rings = [];
+  terms.forEach((t, i) => {
+    const step = n - 1 - i;
+    const inner = step === 0 ? 0 : 0.9 + step * 0.55, outer = 1.45 + step * 0.55;
+    const h = 0.18 + (counts[i] / max) * 0.55;
+    const shape = new THREE.Shape(); shape.absarc(0, 0, outer, 0, Math.PI * 2, false);
+    if (inner > 0) { const hole = new THREE.Path(); hole.absarc(0, 0, inner, 0, Math.PI * 2, true); shape.holes.push(hole); }
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: true, bevelThickness: 0.025, bevelSize: 0.025, bevelSegments: 2, curveSegments: 160 }).rotateX(-Math.PI / 2);
+    const ring = new THREE.Mesh(geo, body); ring.castShadow = ring.receiveShadow = true;
+    const lipShape = new THREE.Shape(); lipShape.absarc(0, 0, outer + 0.02, 0, Math.PI * 2, false);
+    const lipHole = new THREE.Path(); lipHole.absarc(0, 0, outer - (light ? 0.14 : 0.03), 0, Math.PI * 2, true); lipShape.holes.push(lipHole);
+    const lipMat = new THREE.MeshStandardMaterial({ color: light ? 0xd7ddd6 : 0x0b1a12, emissive: accent, emissiveIntensity: 0, metalness: 0.2, roughness: 0.5 });
+    const lip = new THREE.Mesh(new THREE.ExtrudeGeometry(lipShape, { depth: 0.03, bevelEnabled: false, curveSegments: 160 }).rotateX(-Math.PI / 2), lipMat);
+    const holder = new THREE.Group(); holder.add(ring); holder.add(lip); lip.position.y = h + 0.02;
+    group.add(holder);
+    // Base height: stacked like a ziggurat (each newer, smaller terrace sits on top of the older ones).
+    rings.push({ holder, lipMat, base: i * 0.24, h });
+  });
+
+  const key = new THREE.DirectionalLight(light ? 0xfff6e8 : 0xe4f1ee, light ? 2.4 : 2.9);
+  key.position.set(-14, 22, -10); key.castShadow = true; key.shadow.mapSize.set(4096, 4096);
+  Object.assign(key.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 120 }); key.shadow.bias = -0.0004;
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(light ? 0xe8efff : 0x9fd9c0, light ? 0.6 : 0.35); fill.position.set(16, 8, 18); scene.add(fill);
+  scene.add(new THREE.HemisphereLight(light ? 0xffffff : 0x2c3d3a, light ? 0xa8a090 : 0x050707, light ? 0.3 : 0.75));
+  // Rim from behind so terrace edges read even before they light up.
+  const rimL = new THREE.DirectionalLight(light ? 0xffffff : 0xcfe7df, light ? 0.5 : 0.6); rimL.position.set(4, 10, -26); scene.add(rimL);
+  const pool = new THREE.Mesh(new THREE.PlaneGeometry(36, 36), new THREE.MeshBasicMaterial({ map: radialTexture(light ? "rgba(22,101,52,0.18)" : "rgba(120,220,180,0.35)", light ? "rgba(22,101,52,0.05)" : "rgba(30,110,80,0.1)"), transparent: true, depthWrite: false, blending: light ? THREE.NormalBlending : THREE.AdditiveBlending }));
+  pool.rotation.x = -Math.PI / 2; pool.position.y = 0.012; scene.add(pool);
+
+  camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 400);
+  update = (t) => {
+    const lit = smooth(0.04, 0.6, t);           // terraces light up oldest to newest
+    const explode = smooth(0.58, 0.92, t);      // then the stack separates into its terms
+    rings.forEach((r, i) => {
+      const on = Math.min(1, Math.max(0, lit * rings.length - i));
+      r.lipMat.emissiveIntensity = on * (light ? 0 : 2.4);
+      // On paper, a lit terrace turns deep forest green instead of glowing.
+      if (light) r.lipMat.color.setRGB(0.84 - on * 0.75, 0.86 - on * 0.47, 0.83 - on * 0.63);
+      r.holder.position.y = r.base * (1 - explode) + i * (0.62) * explode;
+    });
+    const top = rings.length * 0.62; // height of the fully exploded stack
+    const angle = -0.55 + t * 0.95, radius = 27 + explode * 11, height = 6.2 + explode * 4.5;
+    camera.position.set(Math.sin(angle) * radius, height, Math.cos(angle) * radius);
+    camera.lookAt(0, 2.2 + explode * (top * 0.5 - 2.2), 0);
+    window.__state = { lit, explode, term: terms[Math.min(n - 1, Math.floor(lit * n))] };
+  };
+} else {
+  const orgs = await fetch("/public/data/gsoc/organizations.json").then((r) => r.json());
+  const perYear = new Map();
+  for (const o of orgs) for (const y of o.years) perYear.set(y, (perYear.get(y) || 0) + 1);
+  const years = [...perYear.keys()].sort((a, b) => a - b);
+  const counts = years.map((y) => perYear.get(y));
+  const min = Math.min(...counts), max = Math.max(...counts);
+
+  scene.background = light
+    ? gradientSky([[0, "#f3efe7"], [0.5, "#efe6d6"], [0.68, "#ecdcc2"], [1, "#e7ded0"]])
+    : gradientSky([[0, "#060403"], [0.45, "#120b06"], [0.62, "#2a1608"], [0.7, "#24150a"], [1, "#0d0906"]]);
+  scene.fog = new THREE.FogExp2(light ? 0xeadfcd : 0x1d1209, light ? 0.008 : 0.028);
+  environment(renderer, scene, light ? 0.45 : 0.12);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: light ? 0xe7dfd2 : 0x110d0a, metalness: 0.05, roughness: 0.95 }));
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+
+  const stone = new THREE.MeshPhysicalMaterial(light
+    ? { color: 0xb6a994, metalness: 0.0, roughness: 0.55, clearcoat: 0.25 }
+    : { color: 0x1c1915, metalness: 0.55, roughness: 0.48, clearcoat: 0.2, clearcoatRoughness: 0.5 });
+  const monos = years.map((y, i) => {
+    const h = 3.2 + ((counts[i] - min) / (max - min)) * 4.2;
+    const mat = stone.clone();
+    mat.emissive = new THREE.Color(light ? 0xb45309 : 0xf59e0b);
+    mat.emissiveIntensity = 0;
+    const m = new THREE.Mesh(new RoundedBoxGeometry(1.15, h, 0.55, 3, 0.06), mat);
+    m.position.set(-9 + i * 1.95, h / 2, -2 - i * 1.6); m.rotation.y = -0.38;
+    m.castShadow = m.receiveShadow = true; scene.add(m);
+    return { m, mat };
+  });
+  const sun = new THREE.DirectionalLight(light ? 0xffb560 : 0xffb15c, light ? 3.6 : 3.4);
+  sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096);
+  Object.assign(sun.shadow.camera, { left: -40, right: 40, top: 30, bottom: -30, near: 1, far: 160 }); sun.shadow.bias = -0.0004;
+  scene.add(sun); scene.add(sun.target);
+  scene.add(new THREE.HemisphereLight(light ? 0xfff4e4 : 0x3a2a1c, light ? 0xb8a990 : 0x0a0806, light ? 0.32 : 0.35));
+  const fill = new THREE.DirectionalLight(0xffd2a0, light ? 0.35 : 0.45); fill.position.set(-14, 6, 20); scene.add(fill);
+  const glow = new THREE.Mesh(new THREE.PlaneGeometry(70, 40), new THREE.MeshBasicMaterial({ map: radialTexture(light ? "rgba(255,190,110,0.55)" : "rgba(255,190,110,0.85)", "rgba(245,120,30,0.18)"), transparent: true, depthWrite: false, fog: false, blending: light ? THREE.NormalBlending : THREE.AdditiveBlending }));
+  scene.add(glow);
+
+  camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 400);
+  update = (t) => {
+    const p = smooth(0.04, 0.9, t);
+    const idx = Math.min(years.length - 1, Math.floor(p * years.length));
+    monos.forEach(({ mat }, i) => { mat.emissiveIntensity = i === idx ? (light ? 0.55 : 0.22) : i < idx ? (light ? 0.08 : 0.04) : 0; });
+    // The sun crosses behind the row from left to right.
+    const a = -0.9 + p * 1.8;
+    sun.position.set(Math.sin(a) * 40, 6 + Math.cos(a) * 3, -34);
+    sun.target.position.set(0, 0, -8);
+    glow.position.set(Math.sin(a) * 60, 8, -95);
+    camera.position.set(-7 + p * 5, 2.4 + p * 0.6, 17 - p * 2);
+    camera.lookAt(2 + p * 3, 3.4, -10);
+    window.__state = { year: years[idx], idx };
+  };
+}
+
+const composer = new EffectComposer(renderer);
+composer.setSize(W, H);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), light ? 0.25 : 0.55, 0.5, light ? 0.95 : 0.86));
+composer.addPass(new OutputPass());
+
+window.renderFrame = async (t) => {
+  update(t);
+  composer.render();
+  await new Promise((r) => requestAnimationFrame(r));
+  composer.render();
+  return window.__state;
+};
+window.__done = true;
+</script>
+</body></html>
