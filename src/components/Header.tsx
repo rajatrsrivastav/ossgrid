@@ -19,6 +19,8 @@ interface HeaderProps {
   onCommandPaletteOpen?: () => void;
   searchPlaceholder?: string;
   searchAriaLabel?: string;
+  /** Sits over the always-dark home hero: transparent with light text until the page scrolls. */
+  overlay?: boolean;
 }
 
 export default function Header({
@@ -28,6 +30,7 @@ export default function Header({
   onCommandPaletteOpen,
   searchPlaceholder,
   searchAriaLabel,
+  overlay = false,
 }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
@@ -64,13 +67,15 @@ export default function Header({
   }, [navOpen]);
 
   const isExplorer = variant === "full";
+  const onArt = overlay && !scrolled && !navOpen;
 
   return (
     <div className="sticky top-0 z-40">
       <header
         className={cn(
           "w-full border-b transition-colors duration-200",
-          scrolled || isExplorer
+          onArt && "cine font-ui",
+          scrolled || isExplorer || navOpen
             ? "border-[var(--border)] bg-[var(--bg-base)]/85 backdrop-blur-md"
             : "border-transparent bg-transparent"
         )}
@@ -120,14 +125,14 @@ export default function Header({
               rel="noopener noreferrer"
               aria-label="Support OSSGrid on Buy Me a Coffee"
               title="Support OSSGrid on Buy Me a Coffee"
-              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[var(--radius-control)] border border-[var(--border)] px-2 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[var(--radius-control)] border border-transparent px-2 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
             >
               <Coffee size={15} aria-hidden="true" />
               <span className="hidden lg:inline">Support</span>
             </a>
             {!isExplorer && (
               <div className="hidden lg:block">
-                <Link href="/#programs" className="btn btn-primary btn-sm">Browse programs</Link>
+                <Link href="/#programs" className={onArt ? "cine-btn cine-btn--line !h-9 !px-4 !text-sm" : "btn btn-primary btn-sm"}>Explore programs</Link>
               </div>
             )}
             <div className="lg:hidden">
@@ -174,7 +179,7 @@ export default function Header({
               ))}
               <li className="pt-2">
                 <Link href="/#programs" className="btn btn-primary w-full" onClick={() => setNavOpen(false)}>
-                  <Search size={15} /> Browse programs
+                  <Search size={15} /> Explore programs
                 </Link>
               </li>
             </ul>

@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "@/components/Header";
-import LandingHero from "@/components/LandingHero";
+import CinematicHero, { type HeroCounts } from "@/components/home/CinematicHero";
 import { LogoMarquee, type MarqueeOrg } from "@/components/landing/LogoMarquee";
 import { Programs } from "@/components/landing/ProgramsFeatures";
 import { DashboardsStrip } from "@/components/landing/DashboardsStrip";
@@ -37,22 +37,19 @@ export interface CombinedStats {
 interface HomePageClientProps {
   programStats: ProgramStats[];
   combined: CombinedStats;
-  /** Featured orgs per live program, in hero CTA order. */
-  featured: Record<string, FeaturedOrg[]>;
   marquee: MarqueeOrg[];
-  /** Program ids in CTA order (nearest application window first). */
-  ctaOrder: ProgramId[];
   buildDate: string;
+  hero: { counts: HeroCounts; staged: FeaturedOrg[]; lqip: { desktop: string; mobile: string } };
   proposals: { count: number; orgCount: number; repos: number };
 }
 
-export default function HomePageClient({ programStats, combined, featured, marquee, ctaOrder, buildDate, proposals }: HomePageClientProps) {
+export default function HomePageClient({ programStats, combined, marquee, buildDate, proposals, hero }: HomePageClientProps) {
   const nf = new Intl.NumberFormat("en-US");
   return (
     <>
-      <Header variant="simple" />
-      <main className="flex w-full flex-1 flex-col bg-[var(--bg-base)]">
-        <LandingHero combined={combined} featured={featured} ctaOrder={ctaOrder} />
+      <Header variant="simple" overlay />
+      <main className="-mt-16 flex w-full flex-1 flex-col bg-[var(--bg-base)]">
+        <CinematicHero counts={hero.counts} staged={hero.staged} lqip={hero.lqip} />
         <LogoMarquee orgs={marquee} />
         <Programs programStats={programStats} />
         <DashboardsStrip programStats={programStats} extraTiles={[{ href: "/proposals", title: "Proposals library", count: `${nf.format(proposals.count)} proposals · ${proposals.orgCount} orgs`, verb: "Read proposals" }, { href: "/guide", title: "Contributor playbook", count: `${PROGRAMS.length} program checklists`, verb: "Read the playbook" }]} />

@@ -21,6 +21,14 @@ test("landing page renders programs and a link to the LFX explorer", async ({ pa
   await settle(page);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.locator("#programs")).toBeVisible();
+  // Cinematic hero: live headline, two real routes, panels linking to real organization pages.
+  await expect(page.locator("#hero-title")).toHaveText(/find your place\s*in open source\./);
+  await expect(page.locator("#hero").getByRole("link", { name: "Explore programs" })).toHaveAttribute("href", "/#programs");
+  await expect(page.locator("#hero").getByRole("link", { name: "Discover organizations" })).toHaveAttribute("href", "/gsoc");
+  for (const href of await page.locator("#hero .cine-panel").evaluateAll((els) => els.map((e) => e.getAttribute("href")))) {
+    expect(href).toMatch(/^\/(gsoc|organization)\/[a-z0-9-]+$/);
+  }
+  await expect(page.locator('button[aria-controls="mobile-nav"]')).toHaveCount(1);
   await expect(page.getByRole("link", { name: /Browse LFX orgs/i }).first()).toHaveAttribute("href", "/lfx");
   expect(errors).toEqual([]);
   await expect(page).toHaveScreenshot("home.png", { fullPage: false });

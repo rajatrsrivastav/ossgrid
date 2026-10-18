@@ -5,7 +5,6 @@ import HomePageClient, { FeaturedOrg } from "@/components/home/HomePageClient";
 import type { MarqueeOrg } from "@/components/landing/LogoMarquee";
 import { safeJsonLd, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { getProgramStats, getCombinedStats } from "@/lib/stats";
-import { orderByNextWindow } from "@/lib/program-windows";
 import { getProposalStats } from "@/lib/proposals-data";
 import { PROGRAMS, livePrograms } from "@/data/programs";
 import type { GsocOrganization, Organization } from "@/lib/types";
@@ -57,17 +56,26 @@ function getLandingData(): { featured: Record<string, FeaturedOrg[]>; marquee: M
   return { featured, marquee };
 }
 
+function readLqip(variant: "desktop" | "mobile"): string {
+  try { return fs.readFileSync(path.join(process.cwd(), "public", "art", `hero-grid-${variant}-lqip.txt`), "utf8").trim(); } catch { return ""; }
+}
+
 export default function HomePage() {
   const programStats = getProgramStats();
   const combined = getCombinedStats();
   const { featured, marquee } = getLandingData();
-  const ctaOrder = orderByNextWindow(live).map((p) => p.id);
   const buildDate = new Date().toISOString().slice(0, 10);
   const proposals = getProposalStats();
+  const gsocStats = programStats.find((p) => p.id === "gsoc")!;
+  const lfxStats = programStats.find((p) => p.id === "lfx")!;
+  const heroCounts = { gsocOrgs: gsocStats.orgCount, gsocSince: gsocStats.yearMin, lfxOrgs: lfxStats.orgCount, lfxSince: lfxStats.yearMin, projects: combined.projectCount };
+  // Staged in the hero: the largest org from each live program plus the next GSoC org.
+  const staged = [featured.gsoc[0], featured.lfx[0], featured.gsoc[1]].filter(Boolean);
+  const lqip = { desktop: readLqip("desktop"), mobile: readLqip("mobile") };
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(homeJsonLd) }} />
-      <HomePageClient programStats={programStats} combined={combined} featured={featured} marquee={marquee} ctaOrder={ctaOrder} buildDate={buildDate} proposals={proposals} />
+      <HomePageClient programStats={programStats} combined={combined} marquee={marquee} buildDate={buildDate} proposals={proposals} hero={{ counts: heroCounts, staged, lqip }} />
     </>
   );
 }

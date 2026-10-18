@@ -1,0 +1,183 @@
+<!doctype html>
+<!--
+  Offline renderer for the OSSGrid hero artwork: a contribution graph built as architecture.
+  Rendered once in headless Chromium by scripts/art/render-hero.mjs and exported as WebP.
+  three.js is a dev dependency only; nothing here ships to the browser bundle.
+-->
+<html>
+<head>
+<meta charset="utf-8" />
+<style>html,body{margin:0;background:#050506;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">
+{ "imports": {
+  "three": "/node_modules/three/build/three.module.js",
+  "three/addons/": "/node_modules/three/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<script type="module">
+import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { BokehPass } from "three/addons/postprocessing/BokehPass.js";
+
+const params = new URLSearchParams(location.search);
+const W = Number(params.get("w") || 2560), H = Number(params.get("h") || 1440);
+const variant = params.get("variant") || "desktop";
+
+// Deterministic PRNG so every render is identical.
+let seed = 1337;
+const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+
+// Heights are seeded from real GSoC project counts (sqrt-scaled), shuffled deterministically.
+const orgs = await fetch("/public/data/gsoc/organizations.json").then((r) => r.json());
+// Rank, not raw count, so one very large org cannot become a lone skyscraper.
+const sorted = orgs.map((o) => o.projectCount).filter((n) => n > 0).sort((a, b) => a - b);
+const pct = (n) => sorted.findIndex((x) => x >= n) / sorted.length;
+const counts = orgs.map((o) => o.projectCount).filter((n) => n > 0).map(pct);
+for (let i = counts.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [counts[i], counts[j]] = [counts[j], counts[i]]; }
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.95;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+// Sky: near-black at the top, a cool haze at the horizon that matches the fog, so the floor dissolves.
+const sky = document.createElement("canvas"); sky.width = 4; sky.height = 512;
+const g = sky.getContext("2d").createLinearGradient(0, 0, 0, 512);
+g.addColorStop(0, "#020203"); g.addColorStop(0.3, "#050607"); g.addColorStop(0.5, "#0d1014"); g.addColorStop(0.6, "#161b21"); g.addColorStop(1, "#161b21");
+const skyCtx = sky.getContext("2d"); skyCtx.fillStyle = g; skyCtx.fillRect(0, 0, 4, 512);
+const skyTex = new THREE.CanvasTexture(sky); skyTex.colorSpace = THREE.SRGBColorSpace;
+scene.background = skyTex;
+// Fog matches the sky's horizon band exactly so the floor has no visible edge.
+scene.fog = new THREE.FogExp2(0x161b21, variant === "mobile" ? 0.04 : 0.036);
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.16;
+
+// Floor: dark brushed metal that picks up the emissive tops.
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(2000, 2000),
+  new THREE.MeshStandardMaterial({ color: 0x08090a, metalness: 0.85, roughness: 0.5 })
+);
+floor.rotation.x = -Math.PI / 2;
+floor.receiveShadow = true;
+scene.add(floor);
+
+// The graph: 7 rows (days) by 53 columns (weeks), laid along depth so it recedes into haze.
+const ROWS = 7, COLS = 53, PITCH = 1.12, SIZE = 0.94;
+const graphite = new THREE.MeshPhysicalMaterial({ color: 0x1b1c20, metalness: 0.78, roughness: 0.52, clearcoat: 0.18, clearcoatRoughness: 0.6 });
+const graphiteLit = graphite.clone();
+const capOn = new THREE.MeshStandardMaterial({ color: 0x0c2a1a, emissive: 0x1ac66e, emissiveIntensity: 3.2, metalness: 0.2, roughness: 0.4 });
+const capDim = new THREE.MeshStandardMaterial({ color: 0x0b1a12, emissive: 0x1ac66e, emissiveIntensity: 0.45, metalness: 0.3, roughness: 0.5 });
+// Unit-height rounded box; scaled per column. Bevel catches the rim light along every edge.
+const box = new RoundedBoxGeometry(SIZE, 1, SIZE, 3, 0.05);
+const cap = new RoundedBoxGeometry(SIZE * 0.9, 0.03, SIZE * 0.9, 2, 0.012);
+
+let k = 0;
+const litTops = [];
+for (let c = 0; c < COLS; c++) {
+  for (let r = 0; r < ROWS; r++) {
+    const n = counts[k++ % counts.length];
+    // Height: real counts shaped by a gentle wave so the skyline has rhythm, not noise.
+    const wave = 0.55 + 0.45 * Math.sin(c * 0.33 + r * 0.7);
+    // Keep the skyline in the lower half of the frame; the haze above holds the headline.
+    // Rows near the centre stay low, so the middle of the frame is a calm valley.
+    const centre = 1 - Math.exp(-Math.pow((r - (ROWS - 1) / 2) / 2.2, 2) * 2.4);
+    const near = Math.min(1, c / 14);
+    const h = 0.22 + Math.pow(n, 1.9) * 3.0 * wave * (0.25 + 0.75 * Math.max(centre, 1 - near * 0.85)) + rand() * 0.2;
+    const x = (r - (ROWS - 1) / 2) * PITCH;
+    const z = -c * PITCH;
+    const m = new THREE.Mesh(box, graphite);
+    m.scale.y = h;
+    m.position.set(x, h / 2, z);
+    m.castShadow = m.receiveShadow = true;
+    scene.add(m);
+    const level = rand();
+    if (level > 0.78) {
+      const near = c < 6;
+      const t = new THREE.Mesh(cap, level > 0.95 && !near ? capOn : capDim);
+      t.position.set(x, h + 0.018, z);
+      scene.add(t);
+      if (level > 0.95 && !near) litTops.push(t.position.clone());
+    }
+  }
+}
+
+// A second, lower graph on each side widens the field and frames the centre.
+for (const side of [-1, 1]) {
+  for (let c = 0; c < 40; c++) {
+    for (let r = 0; r < 5; r++) {
+      const n = counts[k++ % counts.length];
+      const h = 0.3 + Math.pow(n, 1.6) * 3.6 + rand() * 0.3;
+      const x = side * (ROWS / 2 * PITCH + 2.6 + r * PITCH);
+      const z = -c * PITCH - 4;
+      const m = new THREE.Mesh(box, graphiteLit);
+      m.scale.y = h;
+      m.position.set(x, h / 2, z);
+      m.castShadow = m.receiveShadow = true;
+      scene.add(m);
+      if (rand() > 0.86) { const t = new THREE.Mesh(cap, capDim); t.position.set(x, h + 0.018, z); scene.add(t); }
+    }
+  }
+}
+
+// Lighting: a cool key from high behind for rim edges, a soft warm-neutral fill, green bounce from lit tops.
+// Rim sits lower and further back: it outlines edges without flaring the flat tops near the camera.
+const rim = new THREE.DirectionalLight(0xdfe6ee, 1.0);
+rim.position.set(-6, 7, -46);
+rim.castShadow = true;
+rim.shadow.mapSize.set(2048, 2048);
+Object.assign(rim.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 120 });
+scene.add(rim);
+const fill = new THREE.DirectionalLight(0xffe8d0, 0.22);
+fill.position.set(8, 6, 12);
+scene.add(fill);
+for (const p of litTops.slice(0, 18)) {
+  const l = new THREE.PointLight(0x1ac66e, 6, 4.5, 2);
+  l.position.set(p.x, p.y + 0.6, p.z);
+  scene.add(l);
+}
+// Distant horizon glow: a soft radial light behind the far end of the graph.
+const gc = document.createElement("canvas"); gc.width = gc.height = 256;
+const gctx = gc.getContext("2d"); const rg = gctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+rg.addColorStop(0, "rgba(150,170,185,0.55)"); rg.addColorStop(0.35, "rgba(70,85,98,0.25)"); rg.addColorStop(1, "rgba(0,0,0,0)");
+gctx.fillStyle = rg; gctx.fillRect(0, 0, 256, 256);
+const glowTex = new THREE.CanvasTexture(gc);
+const glow = new THREE.Mesh(new THREE.PlaneGeometry(120, 46), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
+glow.position.set(0, 3, -80);
+scene.add(glow);
+
+// Camera: low and slightly elevated, looking down the graph so the skyline fills the lower frame
+// and the upper frame stays as haze for the live HTML headline.
+const camera = new THREE.PerspectiveCamera(variant === "mobile" ? 50 : 32, W / H, 0.1, 400);
+if (variant === "mobile") { camera.position.set(0.4, 3.6, 8); camera.lookAt(0, 4.4, -24); }
+else { camera.position.set(0.6, 3.2, 9.5); camera.lookAt(0, 4.0, -26); }
+
+const composer = new EffectComposer(renderer);
+composer.setSize(W, H);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new BokehPass(scene, camera, { focus: 16, aperture: 0.0016, maxblur: 0.008 }));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), 0.6, 0.5, 0.93));
+composer.addPass(new OutputPass());
+
+composer.render();
+// Second frame lets shadows and PMREM settle.
+await new Promise((r) => requestAnimationFrame(r));
+composer.render();
+window.__done = true;
+</script>
+</body>
+</html>
