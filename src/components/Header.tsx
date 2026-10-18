@@ -123,6 +123,16 @@ export default function Header({
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
             <a
+              href="https://x.com/rajatrsrivastav"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Follow OSSGrid on X"
+              title="Follow on X"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius-control)] border border-transparent text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+            </a>
+            <a
               href="https://buymeacoffee.com/rajatrsrivastav"
               target="_blank"
               rel="noopener noreferrer"
