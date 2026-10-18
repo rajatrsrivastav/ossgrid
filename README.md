@@ -11,6 +11,8 @@
 | `/lfx` | Every LFX Mentorship organization since 2019, projects per term, mentors |
 | `/proposals` | Public GSoC proposals indexed from community archives (links only) |
 | `/guide` | The contributor playbook with a checklist per program |
+| `/contribute` | How to contribute to OSSGrid and indexed repositories |
+| `/contributors` | Approved OSSGrid contributors and GitHub repository contributors |
 | `/programs/<id>` | Preview page for programs that are not indexed yet |
 
 Programs live in one registry, `src/data/programs.ts`. Flip a program to `live` (with a route and a data file) and the header, landing page, footer, sitemap and search follow.
@@ -22,7 +24,7 @@ Programs live in one registry, `src/data/programs.ts`. Flip a program to `live` 
 - 🌗 **Dark/Light Mode** — Token-based design system, see `DESIGN.md`.
 - 🔗 **Shareable URLs** — Filters sync to URL query parameters for shareable filtered views.
 - 📱 **Fully Responsive** — Optimized grid layout from mobile to desktop.
-- ⚡ **100% Static** — Pre-built JSON datasets loaded client-side for instant performance.
+- ⚡ **Pre-built program data** — Organization and project datasets are shipped as JSON. Contributor profiles are fetched from GitHub on demand.
 - 🤖 **Auto-synced Data** — GitHub Actions updates project data daily from major open-source repositories.
 
 ## 📊 Data
@@ -62,6 +64,8 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+The contributor directory recognizes OSSGrid contributors only, using all-time GitHub history and maintainer-recognized entries. `npm run sync:contributors` updates the checked-in snapshot while preserving past contributors; the server API refreshes cached GitHub data and falls back to that snapshot on failure. Optional `GITHUB_TOKEN` credentials remain server-side. External repository contributor links open that repository’s GitHub contributors page. The creator is credited in the historical directory and in the footer at https://x.com/rajatrsrivastav. See [CONTRIBUTING.md](CONTRIBUTING.md#directory-recognition-and-synchronization) for maintenance details.
 
 ## 🤝 Contributing
 
