@@ -30,8 +30,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title,
     description: desc,
     alternates: { canonical: canonicalUrl },
-    openGraph: { title, description: desc, url: canonicalUrl, type: "website", siteName: "OSSGrid", images: [{ url: org.logoUrl || "/og-image.jpg", alt: `${org.name} logo` }] },
-    twitter: { card: "summary_large_image", title, description: desc, images: [org.logoUrl || "/og-image.jpg"] },
+    openGraph: { title, description: desc, url: canonicalUrl, type: "website", siteName: "OSSGrid" },
+    twitter: { card: "summary_large_image", title, description: desc },
   };
 }
 

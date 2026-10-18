@@ -4,7 +4,7 @@ import path from "path";
 import Link from "next/link";
 import { Organization, LfxOrganizationDto } from "@/lib/types";
 import LfxClient from "@/components/lfx/LfxClient";
-import { safeJsonLd, DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { safeJsonLd } from "@/lib/seo";
 import { getSiteStats } from "@/lib/stats";
 
 const stats = getSiteStats();
@@ -21,9 +21,8 @@ export const metadata: Metadata = {
     title: lfxTitle,
     description: lfxDescription,
     url: "https://www.ossgrid.tech/lfx",
-    images: [{ ...DEFAULT_OG_IMAGE, alt: "OSSGrid LFX Mentorship organizations" }],
   },
-  twitter: { card: "summary_large_image", title: lfxTitle, description: lfxDescription, images: ["/og-image.jpg"] },
+  twitter: { card: "summary_large_image", title: lfxTitle, description: lfxDescription },
 };
 
 function getOrganizations(): LfxOrganizationDto[] {

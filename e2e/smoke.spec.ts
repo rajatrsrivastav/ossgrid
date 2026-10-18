@@ -70,6 +70,19 @@ test("landing page renders programs and a link to the LFX explorer", async ({ pa
   await page.keyboard.press("Escape");
   await expect(q2).toHaveAttribute("aria-expanded", "false");
   await page.evaluate(() => window.scrollTo(0, 0));
+  // Hero scroll sequence: the stage pins while the track scrolls, and the canvas draws frames.
+  if (await page.evaluate(() => matchMedia("(prefers-reduced-motion: no-preference)").matches)) {
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await expect(page.locator("#hero .hero__canvas")).toHaveAttribute("data-drawn", "true", { timeout: 15_000 });
+    const pinned = await page.evaluate(async () => {
+      window.scrollTo({ top: window.innerHeight * 0.6, behavior: "instant" });
+      await new Promise((r) => setTimeout(r, 300));
+      return document.querySelector(".hero__stage")!.getBoundingClientRect().top;
+    });
+    expect(Math.abs(pinned)).toBeLessThan(2);
+  }
+  // The screenshot uses the still poster (frame 0) so it does not depend on animation timing.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   expect(errors).toEqual([]);
   await expect(page).toHaveScreenshot("home.png", { fullPage: false });
 });

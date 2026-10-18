@@ -1,6 +1,7 @@
 "use client";
 
 import GitHubRepoActions from "./GitHubRepoActions";
+import ActivityStrip from "./ActivityStrip";
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -58,7 +59,6 @@ export default function OrganizationCard({ org, years, accentVar = "--program-lf
     plotYears.forEach((y) => (counts[y] = org.yearlyCounts[y] || 0));
     return counts;
   }, [org.yearlyCounts, plotYears]);
-  const maxProjects = Math.max(...Object.values(yearlyCounts), 1);
   const yearSpan = org.years.length ? `${Math.min(...org.years)}–${Math.max(...org.years)}` : "";
 
   const description = truncate(sanitizeDescription(org.description, org.name), 140);
@@ -126,27 +126,8 @@ export default function OrganizationCard({ org, years, accentVar = "--program-lf
         )}
       </ul>
 
-      {/* Activity strip: projects per year */}
-      <div className="mt-4" aria-label={`${plural[0].toUpperCase()}${plural.slice(1)} per year, ${plotYears[0]} to ${plotYears[plotYears.length - 1]}`}>
-        <div className="flex h-8 items-end gap-1">
-          {plotYears.map((year) => {
-            const count = yearlyCounts[year] || 0;
-            const pct = count > 0 ? Math.max(Math.round((count / maxProjects) * 100), 20) : 0;
-            return (
-              <div key={year} className="flex h-full flex-1 flex-col justify-end" title={`${year}: ${count} ${count === 1 ? unit : plural}`}>
-                <div
-                  className={cn("w-full rounded-[2px]", count > 0 ? "bg-[var(--program-color)]" : "bg-[var(--border)]")}
-                  style={{ height: count > 0 ? `${pct}%` : "2px", opacity: count > 0 ? 0.9 : 1 }}
-                />
-              </div>
-            );
-          })}
-        </div>
-        <div className="num mt-1 flex justify-between text-xs text-[var(--text-muted)]" aria-hidden="true">
-          <span>{String(plotYears[0]).slice(2).padStart(3, "'")}</span>
-          <span>{String(plotYears[plotYears.length - 1]).slice(2).padStart(3, "'")}</span>
-        </div>
-      </div>
+      {/* Activity strip: projects per year, interactive. */}
+      <ActivityStrip years={plotYears} counts={yearlyCounts} total={org.projectCount} activeYears={org.years.length} unit={unit} />
 
       {/* Footer */}
       <div className="mt-4 flex items-center justify-between border-t border-[var(--border)] pt-3 text-xs">

@@ -191,3 +191,10 @@ The brief asked for an audit against seven attached screenshots; none were attac
 1. `b1` captures: LFX tower ran under both text columns at 1024 px. Pinned mode now starts at 1280 px with stronger side scrims; narrower screens get the stacked still.
 2. Network labels collided and clipped at the frame edge: greedy label placement and edge clamping. Light-mode spheres had a dark specular spot: fixed white highlight and a darker rim from the program colour.
 3. Third insight repeated the Python chip: replaced with public proposals. Coming-soon rows misaligned: fixed columns. GSoC and LFX stat values wrapped in mono: serif, no wrapping.
+
+## Phase 5: scroll hero, interactive cards, analytics and SEO
+
+- **Hero**: 48 desktop and 32 portrait frames per theme fly the camera over the contribution-graph city while lights sweep from near to far; frame 0 equals the poster. A world-space sky dome replaced the screen-space gradient so the horizon stays put as the camera tilts. The headline lifts away and the mission ("great work begins in the open") rises over the city word by word; the separate mission section is gone.
+- **Cards**: the five-year activity strip on every GSoC and LFX card shows a tooltip per bar (year, count, share of the total, busiest year) and supports arrow keys.
+- **Analytics**: Vercel Web Analytics and Speed Insights alongside Cloudflare Web Analytics. No cookies.
+- **SEO**: generated 1200x630 preview images for home, both dashboards, guide, proposals and every organization page (previously the org logo was used as a large card); FAQPage and WebSite SearchAction structured data; titles with the current GSoC year; shorter home description; web manifest, theme colour and a PNG apple icon; sitemap dates from the data files.

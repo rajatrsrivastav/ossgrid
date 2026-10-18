@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import GsocClient from "@/components/gsoc/GsocClient";
-import { safeJsonLd, DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { safeJsonLd } from "@/lib/seo";
 import { getGsocStats } from "@/lib/stats";
 import { getGsocOrganizations } from "@/lib/gsoc-data";
 
@@ -19,9 +19,8 @@ export const metadata: Metadata = {
     title,
     description,
     url: "https://www.ossgrid.tech/gsoc",
-    images: [{ ...DEFAULT_OG_IMAGE, alt: "OSSGrid Google Summer of Code organizations" }],
   },
-  twitter: { card: "summary_large_image", title, description, images: ["/og-image.jpg"] },
+  twitter: { card: "summary_large_image", title, description },
 };
 
 const breadcrumbJsonLd = {

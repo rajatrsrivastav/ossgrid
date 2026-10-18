@@ -44,14 +44,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!org) return { title: "Organization not found" };
   const desc = `${org.name} has run ${org.projectCount} LFX Mentorship ${org.projectCount === 1 ? "project" : "projects"} over ${org.years.length} ${org.years.length === 1 ? "year" : "years"}. Projects, mentors and technologies (${org.technologies.slice(0, 5).join(", ")}).`;
   const canonicalUrl = `https://www.ossgrid.tech/organization/${slug}`;
-  const ogImage = org.logoUrl || "/og-image.jpg";
   const title = `${org.name} — LFX Mentorship projects and mentors`;
   return {
     title,
     description: desc,
     alternates: { canonical: canonicalUrl },
-    openGraph: { title, description: desc, url: canonicalUrl, type: "website", siteName: "OSSGrid", images: [{ url: ogImage, alt: `${org.name} logo` }] },
-    twitter: { card: "summary_large_image", title, description: desc, images: [ogImage] },
+    openGraph: { title, description: desc, url: canonicalUrl, type: "website", siteName: "OSSGrid" },
+    twitter: { card: "summary_large_image", title, description: desc },
   };
 }
 

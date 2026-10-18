@@ -5,20 +5,20 @@ import Header from "@/components/Header";
 import PageMasthead from "@/components/PageMasthead";
 import GitHubRepoActions from "@/components/GitHubRepoActions";
 import ContributionLoop from "@/components/guide/ContributionLoop";
-import { safeJsonLd, DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { safeJsonLd } from "@/lib/seo";
 import { GUIDE_SOURCE, READINESS, COMMUNITY_FIRST, ISSUE_ADVICE, PR_CONVERSATIONS, SELECTION_SIGNALS, PROGRAM_CHECKLISTS, RESOURCES } from "@/data/guide";
 import { PROGRAMS, getProgram } from "@/data/programs";
 import { TOOL_PAGES } from "@/data/site";
 
-const title = "Contributor playbook: how people actually get into GSoC, LFX and other mentorships";
+const title = "How to get into GSoC and LFX: the contributor playbook";
 const description = "Readiness, picking a community before an issue, the contribution loop as a checklist, pull request threads worth reading, what selection looks at, and a checklist for every program OSSGrid tracks.";
 
 export const metadata: Metadata = {
   title: { absolute: `${title} | OSSGrid` },
   description,
   alternates: { canonical: "https://www.ossgrid.tech/guide" },
-  openGraph: { type: "article", siteName: "OSSGrid", title, description, url: "https://www.ossgrid.tech/guide", images: [{ ...DEFAULT_OG_IMAGE, alt: "OSSGrid contributor playbook" }] },
-  twitter: { card: "summary_large_image", title, description, images: ["/og-image.jpg"] },
+  openGraph: { type: "article", siteName: "OSSGrid", title, description, url: "https://www.ossgrid.tech/guide" },
+  twitter: { card: "summary_large_image", title, description },
 };
 
 const breadcrumbJsonLd = {

@@ -1,0 +1,10 @@
+{
+  "variant": "mobile",
+  "theme": "dark",
+  "frames": 32,
+  "width": 720,
+  "height": 1440,
+  "widths": [
+    720
+  ]
+}
