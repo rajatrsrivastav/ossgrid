@@ -7,7 +7,8 @@ import { test, expect, type Page } from "@playwright/test";
 const ORG_SLUG = "kubeedge";
 
 async function settle(page: Page) {
-  await page.waitForLoadState("networkidle");
+  // Third-party widgets (analytics, support button) can keep the network busy; idle is best-effort.
+  await page.waitForLoadState("networkidle", { timeout: 10_000 }).catch(() => {});
   // Freeze CSS animations and scroll-reveals so screenshots are stable.
   await page.addStyleTag({ content: "*, *::before, *::after { animation: none !important; transition: none !important; }" });
   await page.evaluate(() => window.scrollTo(0, 0));
