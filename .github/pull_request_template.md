@@ -27,13 +27,15 @@ Closes #
 
 ## Checklist
 
-- [ ] The issue is assigned to me
-- [ ] `npm run lint` and `npm run build` pass
+- [ ] The issue is assigned to me and this PR changes only what it needs
+- [ ] `npm run typecheck`, `npm run lint` and `npm run build` pass
+- [ ] `npm run check:copy` passes (UI text changes)
 - [ ] `npm run test:data` and `npm run audit:data` pass (data or pipeline changes)
+- [ ] Generated files in `public/data/` were regenerated with a `sync:*` script, not edited by hand
 - [ ] Hero layout unchanged (copy and token edits only)
 - [ ] No hardcoded counts or program facts; facts live in `src/data/programs.ts` with a source
 - [ ] No new hex colours, inline styles or `text-[10px]`; follows `DESIGN.md`
 - [ ] Keyboard and screen reader checked; reduced motion respected
 - [ ] Docs updated if behaviour changed
 
-<!-- Ask CodeRabbit for a re-review with: @coderabbitai review -->
+<!-- Ask CodeRabbit for a re-review with: @coderabbitai review. New here? See CONTRIBUTING.md, section 8. -->

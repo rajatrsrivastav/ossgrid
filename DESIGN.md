@@ -71,7 +71,7 @@ Dark mode: no drop shadows on cards; depth is surface step + `--border` + `--hig
 ## 6. Components
 
 - **Header**: 64 px, sticky, blurred background once scrolled. On the explorer the search field is always visible, including a second row on phones. Theme toggle in every variant.
-- **Explorer**: intro (H1, one paragraph, facts strip) → term schedule → toolbar (`CategoryBar`: category pills, result count, sort, view toggle) → sidebar facets + grid. Phones get a left drawer for filters.
+- **Explorer**: intro (H1, one paragraph, facts strip) → term schedule → toolbar (`ExplorerToolbar`: category pills, result count, sort, view toggle) → sidebar facets (`FacetSidebar`) + grid. Phones get a left drawer for filters.
 - **Org card**: 40 px logo plate on white, name 16/600, meta line (category · year span), two-line description, up to 3 mono tech chips + "+N", five-year activity bars in the program colour (`ActivityStrip`: hover a bar, or focus the strip and use the arrow keys, for that year's count, its share of the all-time total and the busiest year), footer with mono counts and "View details". The whole card is one link (stretched), one focus ring.
 - **Facet section**: title 14/600, optional search field, checkbox rows with right-aligned mono counts, "Show N more".
 - **Program card**: sponsor, status pill, name, one sentence, four-fact table from the registry (`src/data/programs.ts`) with a source link per fact, derived counts, one CTA plus "Official site". Coming-soon cards use the compact variant with "Official site" and "Follow progress"; never a disabled button.

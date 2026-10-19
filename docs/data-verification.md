@@ -1,5 +1,7 @@
 # CNCF project data verification
 
+> This is the verification record for the LFX dataset at `cncf/mentoring` revision `17ef996a`. Counts below describe that revision. For current numbers run `npm run audit:data`. For how the pipeline works today, see [ARCHITECTURE.md](./ARCHITECTURE.md#51-lfx-pipeline-in-detail).
+
 This change addresses the data-quality findings on PR #5. It retains official source records and makes parser coverage reproducible. An automated integrity check is not a claim that every historical destination remains live or that every upstream statement has been independently fact-checked.
 
 ## Source and inclusion policy
