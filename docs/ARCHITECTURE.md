@@ -1,174 +1,404 @@
-# OSSGrid Architecture 🏛️
+# OSSGrid architecture
 
-This document describes the design philosophy, technical architecture, data pipeline, and system internals of **OSSGrid**.
+This document explains how OSSGrid is put together: where the data comes from, how it becomes a website, and how changes are checked. Read [README.md](../README.md) first for setup.
 
 ---
 
-## 1. System Overview & Design Philosophy
+## Contents
 
-OSSGrid is a high-performance mentorship explorer designed around three guiding principles:
+1. [Design principles](#1-design-principles)
+2. [System overview](#2-system-overview)
+3. [What runs when](#3-what-runs-when)
+4. [Frontend](#4-frontend)
+5. [Data pipelines](#5-data-pipelines)
+6. [Data files](#6-data-files)
+7. [Program registry](#7-program-registry)
+8. [CI and automation](#8-ci-and-automation)
+9. [Testing](#9-testing)
+10. [Where to make common changes](#10-where-to-make-common-changes)
 
-1. **Zero Runtime Database (Static-First)**: The entire dataset (102 organizations, 953 projects) is compiled into static JSON at build time. Reads are instant, zero-cost, serverless, and resilient against API outages.
-2. **Byte-for-Byte Reproducibility**: The dataset is derived deterministically from pinned upstream Git commits of official open-source foundations (e.g., `cncf/mentoring`). Every project has exact line-level source provenance.
-3. **Strict Quality Gates**: Data is validated against runtime assertions before it can be merged into production. If upstream data format drifts or corrupted fields enter the pipeline, CI halts immediately.
+---
+
+## 1. Design principles
+
+1. **Static first.** Program data is compiled into JSON under `public/data/` and committed. Pages read it at build time. There is no database, so the site stays fast and keeps working when an upstream API is down.
+2. **Reproducible data.** Each pipeline downloads its sources at a pinned Git commit and records where every record came from. Running a `check:*` script rebuilds the data and fails if a single byte differs.
+3. **Quality gates before merge.** Parsers have regression fixtures, audits reject malformed records, and scheduled syncs open pull requests instead of pushing to `main`.
+4. **One registry for programs.** `src/data/programs.ts` lists every program. Navigation, landing page, sitemap and search read from it.
+5. **Privacy.** Mentor emails may appear in source files. They are never written to `public/` or shown in the UI.
+
+---
+
+## 2. System overview
 
 ```mermaid
-flowchart TD
-    subgraph Upstream ["Upstream Official Sources"]
-        A["cncf/mentoring Git Repository"]
-        A -->|Pinned Git SHA| B["48 Source Documents<br/>(Markdown & JSON Exports)"]
+flowchart TB
+    subgraph Upstream["Upstream sources"]
+        CNCF["cncf/mentoring<br/>programs/lfx-mentorship<br/>programs/summerofcode"]
+        GSOCAPI["api.gsocorganizations.dev<br/>GSoC 2016 onward"]
+        ARCH["Proposal archives<br/>(GitHub repos)"]
+        GHAPI["GitHub REST API"]
     end
 
-    subgraph Pipeline ["Ingestion & Verification Pipeline (Offline / CI)"]
-        B --> C["scripts/fetch-lfx-data.ts"]
-        C --> D["scripts/lib/lfx-parser.ts<br/>AST & Regex Parsing Engine"]
-        D --> E["scripts/lib/org-aliases.ts<br/>& scripts/source-equivalences.json"]
-        E --> F["scripts/org-metadata.json<br/>Curated Organization Registry"]
-        F --> G["scripts/audit-data.ts<br/>Strict Quality Gate Assertions"]
-        G --> H["public/data/organizations.json (102 Orgs)<br/>public/data/projects.json (953 Projects)<br/>public/data/source-coverage.json"]
+    subgraph Pipeline["Offline pipeline · scripts/"]
+        LFX["fetch-lfx-data.ts"]
+        GSOC["fetch-gsoc-data.ts"]
+        PROP["fetch-proposals.ts"]
+        CONTRIB["sync-contributors.ts"]
+        AUD["audit-*.ts"]
     end
 
-    subgraph NextApp ["Next.js 16 App Router"]
-        H --> I["/ (Landing Page & Global Trackers)"]
-        H --> J["/lfx (Client-side Fuzzy Search & Faceted Filter)"]
-        H --> K["/organization/[slug] (102 Statically Pre-rendered SSG Pages)"]
+    subgraph Repo["Committed to git"]
+        D1[("public/data/<br/>organizations.json<br/>projects.json")]
+        D2[("public/data/gsoc/")]
+        D3[("public/data/proposals/")]
+        D4[("src/data/<br/>contributors-history.json")]
+        REG["src/data/programs.ts<br/>program registry"]
     end
+
+    subgraph Next["Next.js app · src/app"]
+        PAGES["Pages (server components)<br/>/, /lfx, /gsoc, /proposals, ..."]
+        API["API routes<br/>/api/contributors<br/>/api/github-repository<br/>/api/views"]
+    end
+
+    CNCF --> LFX --> D1
+    CNCF --> GSOC
+    GSOCAPI --> GSOC --> D2
+    ARCH --> PROP --> D3
+    GHAPI --> CONTRIB --> D4
+    D1 & D2 & D3 --> AUD
+    D1 & D2 & D3 & D4 & REG --> PAGES
+    GHAPI -. "at request time, cached" .-> API
+    PAGES --> V(("Browser"))
+    API --> V
 ```
 
----
+Three things to notice:
 
-## 2. Data Pipeline & Provenance Layer
-
-The data pipeline lives entirely in `scripts/` and executes using Node.js + `tsx`.
-
-### 2.1 Pinned Upstream Sources (`scripts/lfx-source.json`)
-To avoid flaky builds from changing upstream repositories, OSSGrid locks:
-* **`revision`**: Immutable 40-character commit SHA (e.g., `17ef996a1fc7b266dbf2cfa6362752d6bb5c4c3d`).
-* **`paths`**: Alphabetical list of all 48 tracked cohort files from 2019 to 2026.
-* **`counts`**: Pre-verified project record counts for each individual file.
-* **`hashes`**: SHA-256 content hashes for each individual file.
-
-### 2.2 Ingestion Engine (`scripts/fetch-lfx-data.ts`)
-1. **Fetch / Read**: Downloads the 48 source files from GitHub Raw or reads them from a local `--source-dir` cache.
-2. **Priority Ordering**: Upstream files often contain duplicates across different stages. The pipeline establishes a strict precedence hierarchy:
-   * **Priority 0**: `lfx-export.json` (Machine-readable export, highest authority).
-   * **Priority 1**: `README.md` / `selected_projects.md` (Accepted project records).
-   * **Priority 2**: `project_ideas.md` (Proposal-only entries; marked as `"status": "proposed"` in the UI).
-3. **Deduplication & Reconciliation**:
-   * Scoped project identity key: `${organizationId}-${year}-t${termIndex}`.
-   * Strong links (official LFX portal URLs, GitHub issue URLs) are matched first.
-   * Titles are reconciled via `scripts/source-equivalences.json` (e.g., mapping historical consolidated 2020 Q1 completed-project tables to original proposal records).
-   * Distinct LFX URLs are never collapsed even if titles or issues repeat.
-
-### 2.3 Parsing Engine (`scripts/lib/lfx-parser.ts`)
-Upstream CNCF files span 7 years of varying markdown formatting styles:
-* **Headings**: Handles H1 to H5 headings, bold-text headings (`**Project Title**`), mixed hierarchy depths (e.g. `kube-burner` and `Kyverno` subgroups).
-* **Field Labels**: Extracts descriptions, expected outcomes, skills, and issue links whether labeled with Markdown bold (`**Skills:**`), plain text (`Skills:`), or bullet markers (`*`, `-`).
-* **Mentors**: Handles Markdown links (`[Name](https://github.com/handle)`), raw handles (`@handle`), obfuscated email addresses (`user AT example DOT com`), and handle-only mentions (`nameIsHandle: true`).
-* **Sanitization**: Strips scraper artifacts and illegal characters while retaining markdown links and technical descriptions.
-
-### 2.4 Metadata Registry & Canonical Aliases
-* **`scripts/org-metadata.json`**: Authoritative directory of 102 organizations containing official name, description, website, GitHub repository URL, and browsing category.
-* **`scripts/lib/org-aliases.ts`**: Maps organizational variant names (e.g., `prometheus-operator`, `k8s`, `opentelemetry-collector`) to their canonical parent organization ID.
-
-### 2.5 Audit & Quality Gate (`scripts/audit-data.ts`)
-Run after compilation and during CI. It asserts:
-* **Schema Integrity**: Non-empty fields, integer years and term indices.
-* **URL Validity**: Ensures zero markdown artifacts, unbalanced brackets, or malformed protocols in URLs.
-* **Source Lineage**: Every single project must link back to an exact file path, line number, revision, and content hash in `cncf/mentoring`.
-* **Coverage Bi-Directionality**: Every project record in source coverage must map to an active project ID, and every project must map to a source line.
-* **Person Names**: Rejects unparsed HTML, markdown junk, or URLs inside mentor/mentee names.
+- **The pipeline and the website are separate.** You can work on the UI without ever running a `sync:*` script.
+- **Almost everything is pre-rendered.** Only the three `/api/*` routes do work while a visitor is on the site.
+- **Data changes arrive as pull requests,** opened by scheduled workflows (see [section 8](#8-ci-and-automation)).
 
 ---
 
-## 3. Frontend Architecture
+## 3. What runs when
 
-OSSGrid's frontend is built using **Next.js 16 (App Router)**, **React 19**, **Tailwind CSS v4**, and **Framer Motion**.
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Cron as Scheduled workflow
+    participant Script as scripts/fetch-*.ts
+    participant Git as GitHub repo
+    participant Build as next build
+    participant Host as Vercel
+    participant User as Visitor
 
-### 3.1 Route Breakdown
+    Note over Cron,Git: Data time (daily or weekly)
+    Cron->>Script: npm run sync:data / sync:gsoc
+    Script->>Script: parse, normalise, audit, test
+    Script->>Git: open PR on an auto/* branch
+    Git->>Git: maintainer reviews and merges
 
-#### `/` — Landing Page (`src/app/page.tsx`)
-* **Client-side landing page** showcasing high-level mentorship programs (LFX, GSoC, Outreachy, etc.).
-* Features an interactive canvas ([`src/components/GlobeCanvas.tsx`](../src/components/GlobeCanvas.tsx)) and beginner onboarding guides.
+    Note over Git,Host: Build time (every merge to main)
+    Git->>Build: checkout main
+    Build->>Build: server components read public/data/*.json
+    Build->>Build: pre-render every /organization/* and /gsoc/* page
+    Build->>Host: deploy static HTML, JS and JSON
 
-#### `/lfx` — Mentorship Explorer (`src/app/lfx/page.tsx`)
-* **Interactive Client Component** that loads `public/data/organizations.json` into memory.
-* **Fuzzy Search**: Implemented via [Fuse.js](https://fusejs.io/) in `src/lib/search.ts` across org names, project titles, tech tags, and mentor names.
-* **Reactive Multi-Facet Filtering**: Powered by `src/lib/data.ts`, offering filtering across terms, categories, technologies, and years.
-* **URL Param Synchronization**: `src/hooks/useFilterState.ts` bi-directionally syncs all active filters to browser query params (e.g. `?terms=2026+Term+3&tech=Go`), making every search state shareable.
+    Note over Host,User: Request time
+    User->>Host: GET /gsoc
+    Host-->>User: pre-rendered HTML + org list
+    User->>User: search and filter in the browser (no server calls)
+    User->>Host: GET /api/contributors (only on /contributors)
+    Host-->>User: cached GitHub data, snapshot fallback
+```
 
-#### `/organization/[slug]` — Organization Detail Pages (`src/app/organization/[slug]/page.tsx`)
-* **Static Site Generation (SSG)**: Statically generates pages for all 102 organizations during `npm run build` using `generateStaticParams()`.
-* **Zero Client Waterfall**: Reads `public/data/organizations.json` directly from the filesystem at build time.
-* **Visual Components**:
-  * Historical participation heatmaps.
-  * Recharts visual timeline of project counts per term.
-  * Full chronological archive of projects, upstream issue links, LFX links, and mentors.
-
----
-
-## 4. CI/CD & Automation
-
-OSSGrid maintains two GitHub Actions workflows:
-
-### 1. PR & Push Gate (`.github/workflows/verify-data.yml`)
-Triggers on every PR and push to `main`:
-1. `npm run test:data` — Runs 17 unit tests verifying parser edge cases and fixture handling.
-2. `npm run audit:data` — Audits `public/data/` for schema integrity, URL hygiene, and coverage.
-3. `npm run check:data` — Re-fetches the pinned source revision and requires byte-for-byte identity against committed files.
-4. `npm run lint` — ESLint verification.
-5. `npm run build` — Full static production build.
-
-### 2. Daily Upstream Sync (`.github/workflows/sync-data.yml`)
-Runs daily at 6:00 AM UTC and supports manual trigger:
-* Discovers changes in upstream CNCF mentorship cohorts.
-* Automatically verifies against tests and audits.
-* Opens a Pull Request if data has changed, preserving reviewability.
-
----
-
-## 5. Summary of Data Files
-
-| File | Purpose | Size / Records |
+| When | What runs | Where |
 |---|---|---|
-| `public/data/organizations.json` | 102 organizations with nested project records | ~800 KB |
-| `public/data/projects.json` | Flat array of 953 project records | ~1.1 MB |
-| `public/data/source-coverage.json` | Audit trail mapping each source line to project IDs | ~200 KB |
-| `scripts/lfx-source.json` | Source lock file with SHA-256 hashes and project counts | ~8.6 KB |
-| `scripts/org-metadata.json` | Authoritative organization names, URLs, categories | ~51 KB |
-| `scripts/source-equivalences.json` | Canonical mapping for historical consolidated projects | ~2 KB |
-
+| Data time | Fetch, parse, audit, test, open PR | GitHub Actions or your terminal |
+| Build time | Read JSON with `fs`, render pages, `generateStaticParams()` for org pages | `npm run build`, Vercel |
+| Request time | Search and filters (client), three API routes (server) | Browser, Vercel functions |
 
 ---
 
-## 6. Multi-program architecture (2026-10)
+## 4. Frontend
 
-### 6.1 Program registry
-`src/data/programs.ts` is the single source of truth: id, names, status, one-liner, accent token, official URL, dashboard path, tracking issue, four sourced facts, data sources and data file. `scripts/audit-programs.ts` (part of `npm run audit:data`) fails when a live program lacks a route or data, when a fact lacks a source or date, and warns when a fact is older than 180 days. Header, landing, footer, sitemap, JSON-LD and the playbook read from it.
+Built with **Next.js 16 (App Router)**, **React 19**, **Tailwind CSS v4** and **Framer Motion**.
 
-### 6.2 Explorer shell
-`src/components/explorer/ExplorerShell.tsx` renders every dashboard from a `ProgramConfig` (`src/lib/explorer/types.ts`): facets with URL keys, quick filters, sort options, category tabs, search keys, attribution and performance switches (debounce, windowing threshold, card animation). Programs map their DTO to `ExplorerOrg` (`src/lib/explorer/lfx.ts`, `gsoc-model.ts`). framer-motion lives only in `AnimatedCardGrid`, loaded on demand.
+> Next.js 16 has breaking changes compared to older tutorials. Check `node_modules/next/dist/docs/` before changing routing or data loading.
 
-### 6.3 Data layout
-```text
-public/data/organizations.json            LFX (light DTO), projects.json, source-coverage.json
-public/data/gsoc/organizations.json       GSoC light DTO (525 orgs)
-public/data/gsoc/projects-<year>.json     accepted projects + CNCF ideas, read only by org pages
-public/data/gsoc/search-index.json        prebuilt Fuse index
-public/data/proposals/proposals.json      326 records; by-org.json; source-coverage.json
+### 4.1 Routes
+
+| Route | Entry file | Renders | Data |
+|---|---|---|---|
+| `/` | `src/app/page.tsx` | `home/HomePageClient.tsx` | `src/lib/home-data.ts` (reads `public/data/`) |
+| `/lfx` | `src/app/lfx/page.tsx` | `lfx/LfxClient.tsx` → `ExplorerShell` | `public/data/organizations.json` |
+| `/organization/[slug]` | `src/app/organization/[slug]/page.tsx` | Server component | `public/data/organizations.json` |
+| `/gsoc` | `src/app/gsoc/page.tsx` | `gsoc/GsocClient.tsx` → `ExplorerShell` | `src/lib/gsoc-data.ts` |
+| `/gsoc/[slug]` | `src/app/gsoc/[slug]/page.tsx` | Server component | `src/lib/gsoc-data.ts` (`projects-<year>.json`) |
+| `/proposals` | `src/app/proposals/page.tsx` | `proposals/ProposalsClient.tsx` | `src/lib/proposals-data.ts` |
+| `/guide` | `src/app/guide/page.tsx` | `guide/ContributionLoop.tsx` | `src/data/guide.ts`, `src/data/programs.ts` |
+| `/contribute` | `src/app/contribute/page.tsx` | Server component | `src/data/contributors.ts`, `src/lib/github-repos.ts` |
+| `/contributors` | `src/app/contributors/page.tsx` | `ContributorsClient.tsx` | `/api/contributors` |
+| `/programs/[id]` | `src/app/programs/[id]/page.tsx` | Server component | `src/data/programs.ts` |
+
+Every route also has metadata, JSON-LD and, for most, an `opengraph-image.tsx`. `src/app/sitemap.ts` lists all of them.
+
+### 4.2 Component tree
+
+```mermaid
+flowchart TB
+    L["app/layout.tsx<br/>fonts, ThemeProvider, Footer, Analytics"]
+
+    L --> HOME["app/page.tsx"]
+    L --> LFXP["app/lfx/page.tsx"]
+    L --> GSOCP["app/gsoc/page.tsx"]
+    L --> PROPP["app/proposals/page.tsx"]
+    L --> ORGP["app/organization/[slug]<br/>app/gsoc/[slug]"]
+
+    HOME --> HPC["HomePageClient"]
+    HPC --> HERO["CinematicHero"]
+    HPC --> STORY["story/: Programs, Explore,<br/>Ecosystem, Playbook, FinalCta"]
+    HPC --> FAQ["FirstTimerFAQ"]
+
+    LFXP --> LFXC["LfxClient"]
+    GSOCP --> GSOCC["GsocClient"]
+    LFXC --> SHELL
+    GSOCC --> SHELL
+
+    subgraph Explorer["components/explorer (shared by every program)"]
+        SHELL["ExplorerShell<br/>config-driven"]
+        SHELL --> HDR["Header + SearchBar"]
+        SHELL --> TB["ExplorerToolbar<br/>categories, sort, view"]
+        SHELL --> FS["FacetSidebar"]
+        SHELL --> GRID["WindowedGrid / AnimatedCardGrid"]
+        GRID --> CARD["OrganizationCard"]
+        SHELL --> CMD["CommandPalette (⌘K)"]
+    end
+
+    PROPP --> PC["ProposalsClient"]
+    ORGP --> ORGUI["OrgChartWrapper, OrgSectionNav,<br/>ActivityStrip, GitHubRepoActions"]
 ```
 
-### 6.4 Pipelines
-| Script | Sources | Pin | Output |
+### 4.3 The explorer shell
+
+`/lfx` and `/gsoc` share one component, `src/components/explorer/ExplorerShell.tsx`. Each program passes a `ProgramConfig` (`src/lib/explorer/types.ts`) that describes:
+
+- facets (year, category, technology, size) with their URL keys and match rules,
+- quick filters, sort options and category tabs,
+- search keys and attribution text,
+- performance switches: search debounce, when to window the grid, whether cards animate.
+
+Each program converts its own data to a common `ExplorerOrg` shape in `src/lib/explorer/lfx.ts` and `src/lib/explorer/gsoc.ts`. Filtering and Fuse.js search live in `src/lib/explorer/filter.ts`.
+
+```mermaid
+flowchart LR
+    JSON["Program JSON"] --> MAP["lfx.ts / gsoc.ts<br/>→ ExplorerOrg[]"]
+    CFG["ProgramConfig"] --> SHELL["ExplorerShell"]
+    MAP --> SHELL
+    URL["URL query<br/>?tech=Go&years=2025"] <--> HOOK["useFilterState"]
+    HOOK <--> SHELL
+    SHELL --> F["filter.ts<br/>filterOrgs + searchOrgs"]
+    F --> GRID["Card grid"]
+```
+
+`src/hooks/useFilterState.ts` keeps filters in the URL with `history.replaceState`, so any filtered view can be shared as a link. GSoC ships a prebuilt Fuse index (`public/data/gsoc/search-index.json`) so the browser does not have to build one for hundreds of organizations.
+
+### 4.4 Server-side pieces
+
+| File | Purpose |
+|---|---|
+| `src/app/api/contributors/route.ts` | Merges `src/data/contributors-history.json` with live GitHub data. Cached for an hour. Falls back to the snapshot on error |
+| `src/app/api/github-repository/route.ts` | Fetches repository metadata (issues enabled, contributing guide) for org pages. Cached for a day |
+| `src/app/api/views/route.ts` | Reads or increments the footer view counter through an external counter service |
+| `src/proxy.ts` | Rate-limits `/api/*` and `/organization/*`, and validates org slugs |
+
+These are the only parts that need a server. GitHub Pages previews do not run them (see [CONTRIBUTING.md](../CONTRIBUTING.md#pull-request-previews)).
+
+### 4.5 Styling
+
+Design tokens (colours, radii, spacing, type) live in `src/app/globals.css`. Components use token classes such as `.card`, `.btn-primary` and `.chip` instead of one-off colours. The rules are in [DESIGN.md](../DESIGN.md), and `npm run check:copy` enforces the copy rules.
+
+---
+
+## 5. Data pipelines
+
+All pipelines live in `scripts/` and run with Node and `tsx`. They share the same shape:
+
+```mermaid
+flowchart LR
+    PIN["Pin file<br/>*-source.json"] --> FETCH["Fetch at pinned commit<br/>(cached in scripts/.cache/)"]
+    FETCH --> PARSE["Parse<br/>scripts/lib/*-parser.ts"]
+    PARSE --> NORM["Normalise<br/>aliases, tags, metadata"]
+    NORM --> WRITE["Write public/data/"]
+    WRITE --> AUDIT["audit-*.ts"]
+    AUDIT --> TEST["scripts/tests/"]
+    TEST --> OK{"Pass?"}
+    OK -- yes --> PR["Commit or open PR"]
+    OK -- no --> FIX["Fix the parser or source,<br/>never the JSON"]
+```
+
+| Pipeline | Script | Sources | Pin file | Output |
+|---|---|---|---|---|
+| LFX | `scripts/fetch-lfx-data.ts` | `cncf/mentoring/programs/lfx-mentorship` | `scripts/lfx-source.json` | `public/data/organizations.json`, `projects.json`, `source-coverage.json` |
+| GSoC | `scripts/fetch-gsoc-data.ts` | `api.gsocorganizations.dev`, `cncf/mentoring/programs/summerofcode` | `scripts/gsoc-cncf-source.json` | `public/data/gsoc/` |
+| Proposals | `scripts/fetch-proposals.ts` | GitHub Trees API over the repos in `scripts/proposal-sources.json` | `revision` per source | `public/data/proposals/` |
+| Contributors | `scripts/sync-contributors.ts` | GitHub contributors API | none | `src/data/contributors-history.json` |
+
+Raw downloads are cached in `scripts/.cache/` (git-ignored), so `check:*` can run offline after one fetch.
+
+### 5.1 LFX pipeline in detail
+
+**Pinned sources (`scripts/lfx-source.json`).** Locks a 40-character `revision` of `cncf/mentoring`, the list of tracked cohort files, the expected project count per file and a SHA-256 hash per file.
+
+**Ingestion (`scripts/fetch-lfx-data.ts`).**
+
+1. Downloads each tracked file from GitHub, or reads it from `--source-dir`.
+2. Applies source priority. The machine-readable `lfx-export.json` wins, then accepted records (`README.md`, `selected_projects.md`), then `project_ideas.md`. Proposal-only entries keep `"status": "proposed"`.
+3. Deduplicates within a cohort. Strong links (LFX portal URLs, issue URLs) match first. Historical title changes are reconciled through `scripts/source-equivalences.json`. Distinct LFX URLs are never merged.
+
+**Parsing (`scripts/lib/lfx-parser.ts`).** Seven years of Markdown styles: H1 to H5 and bold headings, bold or plain field labels, `*` or `-` bullets, mentors as links, `@handles`, obfuscated emails (`AT`/`DOT`) or handle-only (`nameIsHandle: true`).
+
+**Metadata.** `scripts/org-metadata.json` holds each organization's official name, description, website, repository and browsing category. `scripts/lib/org-aliases.ts` maps variant names to a canonical organization ID.
+
+**Audit (`scripts/audit-data.ts`).** Checks required fields, URL hygiene, and that every project maps to an exact source file, line, revision and hash, and back.
+
+The full source policy is in [data-verification.md](./data-verification.md).
+
+### 5.2 GSoC pipeline
+
+- Organizations for every year since 2016 come from `api.gsocorganizations.dev`.
+- CNCF's per-year ideas lists are parsed by `scripts/lib/cncf-gsoc-parser.ts` at the commit pinned in `scripts/gsoc-cncf-source.json`. Malformed blocks become warnings, not crashes.
+- Organizations renamed across years are merged by `scripts/gsoc-org-aliases.json`.
+- Technology tags are normalised by `scripts/gsoc-tag-aliases.json` and `scripts/lib/tag-aliases.ts` (for example `golang` becomes `Go`).
+- Output: a light organization list, one `projects-<year>.json` per year (read only by org pages), a prebuilt search index and a source-coverage report.
+- Flags: `--refresh` moves the CNCF pin to the latest commit, `--year 2026` rebuilds one year, `--check` verifies reproducibility.
+
+### 5.3 Proposals pipeline
+
+- `scripts/proposal-sources.json` lists each archive repo, branch, path pattern, license and pinned revision.
+- `scripts/fetch-proposals.ts` reads file trees through the GitHub Trees API. It never clones repos or downloads PDFs.
+- `scripts/lib/proposals-parser.ts` has one function per archive layout and matches each file to a GSoC organization.
+- Records link to the original file. Nothing is rehosted.
+
+---
+
+## 6. Data files
+
+| File | Contents | Written by |
+|---|---|---|
+| `public/data/organizations.json` | LFX organizations with nested project summaries | `sync:data` |
+| `public/data/projects.json` | Flat list of LFX projects with full provenance | `sync:data` |
+| `public/data/source-coverage.json` | Map from each LFX source line to project IDs | `sync:data` |
+| `public/data/gsoc/organizations.json` | GSoC organizations, light shape for the grid | `sync:gsoc` |
+| `public/data/gsoc/projects-<year>.json` | GSoC projects and CNCF ideas for one year | `sync:gsoc` |
+| `public/data/gsoc/search-index.json` | Prebuilt Fuse.js index for `/gsoc` | `sync:gsoc` |
+| `public/data/gsoc/source-coverage.json` | GSoC source report | `sync:gsoc` |
+| `public/data/proposals/proposals.json` | Proposal records with links to originals | `sync:proposals` |
+| `public/data/proposals/by-org.json` | Proposal counts per GSoC organization | `sync:proposals` |
+| `public/data/proposals/source-coverage.json` | Proposals source report | `sync:proposals` |
+| `src/data/contributors-history.json` | OSSGrid contributor snapshot | `sync:contributors` |
+
+At the time of writing (October 2026) the data holds about 100 LFX organizations with about 950 projects, about 520 GSoC organizations, and about 320 proposal records. Run `npm run audit:data` for current numbers. The UI derives every count from the JSON in `src/lib/stats.ts`, so nothing is hardcoded.
+
+**Hand-maintained files** live in `src/data/`: the program registry (`programs.ts`), dates and stipends with sources (`program-calendar.json`), playbook and guide copy, curated resources and contributor recognition (`contributors.ts`).
+
+---
+
+## 7. Program registry
+
+`src/data/programs.ts` is the single source of truth for which programs exist and what state they are in.
+
+```mermaid
+flowchart LR
+    REG["src/data/programs.ts<br/>id, status, facts + sources,<br/>dashboardPath, dataFile"]
+    REG --> H["Header nav"]
+    REG --> LAND["Landing page"]
+    REG --> FOOT["Footer"]
+    REG --> SM["sitemap.ts + JSON-LD"]
+    REG --> PREV["/programs/[id] preview pages"]
+    REG --> AUD["audit-programs.ts"]
+    AUD --> CHK{"live program has<br/>route + data?<br/>facts sourced and dated?"}
+```
+
+| Status | Meaning | Example |
+|---|---|---|
+| `live` | Has a dashboard route and a data file | `gsoc`, `lfx` |
+| `coming-soon` | Has a preview page at `/programs/<id>` and a tracking issue | `outreachy`, `gssoc`, `mlh-fellowship`, `summer-of-bitcoin` |
+
+`npm run audit:programs` fails when a live program is missing its route or data, or when a fact has no source or date. It warns when a fact is older than 180 days. The steps to add a program are in [CONTRIBUTING.md](../CONTRIBUTING.md#adding-a-program).
+
+---
+
+## 8. CI and automation
+
+```mermaid
+flowchart TB
+    subgraph PRFlow["On every pull request to main"]
+        PR(["Pull request opened or updated"])
+        PR --> QA["main.yml · QA Verification Pipeline<br/>audit-data · typecheck · lint · check:copy · build"]
+        PR --> VD["verify-data.yml · Verify project data<br/>test:data · audit:data · check:data · lint · build"]
+        PR --> LI["pr-linked-issue.yml<br/>body must contain Closes #N"]
+        PR --> PB["pr-pages-build.yml<br/>static preview build"]
+        PB --> PD["pr-pages-deploy.yml<br/>publish to GitHub Pages, comment URL"]
+        PR --> CR["CodeRabbit review<br/>(.coderabbit.yaml)"]
+    end
+
+    subgraph Sched["On a schedule"]
+        S1["sync-data.yml<br/>daily 06:00 UTC"] --> SPR(["PR on auto/* branch"])
+        S2["sync-gsoc.yml<br/>Mondays 05:00 UTC,<br/>daily February to April"] --> SPR
+    end
+
+    subgraph Issues["On issue comments"]
+        AA["auto-assign.yml<br/>/assign → assigns you,<br/>one open issue per person"]
+    end
+
+    QA & VD & LI --> M{"Maintainer review"}
+    M --> MAIN[("main")]
+    SPR --> M
+```
+
+| Workflow | Trigger | What it checks or does |
+|---|---|---|
+| `main.yml` | PR to `main` | `audit-data.ts`, `tsc --noEmit`, `lint`, `check:copy`, `build`; posts a summary comment |
+| `verify-data.yml` | Every PR, push to `main` | `test:data`, `audit:data`, `check:data`, `lint`, `build` |
+| `pr-linked-issue.yml` | Every PR (except `auto/*` branches and Dependabot) | Description must contain `Closes #N`, `Fixes #N` or `Resolves #N` |
+| `pr-pages-build.yml` + `pr-pages-deploy.yml` | PR to `main` | Builds a static preview and posts `https://rajatrsrivastav.github.io/ossgrid/pr-<number>/` |
+| `sync-data.yml` | Daily, manual | Refreshes LFX data and opens a PR if it changed |
+| `sync-gsoc.yml` | Weekly, daily in GSoC season, manual | Refreshes GSoC data and opens a PR if it changed |
+| `auto-assign.yml` | `/assign` comment on an issue | Assigns the commenter if they have no other open assigned issue |
+
+The production site is hosted on Vercel and is built from `main`.
+
+---
+
+## 9. Testing
+
+| Layer | Command | Location | What it covers |
 |---|---|---|---|
-| `scripts/fetch-lfx-data.ts` | `cncf/mentoring/programs/lfx-mentorship` | `scripts/lfx-source.json` | `public/data/*.json` |
-| `scripts/fetch-gsoc-data.ts` | `api.gsocorganizations.dev` (2016–2026), `cncf/mentoring/programs/summerofcode` | `scripts/gsoc-cncf-source.json` | `public/data/gsoc/` |
-| `scripts/fetch-proposals.ts` | GitHub Trees API over `scripts/proposal-sources.json` | per-source `revision` | `public/data/proposals/` |
+| Data unit tests | `npm run test:data` | `scripts/tests/*.test.ts` + `fixtures/` | LFX parser, CNCF GSoC parser (2017, 2021, 2022, 2024, malformed), GSoC builder, proposal layouts, contributor merging |
+| Data audits | `npm run audit:data` | `scripts/audit-*.ts` | Schema, URLs, provenance, program registry, proposals |
+| Reproducibility | `npm run check:data`, `check:gsoc`, `check:proposals` | `scripts/fetch-*.ts --check` | Rebuild equals the committed JSON |
+| Types and lint | `npm run typecheck`, `npm run lint` | whole repo | TypeScript and ESLint |
+| Copy rules | `npm run check:copy` | `scripts/check-copy.ts` | Banned hype words in UI text |
+| Browser | `npm run test:e2e` | `e2e/*.spec.ts` | Smoke tests for main routes at 1440 px and 375 px, axe accessibility, contribution flow |
 
-Shared helpers: `scripts/gsoc-tag-aliases.json` + `scripts/lib/tag-aliases.ts` (tag normalisation), `scripts/gsoc-org-aliases.json` (slug merges), `scripts/lib/cncf-gsoc-parser.ts` (content-classified Markdown parser; bad blocks become warnings), `scripts/lib/proposals-parser.ts` (one function per archive layout). Raw downloads are cached in `scripts/.cache/` (git-ignored) so `--check` runs offline.
+Unit tests use Node's built-in `node:test`. To add one, copy an existing `test(...)` block in the relevant file and change the input and expected value. Parser bugs should get a new fixture in `scripts/tests/fixtures/`.
 
-### 6.5 Workflows
-`sync-data.yml` (LFX, daily), `sync-gsoc.yml` (Monday 05:00 UTC, daily February to April, manual with an optional year), `pr-linked-issue.yml` (every PR needs `Closes #N`), `.coderabbit.yaml` (review against the linked issue, five pre-merge checks).
+`npm run test:e2e` starts `next start` on port 3100, so run `npm run build` first. Screenshot baselines in `e2e/__screenshots__/` are machine-specific.
 
-### 6.6 Tests
-`npm run test:data` covers the LFX parser, the CNCF GSoC parser fixtures (2017, 2021, 2022, 2024, malformed), the GSoC dataset builder, the proposals parser layouts and the program registry audit. `npm run test:e2e` runs Playwright smoke tests for `/`, `/lfx`, `/organization/[slug]`, `/gsoc`, `/gsoc/[slug]`, `/proposals` and `/guide` at 1440 and 375 px against a production build.
+---
+
+## 10. Where to make common changes
+
+| I want to... | Change this | Then run |
+|---|---|---|
+| Fix a typo on a page | The component under `src/components/` or the page in `src/app/` | `npm run check:copy`, `npm run lint` |
+| Fix wrong LFX data | `scripts/lib/lfx-parser.ts` or `scripts/org-metadata.json`, plus a fixture | `npm run sync:data`, `npm run test:data`, `npm run audit:data` |
+| Fix a GSoC tag or org name | `scripts/gsoc-tag-aliases.json` or `scripts/gsoc-org-aliases.json` | `npm run sync:gsoc`, `npm run audit:data` |
+| Update a stipend or date | `src/data/program-calendar.json` or `src/data/programs.ts`, with source URL and date | `npm run audit:programs` |
+| Add a filter to an explorer | The `ProgramConfig` in `src/lib/explorer/lfx.ts` or `gsoc.ts` | `npm run typecheck`, check in the browser |
+| Change colours or spacing | Tokens in `src/app/globals.css` (see `DESIGN.md`) | Check light and dark mode |
+| Add a proposal archive | `scripts/proposal-sources.json` and a layout in `scripts/lib/proposals-parser.ts` | `npm run sync:proposals`, `npm run test:data` |
+
+Never edit files in `public/data/` by hand. They are overwritten on the next sync.
