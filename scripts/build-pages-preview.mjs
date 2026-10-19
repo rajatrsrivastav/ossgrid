@@ -9,9 +9,12 @@ if (!/^\d+$/.test(pr || "")) throw new Error("Usage: node scripts/build-pages-pr
 const basePath = `/ossgrid/pr-${pr}`;
 const stage = await mkdtemp(join(tmpdir(), "ossgrid-pages-"));
 try {
-  for (const path of ["src", "public", "package.json", "package-lock.json", "tsconfig.json", "postcss.config.mjs", "next-env.d.ts"]) {
+  for (const path of ["src", "public", "package.json", "package-lock.json", "tsconfig.json", "postcss.config.mjs"]) {
     await cp(join(root, path), join(stage, path), { recursive: true });
   }
+  // next-env.d.ts is gitignored; generate the minimal reference so tsc is happy
+  // before `next build` overwrites it with the full version.
+  await writeFile(join(stage, "next-env.d.ts"), '/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n// NOTE: This file is auto-generated and should not be edited.\n');
   await symlink(join(root, "node_modules"), join(stage, "node_modules"), "dir");
   await rm(join(stage, "src/app/api"), { recursive: true });
   await rm(join(stage, "src/proxy.ts"));
