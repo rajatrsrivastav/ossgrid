@@ -965,13 +965,25 @@ header.cine .icon-btn-bordered { border-color: transparent; background: transpar
 .eco__frame { position: relative; min-width: 880px; border-top: 1px solid var(--cine-line); border-bottom: 1px solid var(--cine-line); }
 @media (min-width: 1024px) { .eco__frame { min-width: 0; } }
 .eco__frame svg { display: block; width: 100%; height: auto; }
+.eco__program--gsoc { --eco-program-color: var(--program-gsoc); }
+.eco__program--lfx { --eco-program-color: var(--program-lfx); }
+.eco__stop--highlight { stop-color: var(--cine-fg); stop-opacity: 0.95; }
+.eco__stop--mid { stop-color: var(--eco-program-color); }
+.eco__stop--edge { stop-color: color-mix(in srgb, var(--eco-program-color) 35%, var(--cine-bg)); }
+[data-theme="light"] .eco__stop--highlight { stop-color: color-mix(in srgb, var(--eco-program-color) 76%, var(--cine-bg)); stop-opacity: 1; }
+[data-theme="light"] .eco__stop--mid { stop-color: color-mix(in srgb, var(--eco-program-color) 90%, var(--cine-bg)); }
+[data-theme="light"] .eco__stop--edge { stop-color: color-mix(in srgb, var(--eco-program-color) 78%, var(--cine-fg)); }
 .eco__link { stroke: rgb(var(--cine-ink) / 0.16); stroke-width: 1; transition: stroke 200ms var(--cine-ease), opacity 200ms var(--cine-ease); vector-effect: non-scaling-stroke; }
+[data-theme="light"] .eco__link { stroke: rgb(var(--cine-ink) / 0.38); stroke-width: 1.2; }
 .eco__link--on { stroke: var(--cine-accent); stroke-width: 1.6; }
+[data-theme="light"] .eco__link--on { stroke: var(--cine-accent); stroke-width: 2; }
 .eco__link--off { opacity: 0.3; }
+[data-theme="light"] .eco__link--off { opacity: 0.18; }
 .eco__node { cursor: pointer; outline: none; }
 .eco__hit { fill: transparent; }
 .eco__sphere { stroke: rgb(var(--cine-ink) / 0.22); stroke-width: 1; vector-effect: non-scaling-stroke; transition: opacity 220ms var(--cine-ease), transform 220ms var(--cine-ease); transform-box: fill-box; transform-origin: center; }
 .eco__node--dim .eco__sphere { opacity: 0.16; }
+[data-theme="light"] .eco__node--dim .eco__sphere { opacity: 0.3; }
 .eco__node:hover .eco__sphere, .eco__node--on .eco__sphere { transform: scale(1.12); stroke: var(--cine-fg); }
 .eco__node:focus-visible .eco__sphere { stroke: var(--cine-accent); stroke-width: 3; }
 .eco__label {
@@ -986,7 +998,8 @@ header.cine .icon-btn-bordered { border-color: transparent; background: transpar
   box-shadow: 0 18px 40px rgb(0 0 0 / 0.28);
 }
 .eco__tip--below { transform: translate(-50%, 14px); }
-.eco__key { display: inline-block; width: 14px; height: 14px; border-radius: 999px; }
+.eco__key { display: inline-block; width: 14px; height: 14px; border-radius: 999px; background: radial-gradient(circle at 34% 30%, var(--cine-fg), var(--eco-program-color) 40%, color-mix(in srgb, var(--eco-program-color) 35%, var(--cine-bg))); }
+[data-theme="light"] .eco__key { background: radial-gradient(circle at 34% 30%, color-mix(in srgb, var(--eco-program-color) 76%, var(--cine-bg)), color-mix(in srgb, var(--eco-program-color) 90%, var(--cine-bg)) 40%, color-mix(in srgb, var(--eco-program-color) 78%, var(--cine-fg))); }
 @media (prefers-reduced-motion: reduce) { .eco__sphere, .eco__link, .eco__label { transition: none; } }
 
 /* ---------------------------------------------------------------------------
