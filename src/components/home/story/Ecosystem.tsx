@@ -70,7 +70,7 @@ export default function Ecosystem({ width: W, height: H, nodes, links, filters, 
       if (boxes.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0)) continue;
       boxes.push(box);
       ids.add(n.id);
-      if (ids.size === 9) break;
+      if (ids.size === 14) break;
     }
     return ids;
   }, [nodes, W]);
@@ -141,10 +141,10 @@ export default function Ecosystem({ width: W, height: H, nodes, links, filters, 
               <svg viewBox={`0 0 ${W} ${H}`} role="group" aria-label={`Network of ${nodes.length} organizations. Use the arrow keys to move between them and Enter to open one.`}>
                 <defs>
                   {(["gsoc", "lfx"] as const).map((p) => (
-                    <radialGradient key={p} id={`eco-${p}`} cx="34%" cy="30%" r="78%">
-                      <stop offset="0%" style={{ stopColor: "#ffffff", stopOpacity: 0.95 }} />
-                      <stop offset="28%" style={{ stopColor: `var(--program-${p})` }} />
-                      <stop offset="100%" style={{ stopColor: `color-mix(in srgb, var(--program-${p}) 35%, #050506)` }} />
+                    <radialGradient key={p} id={`eco-${p}`} className={`eco__gradient eco__program--${p}`} cx="34%" cy="30%" r="78%">
+                      <stop offset="0%" className="eco__stop--highlight" />
+                      <stop offset="28%" className="eco__stop--mid" />
+                      <stop offset="100%" className="eco__stop--edge" />
                     </radialGradient>
                   ))}
                 </defs>
@@ -232,8 +232,8 @@ export default function Ecosystem({ width: W, height: H, nodes, links, filters, 
             </div>
           </div>
           <div className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-[var(--cine-fg-2)]">
-            <span className="flex items-center gap-2"><span className="eco__key" style={{ background: "radial-gradient(circle at 34% 30%, #fff, var(--program-gsoc) 40%, color-mix(in srgb, var(--program-gsoc) 35%, #050506))" }} aria-hidden="true" />Google Summer of Code</span>
-            <span className="flex items-center gap-2"><span className="eco__key" style={{ background: "radial-gradient(circle at 34% 30%, #fff, var(--program-lfx) 40%, color-mix(in srgb, var(--program-lfx) 35%, #050506))" }} aria-hidden="true" />LFX Mentorship</span>
+            <span className="flex items-center gap-2"><span className="eco__key eco__program--gsoc" aria-hidden="true" />Google Summer of Code</span>
+            <span className="flex items-center gap-2"><span className="eco__key eco__program--lfx" aria-hidden="true" />LFX Mentorship</span>
             <span className="flex items-center gap-2"><span className="h-px w-6 bg-[var(--cine-fg-3)]" aria-hidden="true" />Four or more shared technologies</span>
             <span className="text-[var(--cine-fg-3)] lg:ml-auto">
               <span className="hidden md:inline">Arrow keys move between organizations. Enter opens one.</span>

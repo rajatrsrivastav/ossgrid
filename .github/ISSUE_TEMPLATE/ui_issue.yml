@@ -1,0 +1,60 @@
+name: UI issue
+description: Report a visual, layout, or theme problem with a screenshot.
+title: "fix(ui): "
+labels: ["bug"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page URL
+      placeholder: https://www.ossgrid.tech/
+    validations:
+      required: true
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Theme
+      options:
+        - Light
+        - Dark
+        - Both
+    validations:
+      required: true
+  - type: textarea
+    id: appearance
+    attributes:
+      label: What looks wrong, and what should it look like?
+      description: Name the element and describe the visual difference you expect.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to see it
+      placeholder: |
+        1. Open the page
+        2. Select Light theme
+        3. Scroll to the ecosystem network
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or recording
+      description: Drag an image here. Include both themes if the difference matters.
+      placeholder: Add an image or a short recording.
+  - type: input
+    id: environment
+    attributes:
+      label: Browser, device, and screen size
+      placeholder: Chrome on macOS, desktop 1440 px
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: State how a contributor can confirm the issue is fixed.
+      placeholder: |
+        - [ ] The element is readable in light and dark themes
+        - [ ] Mobile layout still works
+    validations:
+      required: true
