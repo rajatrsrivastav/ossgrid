@@ -2,6 +2,28 @@
   "_comment": "Pinned cncf/mentoring revision for programs/summerofcode. --refresh moves it to main; everything else reads this SHA so builds are reproducible.",
   "revision": "97525d8f004aa477c24f6ce2f34ce4d9b51bf75c",
   "root": "programs/summerofcode/",
-  "years": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026],
-  "hashes": {}
+  "years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "hashes": {
+    "2017.md": "3b8047e28906c81092911cfa523cdb182268d30d92133de9ea7138f7cce188b1",
+    "2018.md": "0bbbc2a8f86a7e84e26a4618c2db3efe1defa9780eac8d323d3f913bfe8b252a",
+    "2019.md": "a914f61839cfaea7ab4eb604518cac79e670ff31c8c28994b383bb9a969163dd",
+    "2020.md": "f92b5f0ad4554222a493ce10a93487ad190058b28eb68b77c137611c87fcc015",
+    "2021.md": "5e64ddb293d48214671df1be44fed55f7c9761081069e5f31f875e3b4195b6f3",
+    "2022.md": "55825bf0cef1e63b09a3fa81882d87cb8c3946056cbf703d0c6125ef1c118700",
+    "2023.md": "5e445ffd0b647875b1ec9f045368e6de0600919ce382c71e799d0b7a7631b68e",
+    "2024.md": "ecb36cf41365fce963bdf9457f4935e2e1c444b931dc1d5e218274abb2a2469f",
+    "2025.md": "7e82182cde54e4276ffe15da2dc3e8b39d3bef82726944672ae4bb9db96abed1",
+    "2026.md": "be93cd82510cf45a7e0659d09938c5f5868a01f54704955b5fcc2cb12f0785d5"
+  }
 }
