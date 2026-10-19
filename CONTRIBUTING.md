@@ -2,6 +2,14 @@
 
 Thanks for contributing to OSSGrid.
 
+## Pull request previews
+
+Pull requests targeting `main` receive a static GitHub Pages preview after the **Build PR Pages Preview** and **Publish PR Pages Previews** workflows finish. The publishing workflow adds the URL to the pull request, in the form `https://rajatrsrivastav.github.io/ossgrid/pr-<number>/`. Fork PRs may need a maintainer to approve their first Actions run. A changed PR is rebuilt and its preview is updated; closing a PR removes its preview during the next deployment.
+
+The Pages preview covers the prebuilt routes and bundled data. Server-backed features, including live contributor refresh, GitHub repository metadata, and the view counter, are unavailable. Fonts use system fallbacks. Test those features locally with `npm run dev`. To reproduce the static preview locally, run `node scripts/build-pages-preview.mjs <PR number>` and serve `pages-preview-output` beneath `/ossgrid/pr-<number>/`.
+
+Maintainers: set **Settings → Pages → Build and deployment → Source** to **GitHub Actions**. The repository's Actions policy must allow the GitHub Pages actions. The Pages site has a size limit; this workflow stops with a clear error if concurrent previews exceed its configured 900 MB budget.
+
 OSSGrid is maintained with a simple rule:
 
 > **If you claim an issue, own it. Communicate early, ship it properly, and don't leave other contributors blocked.**

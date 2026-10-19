@@ -1,0 +1,30 @@
+name: Build PR Pages Preview
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Build static PR preview
+        env:
+          PREVIEW_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/build-pages-preview.mjs "${{ github.event.pull_request.number }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pages-pr-${{ github.event.pull_request.number }}
+          path: pages-preview-output/
+          retention-days: 90
+          if-no-files-found: error

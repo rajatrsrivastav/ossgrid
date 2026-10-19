@@ -1,0 +1,69 @@
+name: Publish PR Pages Previews
+
+on:
+  workflow_run:
+    workflows: [Build PR Pages Preview]
+    types: [completed]
+  pull_request_target:
+    branches: [main]
+    types: [closed]
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  pages: write
+  id-token: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: pr-pages-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # This workflow always checks out trusted main. It never runs PR code with
+      # the write-capable deployment token.
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+      - name: Assemble current open PR artifacts
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/assemble-pages-previews.mjs
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: pages-site/
+          include-hidden-files: true
+      - id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Post or update PR preview links
+        uses: actions/github-script@v7
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        with:
+          script: |
+            const fs = require('fs');
+            const numbers = JSON.parse(fs.readFileSync('published-previews.json', 'utf8'));
+            const marker = '<!-- ossgrid-pages-preview -->';
+            const base = process.env.PAGE_URL.replace(/\/$/, '');
+            for (const number of numbers) {
+              const body = `${marker}\nStatic preview: ${base}/pr-${number}/\n\nServer-backed features are unavailable in this GitHub Pages preview.`;
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: number, per_page: 100,
+              });
+              const previous = comments.find(c => c.user?.type === 'Bot' && c.body?.includes(marker));
+              if (previous) {
+                if (previous.body !== body) await github.rest.issues.updateComment({ owner: context.repo.owner, repo: context.repo.repo, comment_id: previous.id, body });
+              } else {
+                await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: number, body });
+              }
+            }
