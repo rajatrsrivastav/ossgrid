@@ -993,11 +993,10 @@ header.cine .icon-btn-bordered { border-color: transparent; background: transpar
 }
 .eco__label--dim { opacity: 0.2; }
 .eco__tip {
-  position: absolute; z-index: 2; width: min(20rem, 70vw); transform: translate(-50%, calc(-100% - 14px)); pointer-events: none;
+  position: absolute; z-index: 2; width: min(20rem, 70vw); max-height: calc(100% - 16px); overflow-y: auto;
   padding: 1rem 1.1rem; border-radius: 4px; background: var(--cine-raised); border: 1px solid var(--cine-line-strong);
   box-shadow: 0 18px 40px rgb(0 0 0 / 0.28);
 }
-.eco__tip--below { transform: translate(-50%, 14px); }
 .eco__key { display: inline-block; width: 14px; height: 14px; border-radius: 999px; background: radial-gradient(circle at 34% 30%, var(--cine-fg), var(--eco-program-color) 40%, color-mix(in srgb, var(--eco-program-color) 35%, var(--cine-bg))); }
 [data-theme="light"] .eco__key { background: radial-gradient(circle at 34% 30%, color-mix(in srgb, var(--eco-program-color) 76%, var(--cine-bg)), color-mix(in srgb, var(--eco-program-color) 90%, var(--cine-bg)) 40%, color-mix(in srgb, var(--eco-program-color) 78%, var(--cine-fg))); }
 @media (prefers-reduced-motion: reduce) { .eco__sphere, .eco__link, .eco__label { transition: none; } }

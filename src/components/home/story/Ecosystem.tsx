@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { EcoLink, EcoNode } from "@/lib/home-data";
 import { cn } from "@/lib/utils";
@@ -35,6 +35,9 @@ export default function Ecosystem({ width: W, height: H, nodes, links, filters, 
   const refs = useRef(new Map<string, { focus: () => void }>());
 
   const scroller = useRef<HTMLDivElement>(null);
+  const frame = useRef<HTMLDivElement>(null);
+  const tip = useRef<HTMLDivElement>(null);
+  const [tipPosition, setTipPosition] = useState<{ left: number; top: number } | null>(null);
   // On narrow screens the network is wider than the viewport; start in the middle of it.
   useEffect(() => {
     const el = scroller.current;
@@ -58,6 +61,33 @@ export default function Ecosystem({ width: W, height: H, nodes, links, filters, 
   }, [nodes, program, tech]);
 
   const focusNode = selected ? byId.get(selected) : undefined;
+  useLayoutEffect(() => {
+    if (!focusNode || !frame.current || !tip.current) return;
+
+    const placeTip = () => {
+      const container = frame.current!;
+      const card = tip.current!;
+      const margin = 8;
+      const gap = 14;
+      const scale = container.clientWidth / W;
+      const centerX = focusNode.x * scale;
+      const centerY = focusNode.y * scale;
+      const above = centerY - focusNode.r * scale - gap - card.offsetHeight;
+      const below = centerY + focusNode.r * scale + gap;
+      const preferredTop = above >= margin ? above : below;
+
+      setTipPosition({
+        left: Math.max(margin, Math.min(centerX - card.offsetWidth / 2, container.clientWidth - card.offsetWidth - margin)),
+        top: Math.max(margin, Math.min(preferredTop, container.clientHeight - card.offsetHeight - margin)),
+      });
+    };
+
+    placeTip();
+    const observer = new ResizeObserver(placeTip);
+    observer.observe(frame.current);
+    observer.observe(tip.current);
+    return () => observer.disconnect();
+  }, [focusNode, W]);
   const near = new Set(focusNode ? (neighbours.get(focusNode.id) ?? []).map((n) => n.id) : []);
   // Label the largest organizations whose names do not collide, in viewBox units (about 6 per character).
   const labelled = useMemo(() => {
@@ -137,7 +167,7 @@ export default function Ecosystem({ width: W, height: H, nodes, links, filters, 
 
         <div className="eco mt-6">
           <div ref={scroller} className="eco__scroll">
-            <div className="eco__frame" onPointerLeave={() => { if (pointer.current === "mouse") setSelected(null); }}>
+            <div ref={frame} className="eco__frame" onPointerLeave={() => { if (pointer.current === "mouse") setSelected(null); }}>
               <svg viewBox={`0 0 ${W} ${H}`} role="group" aria-label={`Network of ${nodes.length} organizations. Use the arrow keys to move between them and Enter to open one.`}>
                 <defs>
                   {(["gsoc", "lfx"] as const).map((p) => (
@@ -207,12 +237,10 @@ export default function Ecosystem({ width: W, height: H, nodes, links, filters, 
 
               {focusNode && (
                 <div
+                  ref={tip}
                   role="status"
-                  className={cn("eco__tip", focusNode.y / H < 0.38 && "eco__tip--below")}
-                  style={{
-                    left: `${Math.min(84, Math.max(16, (focusNode.x / W) * 100))}%`,
-                    top: `${((focusNode.y + (focusNode.y / H < 0.38 ? focusNode.r : -focusNode.r)) / H) * 100}%`,
-                  }}
+                  className="eco__tip"
+                  style={{ left: tipPosition?.left ?? 0, top: tipPosition?.top ?? 0, visibility: tipPosition ? "visible" : "hidden" }}
                 >
                   <p className="text-xs text-[var(--cine-fg-3)]">{PROGRAM_NAME[focusNode.program]}</p>
                   <p className="font-display mt-0.5 text-xl font-bold leading-tight text-[var(--cine-fg)]">{focusNode.name}</p>
