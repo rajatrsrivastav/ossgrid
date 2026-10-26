@@ -6,7 +6,7 @@ import { getGsocStats } from "@/lib/stats";
 import { getGsocOrganizations } from "@/lib/gsoc-data";
 
 const stats = getGsocStats();
-const title = `Google Summer of Code organizations — ${stats.orgLabel} orgs, ${stats.yearMin} to ${stats.yearMax}`;
+const title = `GSoC Dashboard ${stats.yearMax} — ${stats.orgLabel} Organizations & Projects`;
 const description = `Browse ${stats.orgLabel} Google Summer of Code organizations and ${stats.projectLabel} projects from ${stats.yearMin} to ${stats.yearMax}. Filter by year, technology, topic and category; open an org to see what it ran each year.`;
 
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ const breadcrumbJsonLd = {
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Home", item: "https://www.ossgrid.tech" },
-    { "@type": "ListItem", position: 2, name: "Google Summer of Code organizations", item: "https://www.ossgrid.tech/gsoc" },
+    { "@type": "ListItem", position: 2, name: "GSoC Dashboard", item: "https://www.ossgrid.tech/gsoc" },
   ],
 };
 
@@ -37,7 +37,7 @@ const collectionJsonLd = {
   "@type": "CollectionPage",
   "@id": "https://www.ossgrid.tech/gsoc#collection",
   url: "https://www.ossgrid.tech/gsoc",
-  name: "Google Summer of Code organizations",
+  name: `GSoC Dashboard ${stats.yearMax}`,
   description,
   isPartOf: { "@type": "WebSite", "@id": "https://www.ossgrid.tech/#website", name: "OSSGrid", url: "https://www.ossgrid.tech" },
 };
@@ -49,7 +49,10 @@ export default function GsocPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(collectionJsonLd) }} />
-      <GsocClient stats={{ orgCount: stats.orgCount, projectCount: stats.projectCount, yearMin: stats.yearMin, yearMax: stats.yearMax }} />
+      <GsocClient
+        initialOrganizations={organizations}
+        stats={{ orgCount: stats.orgCount, projectCount: stats.projectCount, yearMin: stats.yearMin, yearMax: stats.yearMax }}
+      />
 
       {/* Static crawler index for search engines without JavaScript */}
       <noscript>

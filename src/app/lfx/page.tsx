@@ -8,7 +8,7 @@ import { safeJsonLd } from "@/lib/seo";
 import { getSiteStats } from "@/lib/stats";
 
 const stats = getSiteStats();
-const lfxTitle = `LFX Mentorship organizations — ${stats.orgLabel} orgs, ${stats.projectLabel} projects`;
+const lfxTitle = `LFX Mentorship Dashboard — ${stats.orgLabel} Organizations & ${stats.projectLabel} Projects`;
 const lfxDescription = `Browse ${stats.orgLabel} Linux Foundation and CNCF organizations and ${stats.projectLabel} LFX Mentorship projects from ${stats.yearMin} to ${stats.yearMax}. Filter by technology, year and mentor.`;
 
 export const metadata: Metadata = {
@@ -65,7 +65,7 @@ const breadcrumbJsonLd = {
     {
       "@type": "ListItem",
       position: 2,
-      name: "LFX Mentorship organizations",
+      name: "LFX Mentorship Dashboard",
       item: "https://www.ossgrid.tech/lfx",
     },
   ],
@@ -76,7 +76,7 @@ const collectionJsonLd = {
   "@type": "CollectionPage",
   "@id": "https://www.ossgrid.tech/lfx#collection",
   url: "https://www.ossgrid.tech/lfx",
-  name: "LFX Mentorship organizations",
+  name: "LFX Mentorship Dashboard",
   description: lfxDescription,
   isPartOf: {
     "@type": "WebSite",

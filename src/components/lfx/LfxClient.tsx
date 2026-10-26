@@ -46,7 +46,7 @@ export default function LfxClient({ initialOrganizations = [] }: LfxClientProps)
         <PageMasthead
           art="lfx"
           crumbs={[{ label: "Home", href: "/" }, { label: "Programs", href: "/#programs" }, { label: "LFX Mentorship" }]}
-          title="LFX Mentorship organizations"
+          title="LFX Mentorship dashboard"
           lede={<p>Every organization that has offered an LFX Mentorship project{yearMin < 9999 ? ` since ${yearMin}` : ""}, with its projects, mentors and technologies. Filter by what you already know, then read the org page before you apply.</p>}
           aside={
             <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-4 lg:min-w-[520px]">

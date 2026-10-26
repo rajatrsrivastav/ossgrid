@@ -15,25 +15,30 @@ import GsocAboutModal from "@/components/gsoc/GsocAboutModal";
 const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
 
 interface GsocClientProps {
+  /** Server-loaded organizations make the complete dashboard and its links available in initial HTML. */
+  initialOrganizations?: GsocOrganization[];
   /** Counts rendered on the server so the intro never shows placeholders. */
   stats: { orgCount: number; projectCount: number; yearMin: number; yearMax: number };
 }
 
 /**
- * /gsoc explorer. The org DTO (~150 kB gzipped) and the prebuilt search index are fetched on the
- * client so the HTML stays small; per-year project files are only read by the org detail pages.
+ * /gsoc explorer. Organization summaries arrive with the server render so cards and internal
+ * links are crawlable; the search index and proposal counts hydrate on the client. Per-year
+ * project files are only read by organization detail pages.
  */
-export default function GsocClient({ stats }: GsocClientProps) {
-  const [dtos, setDtos] = useState<GsocOrganization[]>([]);
+export default function GsocClient({ initialOrganizations = [], stats }: GsocClientProps) {
+  const [dtos, setDtos] = useState<GsocOrganization[]>(initialOrganizations);
   const [prebuilt, setPrebuilt] = useState<unknown>(undefined);
   const [proposalCounts, setProposalCounts] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initialOrganizations.length === 0);
   const [aboutOpen, setAboutOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     Promise.all([
-      fetch("/data/gsoc/organizations.json").then((r) => r.json()),
+      initialOrganizations.length
+        ? Promise.resolve(initialOrganizations)
+        : fetch("/data/gsoc/organizations.json").then((r) => r.json()),
       fetch("/data/gsoc/search-index.json").then((r) => (r.ok ? r.json() : null)).catch(() => null),
       fetch("/data/proposals/by-org.json").then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
     ])
@@ -46,7 +51,7 @@ export default function GsocClient({ stats }: GsocClientProps) {
       })
       .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, []);
+  }, [initialOrganizations]);
 
   const currentYear = useMemo(() => (dtos.length ? gsocCurrentYear(dtos) : stats.yearMax), [dtos, stats.yearMax]);
   const config = useMemo(() => makeGsocConfig(currentYear), [currentYear]);
@@ -70,7 +75,7 @@ export default function GsocClient({ stats }: GsocClientProps) {
         <PageMasthead
           art="gsoc"
           crumbs={[{ label: "Home", href: "/" }, { label: "Programs", href: "/#programs" }, { label: "Google Summer of Code" }]}
-          title="Google Summer of Code organizations"
+          title={`GSoC ${stats.yearMax} dashboard`}
           lede={<p>Every organization accepted into GSoC from {stats.yearMin} to {stats.yearMax}, with the projects it ran each year, its technologies and its ideas list. Pick orgs that keep coming back, read their past projects, then start contributing before applications open.</p>}
           aside={
             <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-4 lg:min-w-[520px]">

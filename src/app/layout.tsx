@@ -109,6 +109,7 @@ const globalJsonLd = {
       "@id": "https://www.ossgrid.tech/#website",
       "url": "https://www.ossgrid.tech",
       "name": "OSSGrid",
+      "alternateName": ["OSS Grid", "GSoC Dashboard", "LFX Mentorship Dashboard"],
       "description": "Open Source Mentorship & Ecosystem Explorer",
       "inLanguage": "en-US",
       "publisher": { "@id": "https://www.ossgrid.tech/#organization" },
