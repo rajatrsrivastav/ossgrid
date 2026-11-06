@@ -1,5 +1,5 @@
 {
-  "revision": "97525d8f004aa477c24f6ce2f34ce4d9b51bf75c",
+  "revision": "062851f9ec2b6cb6de9b588439b44bff5b14c183",
   "policy": "All official cohort project records, including proposal-only entries labeled proposed. Export/accepted records take precedence over proposal copies. Missing source values remain empty.",
   "files": [
     {
@@ -2837,7 +2837,7 @@
     },
     {
       "path": "2021/03-Fall/README.md",
-      "sha256": "a7d546e81cdf621503d1a507f678bc36ad27c80f09a420bf51d3619cc6014455",
+      "sha256": "80859adad9182ccc24940fd21704956bed588c2d83b8562457cf53afd385d0b4",
       "projects": 34,
       "sections": [
         {
@@ -6915,7 +6915,7 @@
     },
     {
       "path": "2024/03-Sep-Nov/README.md",
-      "sha256": "efeee2048f76126cc7d5565be205ce8870030433596c28e8c0fb1fea1bd946a6",
+      "sha256": "d7c117ca7dd49faa31c1dee2123d0665cab1172e848010d1c0f72e9b55cce093",
       "projects": 49,
       "sections": [
         {
@@ -7363,7 +7363,7 @@
     },
     {
       "path": "2025/01-Mar-May/README.md",
-      "sha256": "3d445a875e994ccb7fcb4cc27d8920c076258880173d5c5fdc40f9d938be1da6",
+      "sha256": "8ac3026738238d583661f90bd1b978d8753a5b68b1570f91fe76634e01db1cf3",
       "projects": 66,
       "sections": [
         {
@@ -7943,7 +7943,7 @@
     },
     {
       "path": "2025/02-Jun-Aug/README.md",
-      "sha256": "b15100b373fac808115cfd7a0862a612b709cafd1a34a65206ba91e46d672d3b",
+      "sha256": "425ebf40ce2fd1306b2517da32e3c4cec39aa562c57c07301b2bec23a7e1e1e6",
       "projects": 57,
       "sections": [
         {
@@ -8454,7 +8454,7 @@
     },
     {
       "path": "2025/03-Sep-Nov/README.md",
-      "sha256": "2560c613571e64e7fa93afc262089cbefabb9ae899b6b3f981f12d461cbf8d62",
+      "sha256": "3bd31adbbbc660307156215a9c71468382e06fa68d4666613484462728c70106",
       "projects": 65,
       "sections": [
         {
@@ -9028,7 +9028,7 @@
     },
     {
       "path": "2026/01-Mar-May/README.md",
-      "sha256": "9582cc64fed15c73d39da12135d56bfb6a68bde9b5de4a040ca1c9b1470c2c61",
+      "sha256": "6d75024a477e14d9f5fd95e34aea469266bdb115c68eaede70489fb8ede251b3",
       "projects": 72,
       "sections": [
         {
@@ -9689,7 +9689,7 @@
     },
     {
       "path": "2026/02-Jun-Aug/README.md",
-      "sha256": "f26f54a60480c6666eb0b42bf64669262b47d92b6050eb533281e85f8c7d682c",
+      "sha256": "bb9f7d5549ecbf52c468485ca03c62044be0c21b49798ff739381725143e0ed6",
       "projects": 65,
       "sections": [
         {
@@ -10644,7 +10644,7 @@
     },
     {
       "path": "2026/03-Sep-Nov/README.md",
-      "sha256": "73beb8153e1e5190bb80f3e34cc859463fe5602ee493e825762b523017123aaa",
+      "sha256": "0b121e10af2ede6e14ecbf6f9f5cd231580a14350918cbcc1f6d25f9bfe37cb4",
       "projects": 59,
       "sections": [
         {
