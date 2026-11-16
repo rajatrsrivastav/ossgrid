@@ -253,7 +253,7 @@ export default function EventDetail({ event, announcements }: EventDetailProps) 
           ) : (
             <>
               <p className="text-sm text-[var(--text-secondary)]">
-                Registration is not open on this site yet. Watch announcements on this page. Team formation, invite codes, and submissions are planned for a later phase.
+                Registration is not open on this site yet. Watch announcements on this page for official updates.
               </p>
               <div className="flex flex-wrap gap-3">
                 <a href="#announcements" className="btn btn-secondary">

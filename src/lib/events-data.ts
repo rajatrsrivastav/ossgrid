@@ -39,7 +39,7 @@ export function formatEventDateRange(start: string, end?: string): string {
 }
 
 export function eventStatusLabel(status: EventStatus): string {
-  if (status === "upcoming") return "Upcoming";
   if (status === "live") return "Live";
-  return "Past";
+  if (status === "past") return "Past";
+  return "Open";
 }

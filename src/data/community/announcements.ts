@@ -6,7 +6,7 @@ export const ANNOUNCEMENTS: Announcement[] = [
     id: "eagle-2026-announced",
     scope: "community",
     title: "OSS Grid × Eagle Buildathon is open for interest",
-    body: "Learning week runs 30 November to 4 December 2026 online with the Eagle team. Build weekend is 5–6 December 2026 (tentative). Every team builds on EAGLE-4. Registration details will be posted here when they are ready.",
+    body: "Learning week runs 30 November to 4 December 2026 online with the Eagle team. Build weekend is 5–6 December 2026 (tentative). Every team builds on EAGLE-4. Registration details will be posted in official announcements.",
     publishedAt: "2026-11-16",
     author: "OSS Grid organisers",
   },

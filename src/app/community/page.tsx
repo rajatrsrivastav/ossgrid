@@ -19,7 +19,7 @@ import { safeJsonLd } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Community",
   description:
-    "OSS Grid community hub: what we are, partner communities, member profiles, announcements, and upcoming events.",
+    "OSS Grid community hub: what we are, partner communities, member profiles, announcements, and events.",
   alternates: { canonical: "/community" },
 };
 
@@ -113,17 +113,17 @@ export default function CommunityPage() {
             </ul>
           </section>
 
-          <section aria-labelledby="upcoming" className="mt-14 space-y-4">
+          <section aria-labelledby="events" className="mt-14 space-y-4">
             <div className="flex flex-wrap items-end justify-between gap-3">
-              <h2 id="upcoming" className="display text-2xl font-semibold text-[var(--text-primary)] md:text-3xl">
-                Upcoming events
+              <h2 id="events" className="display text-2xl font-semibold text-[var(--text-primary)] md:text-3xl">
+                Events
               </h2>
               <Link href="/events" className="text-sm font-medium text-[var(--text-primary)] underline-offset-4 hover:underline">
                 All events
               </Link>
             </div>
             {upcoming.length === 0 ? (
-              <p className="text-sm text-[var(--text-secondary)]">No upcoming events yet.</p>
+              <p className="text-sm text-[var(--text-secondary)]">No events listed yet.</p>
             ) : (
               <ul className="grid gap-4 md:grid-cols-2">
                 {upcoming.map((event) => (

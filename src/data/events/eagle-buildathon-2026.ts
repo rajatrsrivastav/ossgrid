@@ -140,7 +140,7 @@ export const EAGLE_BUILDATHON_2026: Event = {
     {
       question: "How do I register?",
       answer:
-        "Registration is not open yet on this site. Watch the announcements on this page. Interactive sign-up, teams, and submissions are planned for a later phase.",
+        "Registration is not open yet on this site. Watch the announcements on this page for official updates.",
     },
     {
       question: "Is there a Hugging Face bonus?",
