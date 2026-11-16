@@ -7,5 +7,5 @@ export const COMMUNITY_OVERVIEW: CommunityOverview = {
   ],
   memberCountLabel: "",
   activeMembersLabel: "",
-  partnerIds: ["oss-grid", "devclub-nst", "oss-connect", "eagle"],
+  partnerIds: ["oss-grid", "devclub-nst", "oss-connect"],
 };

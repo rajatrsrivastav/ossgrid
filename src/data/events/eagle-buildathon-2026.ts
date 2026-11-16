@@ -7,12 +7,16 @@ const partnerById = (id: string) => {
   return p;
 };
 
-/** First seeded event: OSS Grid × Eagle Buildathon. */
+/**
+ * Seeded event: OSS Grid × Eagle Buildathon.
+ * Kept unpublished until the proposal is accepted — flip `published` to true then.
+ */
 export const EAGLE_BUILDATHON_2026: Event = {
   slug: "eagle-buildathon-2026",
   title: "OSS Grid × Eagle Buildathon",
   shortTitle: "Eagle Buildathon",
   status: "upcoming",
+  published: false,
   summary:
     "Learning week with the Eagle team, then a build weekend on EAGLE-4. Online, with a proposed onsite component at NST.",
   overview:

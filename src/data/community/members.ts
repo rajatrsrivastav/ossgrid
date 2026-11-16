@@ -13,6 +13,6 @@ export const MEMBERS: CommunityMember[] = [
     skills: ["open source", "mentorship programs", "Next.js"],
     bio: "Builds OSS Grid and organises community events.",
     projects: [{ name: "OSS Grid", url: "https://github.com/rajatrsrivastav/ossgrid" }],
-    eventsJoined: ["eagle-buildathon-2026"],
+    eventsJoined: [],
   },
 ];

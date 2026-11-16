@@ -2,12 +2,15 @@ import { EVENTS } from "@/data/events";
 import { ANNOUNCEMENTS } from "@/data/community/announcements";
 import type { Announcement, Event, EventStatus } from "@/lib/community-types";
 
+/** Public catalog only. Unpublished seeds stay in `src/data/events` until approved. */
 export function getAllEvents(): Event[] {
-  return [...EVENTS].sort((a, b) => a.startDate.localeCompare(b.startDate));
+  return EVENTS.filter((e) => e.published).sort((a, b) => a.startDate.localeCompare(b.startDate));
 }
 
 export function getEventBySlug(slug: string): Event | undefined {
-  return EVENTS.find((e) => e.slug === slug);
+  const event = EVENTS.find((e) => e.slug === slug);
+  if (!event?.published) return undefined;
+  return event;
 }
 
 export function getEventsByStatus(status: EventStatus): Event[] {

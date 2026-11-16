@@ -65,6 +65,8 @@ export interface Event {
   title: string;
   shortTitle: string;
   status: EventStatus;
+  /** When false, the event stays in seed data but is hidden from public routes. */
+  published: boolean;
   summary: string;
   overview: string;
   /** ISO date used for sorting and status display. */
