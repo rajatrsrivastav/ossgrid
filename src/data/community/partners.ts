@@ -7,7 +7,7 @@ export const PARTNERS: Partner[] = [
     name: "OSS Grid",
     role: "organiser",
     url: "https://www.ossgrid.tech",
-    blurb: "Open-source mentorship index and community hub.",
+    blurb: "Community hub and event organiser.",
   },
   {
     id: "devclub-nst",

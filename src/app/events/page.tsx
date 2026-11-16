@@ -33,19 +33,7 @@ export default function EventsPage() {
           crumbs={[{ label: "Home", href: "/" }, { label: "Events" }]}
           label="Events"
           title="Community events and hackathons"
-          lede={
-            <p>
-              Official OSS Grid events. Listings and details come from curated data so every participant sees the same schedule, rules, and announcements.
-            </p>
-          }
-          aside={
-            <dl className="grid grid-cols-1 gap-4 text-sm sm:min-w-[120px]">
-              <div>
-                <dt className="text-[var(--cine-fg-3)]">Listed</dt>
-                <dd className="display mt-1 text-2xl text-[var(--cine-fg)]">{all.length}</dd>
-              </div>
-            </dl>
-          }
+          lede={<p>Official OSS Grid events, schedules, and announcements.</p>}
         />
         <div className="mx-auto w-full max-w-[1100px] flex-1 px-4 py-12 sm:px-6 lg:px-8">
           <section aria-labelledby="events-all">

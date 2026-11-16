@@ -11,7 +11,7 @@ export const MEMBERS: CommunityMember[] = [
     avatarUrl: "https://github.com/rajatrsrivastav.png?size=128",
     github: "rajatrsrivastav",
     skills: ["open source", "mentorship programs", "Next.js"],
-    bio: "Builds OSS Grid. Organises community events and the mentorship index.",
+    bio: "Builds OSS Grid and organises community events.",
     projects: [{ name: "OSS Grid", url: "https://github.com/rajatrsrivastav/ossgrid" }],
     eventsJoined: ["eagle-buildathon-2026"],
   },

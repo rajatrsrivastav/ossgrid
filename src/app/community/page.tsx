@@ -49,18 +49,6 @@ export default function CommunityPage() {
           label="Community"
           title="OSS Grid community"
           lede={<p>{overview.tagline}</p>}
-          aside={
-            <dl className="grid grid-cols-2 gap-4 text-sm sm:min-w-[220px]">
-              <div>
-                <dt className="text-[var(--cine-fg-3)]">Members</dt>
-                <dd className="mt-1 text-[var(--cine-fg-2)]">{overview.memberCountLabel}</dd>
-              </div>
-              <div>
-                <dt className="text-[var(--cine-fg-3)]">Active</dt>
-                <dd className="mt-1 text-[var(--cine-fg-2)]">{overview.activeMembersLabel}</dd>
-              </div>
-            </dl>
-          }
         >
           <div className="flex flex-wrap gap-3">
             <Link href="/events" className="btn btn-primary">
@@ -139,13 +127,6 @@ export default function CommunityPage() {
             <h2 id="members" className="display text-2xl font-semibold text-[var(--text-primary)] md:text-3xl">
               Members
             </h2>
-            <p className="text-sm text-[var(--text-secondary)]">
-              Curated profiles. More people will appear as they opt in. For OSS Grid repository contributors, see the{" "}
-              <Link href="/contributors" className="underline underline-offset-4">
-                contributors directory
-              </Link>
-              .
-            </p>
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {members.map((member) => (
                 <li key={member.slug}>
@@ -159,9 +140,6 @@ export default function CommunityPage() {
             <h2 id="announcements" className="display text-2xl font-semibold text-[var(--text-primary)] md:text-3xl">
               Announcements
             </h2>
-            <p className="text-sm text-[var(--text-secondary)]">
-              Official updates from organisers. One source of truth for the community hub.
-            </p>
             <AnnouncementsFeed items={announcements} />
           </section>
         </div>

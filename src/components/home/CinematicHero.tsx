@@ -202,8 +202,6 @@ export default function CinematicHero({ counts, staged, lqip, mission }: Cinemat
 
           <div className="hero__content relative mx-auto flex w-full max-w-[1320px] flex-1 flex-col items-center px-5 pt-28 text-center sm:px-8 md:pt-40 lg:pt-[24vh]">
             <div className="cine-scrim flex flex-col items-center">
-              <p className="font-ui cine-in-1 mb-6 text-sm text-[var(--cine-fg-2)] md:text-[0.95rem]">Open-source mentorships, indexed</p>
-
               <h1 id="hero-title" className="font-display cine-title">
                 <span className="line">find your place</span>
                 <span className="line">in open source.</span>

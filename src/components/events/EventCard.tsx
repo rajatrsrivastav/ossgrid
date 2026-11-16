@@ -14,7 +14,9 @@ export default function EventCard({ event }: EventCardProps) {
       className="card group flex flex-col p-5 transition-colors duration-200 hover:bg-[var(--bg-card-hover)] focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
     >
       <div className="flex flex-wrap items-center gap-2">
-        <EventStatusPill status={event.status} />
+        {(event.status === "live" || event.status === "past") && (
+          <EventStatusPill status={event.status} />
+        )}
         <span className="num text-xs text-[var(--text-muted)]">
           {formatEventDateRange(event.startDate, event.endDate)}
         </span>

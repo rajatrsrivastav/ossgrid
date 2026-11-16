@@ -49,7 +49,9 @@ export default function EventDetail({ event, announcements }: EventDetailProps) 
       <EventSectionReveal>
         <section aria-labelledby="overview" className="space-y-4">
           <div className="flex flex-wrap items-center gap-3">
-            <EventStatusPill status={event.status} />
+            {(event.status === "live" || event.status === "past") && (
+              <EventStatusPill status={event.status} />
+            )}
             <span className="num text-sm text-[var(--text-muted)]">
               {formatEventDateRange(event.startDate, event.endDate)}
             </span>
@@ -222,9 +224,6 @@ export default function EventDetail({ event, announcements }: EventDetailProps) 
       <EventSectionReveal className="mt-14">
         <section aria-labelledby="announcements" className="space-y-4">
           <SectionTitle id="announcements">Announcements</SectionTitle>
-          <p className="text-sm text-[var(--text-secondary)]">
-            Official updates for this event. Same feed participants should treat as the source of truth.
-          </p>
           <AnnouncementsFeed items={announcements} />
         </section>
       </EventSectionReveal>
@@ -242,28 +241,18 @@ export default function EventDetail({ event, announcements }: EventDetailProps) 
             Registration
           </h2>
           {event.registrationUrl ? (
-            <>
-              <p className="text-sm text-[var(--text-secondary)]">
-                Sign up as an individual or with a team. Team formation and project submission will use the same flow once interactive features ship.
-              </p>
-              <a href={event.registrationUrl} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
-                Register for {event.shortTitle}
-              </a>
-            </>
+            <a href={event.registrationUrl} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
+              Register for {event.shortTitle}
+            </a>
           ) : (
-            <>
-              <p className="text-sm text-[var(--text-secondary)]">
-                Registration is not open on this site yet. Watch announcements on this page for official updates.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <a href="#announcements" className="btn btn-secondary">
-                  Read announcements
-                </a>
-                <Link href="/community" className="btn btn-ghost">
-                  Community hub
-                </Link>
-              </div>
-            </>
+            <div className="flex flex-wrap gap-3">
+              <a href="#announcements" className="btn btn-secondary">
+                Read announcements
+              </a>
+              <Link href="/community" className="btn btn-ghost">
+                Community hub
+              </Link>
+            </div>
           )}
         </section>
       </EventSectionReveal>
