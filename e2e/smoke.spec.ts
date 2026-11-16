@@ -36,7 +36,11 @@ test("landing page renders programs and a link to the LFX explorer", async ({ pa
   await expect(page.locator("#programs").getByRole("link", { name: "Browse GSoC organizations" })).toHaveAttribute("href", "/gsoc");
   await expect(page.locator("#programs").getByRole("link", { name: "Browse LFX organizations" })).toHaveAttribute("href", "/lfx");
   await expect(page.locator("#programs").getByRole("list", { name: "Programs coming soon" }).getByRole("link")).not.toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Start contributing" }).last()).toHaveAttribute("href", "/contribute");
+  await expect(page.getByRole("heading", { name: "built in the open, too." })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Source on GitHub" }).last()).toHaveAttribute(
+    "href",
+    "https://github.com/rajatrsrivastav/ossgrid",
+  );
   for (const href of await page.locator("#explore .cine-tile a, #ecosystem a.eco__node").evaluateAll((els) => els.map((e) => e.getAttribute("href")))) {
     expect(href).toMatch(/^\/(gsoc|organization)\/[a-z0-9-]+$/);
   }

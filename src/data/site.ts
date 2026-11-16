@@ -52,8 +52,7 @@ export function footerGroups(): { title: string; links: NavLink[] }[] {
       title: "Community",
       links: [
         { label: "Community hub", href: "/community" },
-        { label: "Contributors", href: "/contributors" },
-        { label: "Start contributing", href: "/contribute" },
+        { label: "Find a project", href: "/contribute" },
         { label: "Source on GitHub", href: "https://github.com/rajatrsrivastav/ossgrid", external: true },
       ],
     },

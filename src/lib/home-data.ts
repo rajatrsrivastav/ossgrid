@@ -3,8 +3,6 @@ import path from "path";
 import type { GsocOrganization, GsocYearFile, Organization } from "./types";
 import { getProgramStats, getCombinedStats } from "./stats";
 import { getProposalStats } from "./proposals-data";
-import { mergeContributors } from "./contributors";
-import snapshot from "@/data/contributors-history.json";
 import { getProgram, PROGRAMS, livePrograms, factRows } from "@/data/programs";
 import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide, forceX, forceY, type SimulationNodeDatum } from "d3-force";
 
@@ -191,9 +189,6 @@ export function getHomeData() {
     { value: proposals.count, label: `public GSoC proposals from ${proposals.orgCount} organizations, ready to read before you write yours`, href: "/proposals" },
   ];
 
-  const contributors = mergeContributors(snapshot.contributors);
-  const community = { count: contributors.length, faces: contributors.slice(0, 10).map((c) => ({ login: c.login, name: c.name, avatarUrl: c.avatarUrl, profileUrl: c.profileUrl })) };
-
   return {
     programStats,
     combined,
@@ -209,7 +204,6 @@ export function getHomeData() {
     ecosystem,
     chapters: { gsoc: gsocSteps, lfx: lfxSteps },
     explore: { insights, topTech },
-    community,
     programCount: PROGRAMS.length,
     liveCount: livePrograms().length,
     buildDate: new Date().toISOString().slice(0, 10),

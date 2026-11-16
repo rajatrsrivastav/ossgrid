@@ -1,18 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
-
-interface FinalCtaProps {
-  community: {
-    count: number;
-    faces: { login: string; name: string; avatarUrl: string; profileUrl: string }[];
-  };
-}
 
 /**
- * Closing statement with one decision and two actions, then OSSGrid's own contributors, kept
- * clearly apart from the projects OSSGrid indexes.
+ * Closing statement: pick an organization to contribute to.
+ * OSSGrid is open source, but the product goal is contributing to indexed projects, not this repo.
  */
-export default function FinalCta({ community }: FinalCtaProps) {
+export default function FinalCta() {
   return (
     <section aria-labelledby="final-title" className="cine cine-section">
       <div className="cine-wrap flex flex-col items-center text-center">
@@ -34,23 +26,18 @@ export default function FinalCta({ community }: FinalCtaProps) {
           <div className="max-w-[40rem]">
             <h3 className="font-display text-[clamp(1.6rem,2.4vw,2.25rem)] font-bold leading-tight text-[var(--cine-fg)]">built in the open, too.</h3>
             <p className="mt-3 text-base leading-relaxed text-[var(--cine-fg-2)]">
-              OSSGrid is itself open source. {community.count} people have shipped changes to it. That work is separate from the organizations listed here, which recognize contributions to their own projects.
+              OSSGrid’s source is public. This site exists so you can find organizations to contribute to — not so you contribute here.
             </p>
           </div>
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-            <ul className="flex -space-x-2" aria-label="Some OSSGrid contributors">
-              {community.faces.slice(0, 6).map((p) => (
-                <li key={p.login}>
-                  <a href={p.profileUrl} target="_blank" rel="noopener noreferrer" className="block rounded-full ring-2 ring-[var(--cine-bg)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cine-accent)]" title={p.name}>
-                    <Image src={p.avatarUrl} alt={p.name} width={44} height={44} unoptimized className="h-11 w-11 rounded-full grayscale" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/contribute" className="cine-btn cine-btn--line">Start contributing</Link>
-              <Link href="/contributors" className="cine-link self-center text-sm">Meet the contributors</Link>
-            </div>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href="https://github.com/rajatrsrivastav/ossgrid"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cine-btn cine-btn--line"
+            >
+              Source on GitHub
+            </a>
           </div>
         </div>
       </div>

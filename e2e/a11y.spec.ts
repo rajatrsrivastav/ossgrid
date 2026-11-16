@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 /** Fails on serious or critical axe violations (WCAG 2.2 AA rules) on every main route. */
-const ROUTES = ["/", "/gsoc", "/lfx", "/gsoc/numfocus", "/organization/kubeedge", "/proposals", "/guide", "/programs/outreachy", "/contributors", "/contribute"];
+const ROUTES = ["/", "/gsoc", "/lfx", "/gsoc/numfocus", "/organization/kubeedge", "/proposals", "/guide", "/programs/outreachy", "/community", "/contribute"];
 
 for (const route of ROUTES) {
   test(`no serious accessibility violations on ${route}`, async ({ page }, info) => {

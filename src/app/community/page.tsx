@@ -54,8 +54,8 @@ export default function CommunityPage() {
             <Link href="/events" className="btn btn-primary">
               Browse events
             </Link>
-            <Link href="/contribute" className="btn btn-secondary">
-              Start contributing
+            <Link href="/#explore" className="btn btn-secondary">
+              Explore organizations
             </Link>
           </div>
         </PageMasthead>

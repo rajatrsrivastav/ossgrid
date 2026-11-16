@@ -27,7 +27,7 @@ export default function HomePageClient({ data }: { data: HomeData }) {
         <Ecosystem {...data.ecosystem} orgCount={data.combined.orgCount} />
         <Playbook />
         <FirstTimerFAQ />
-        <FinalCta community={data.community} />
+        <FinalCta />
       </main>
     </>
   );

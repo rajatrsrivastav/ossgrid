@@ -1,7 +1,7 @@
 import type { CommunityOverview } from "@/lib/community-types";
 
 export const COMMUNITY_OVERVIEW: CommunityOverview = {
-  tagline: "A place to meet contributors, follow official updates, and join OSS Grid events.",
+  tagline: "Follow official updates, meet partner communities, and join OSS Grid events.",
   about: [
     "OSS Grid hosts community events, partner communities, and announcements alongside its open-source program index.",
   ],
