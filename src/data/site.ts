@@ -23,6 +23,8 @@ export function headerLinks(): NavLink[] {
     ...tools,
     { label: "Playbook", href: guide?.enabled ? guide.href : "/#playbook" },
     { label: "FAQ", href: "/#faq" },
+    { label: "Community", href: "/community" },
+    { label: "Events", href: "/events" },
   ];
 }
 
@@ -43,11 +45,13 @@ export function footerGroups(): { title: string; links: NavLink[] }[] {
         ...enabledTools().filter((t) => t.id !== "guide").map((t) => ({ label: t.label, href: t.href })),
         { label: "Contributor playbook", href: guide?.enabled ? guide.href : "/#playbook" },
         { label: "FAQ", href: "/#faq" },
+        { label: "Events", href: "/events" },
       ],
     },
     {
       title: "Community",
       links: [
+        { label: "Community hub", href: "/community" },
         { label: "Contributors", href: "/contributors" },
         { label: "Start contributing", href: "/contribute" },
         { label: "Source on GitHub", href: "https://github.com/rajatrsrivastav/ossgrid", external: true },

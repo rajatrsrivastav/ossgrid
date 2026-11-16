@@ -3,6 +3,8 @@ import fs from "fs";
 import path from "path";
 import { GsocOrganization, Organization } from "@/lib/types";
 import { comingSoonPrograms } from "@/data/programs";
+import { getAllMembers } from "@/lib/community-data";
+import { getAllEvents } from "@/lib/events-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.ossgrid.tech";
@@ -64,6 +66,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.8,
     },
+    {
+      url: `${baseUrl}/community`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/events`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    ...getAllMembers().map((member) => ({
+      url: `${baseUrl}/community/members/${member.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
+    ...getAllEvents().map((event) => ({
+      url: `${baseUrl}/events/${event.slug}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    })),
     ...comingSoonPrograms().map((p) => ({
       url: `${baseUrl}/programs/${p.id}`,
       lastModified: now,
