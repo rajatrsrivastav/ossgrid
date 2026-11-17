@@ -1,22 +1,52 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-/**
- * Deprecated proxy. The footer counts views in the browser against CountAPI
- * so Hobby function timeouts / quota soft-blocks do not break the counter.
- * Kept as a thin redirect-style hint for any old clients.
- */
-export async function POST() {
-  return NextResponse.json(
-    {
-      error: "Use the CountAPI host directly from the client.",
-      upstream: "https://abacus.jasoncameron.dev",
-      namespace: "ossgrid",
-      key: "prod_visits",
-    },
-    { status: 410 },
-  );
-}
+// Node.js runtime (default) — reliable outbound HTTP on Vercel
+// Do NOT add: export const runtime = "edge"
 
-export async function GET() {
-  return POST();
+const NAMESPACE = "ossgrid";
+const KEY = "prod_visits";
+const UPSTREAM = "https://abacus.jasoncameron.dev";
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = (await req.json().catch(() => ({}))) as { increment?: boolean };
+    const isIncrement = body.increment === true;
+    const url = isIncrement
+      ? `${UPSTREAM}/hit/${NAMESPACE}/${KEY}`
+      : `${UPSTREAM}/get/${NAMESPACE}/${KEY}`;
+
+    const upstream = await fetch(url, {
+      headers: {
+        "User-Agent": "ossgrid/1.0 (+https://www.ossgrid.tech)",
+        Accept: "application/json",
+      },
+      // Hobby soft-blocks can make cold starts + egress slow; keep under function limit.
+      signal: AbortSignal.timeout(12_000),
+      cache: "no-store",
+    });
+
+    if (!upstream.ok) {
+      throw new Error(`CountAPI returned ${upstream.status}`);
+    }
+
+    const data = (await upstream.json()) as { value?: unknown };
+
+    if (typeof data.value !== "number") {
+      throw new Error("Unexpected CountAPI response shape");
+    }
+
+    return NextResponse.json(
+      { views: data.value },
+      {
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+          "Access-Control-Allow-Origin": "*",
+        },
+      },
+    );
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[views] proxy error:", message);
+    return NextResponse.json({ error: message }, { status: 502 });
+  }
 }
