@@ -6,11 +6,13 @@ import { Eye } from "lucide-react";
 import { PROGRAMS, livePrograms } from "@/data/programs";
 import { footerGroups, trademarkLine } from "@/data/site";
 
-
+/** CountAPI-compatible host (CORS-enabled). Called from the browser to avoid Hobby function timeouts. */
+const VIEWS_NAMESPACE = "ossgrid";
+const VIEWS_KEY = "prod_visits";
+const VIEWS_UPSTREAM = "https://abacus.jasoncameron.dev";
 
 export default function Footer() {
   const [views, setViews] = useState<number | null>(null);
-  const [hasError, setHasError] = useState(false);
   const fetchedRef = useRef(false);
 
   useEffect(() => {
@@ -24,42 +26,43 @@ export default function Footer() {
     } catch {
       /* storage unavailable */
     }
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
 
-    fetch("/api/views", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ increment: isNewSession }),
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const path = isNewSession
+      ? `${VIEWS_UPSTREAM}/hit/${VIEWS_NAMESPACE}/${VIEWS_KEY}`
+      : `${VIEWS_UPSTREAM}/get/${VIEWS_NAMESPACE}/${VIEWS_KEY}`;
+
+    fetch(path, {
       signal: controller.signal,
+      headers: { Accept: "application/json" },
     })
       .then((res) => {
         clearTimeout(timeout);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json() as Promise<{ views?: number }>;
+        return res.json() as Promise<{ value?: unknown }>;
       })
       .then((data) => {
-        if (typeof data.views === "number") {
-          setViews(data.views);
-          if (isNewSession) {
-            try {
-              sessionStorage.setItem(SESSION_KEY, "1");
-            } catch {
-              /* ignore */
-            }
+        if (typeof data.value !== "number") return;
+        setViews(data.value);
+        if (isNewSession) {
+          try {
+            sessionStorage.setItem(SESSION_KEY, "1");
+          } catch {
+            /* ignore */
           }
-        } else {
-          setHasError(true);
         }
       })
       .catch(() => {
         clearTimeout(timeout);
-        setHasError(true);
+        // Soft-fail: keep the footer clean when the counter is unreachable.
       });
-  }, []);
 
-  const viewsDisplay =
-    views !== null ? `${views.toLocaleString()} views` : hasError ? "Views unavailable" : "… views";
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
+  }, []);
 
   return (
     <footer className="cine font-ui relative z-10 mt-auto w-full border-t border-[var(--cine-line)] bg-[var(--cine-bg)]">
@@ -112,10 +115,12 @@ export default function Footer() {
       <div className="border-t border-[var(--cine-line)]">
         <div className="cine-wrap flex flex-wrap items-center justify-between gap-3 py-5 text-xs text-[var(--cine-fg-3)]">
           <p>Built with ❤️ by <a href="https://x.com/rajatrsrivastav" target="_blank" rel="noopener noreferrer" className="text-[var(--cine-fg-2)] underline underline-offset-4 hover:text-[var(--cine-fg)]">Rajat Srivastav</a></p>
-          <span className="num inline-flex items-center gap-1.5">
-            <Eye size={13} aria-hidden="true" />
-            {viewsDisplay}
-          </span>
+          {views !== null && (
+            <span className="num inline-flex items-center gap-1.5">
+              <Eye size={13} aria-hidden="true" />
+              {`${views.toLocaleString()} views`}
+            </span>
+          )}
         </div>
       </div>
     </footer>
