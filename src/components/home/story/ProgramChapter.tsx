@@ -52,6 +52,8 @@ export default function ProgramChapter({ exhibit, steps, flip }: ProgramChapterP
   const [active, setActive] = useState(false);
   const [manifest, setManifest] = useState<Manifest | null>(null);
   const [frame, setFrame] = useState(FRAMES - 1);
+  const manifestRef = useRef<Manifest | null>(null);
+  manifestRef.current = manifest;
 
   // Scroll scenes run only on wide screens with motion allowed.
   useEffect(() => {
@@ -84,8 +86,10 @@ export default function ProgramChapter({ exhibit, steps, flip }: ProgramChapterP
     const ready: boolean[] = Array(FRAMES).fill(false);
     let loading = false;
     let current = -1;
+    let lastReactKey = "";
     let raf = 0;
-    const width = window.innerWidth * Math.min(window.devicePixelRatio || 1, 2) > 1400 ? 1600 : 960;
+    let visible = true;
+    const width = window.innerWidth * Math.min(window.devicePixelRatio || 1, 1.5) > 1400 ? 1600 : 960;
     const src = (i: number) => `/art/seq/${scene}-${theme}/${String(i).padStart(3, "0")}-${width}.webp`;
 
     const draw = (i: number) => {
@@ -97,11 +101,12 @@ export default function ProgramChapter({ exhibit, steps, flip }: ProgramChapterP
       }
       const img = images[k];
       if (!img || !ready[k]) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const w = canvas.clientWidth, h = canvas.clientHeight;
-      if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
-        canvas.width = Math.round(w * dpr);
-        canvas.height = Math.round(h * dpr);
+      const bw = Math.round(w * dpr), bh = Math.round(h * dpr);
+      if (canvas.width !== bw || canvas.height !== bh) {
+        canvas.width = bw;
+        canvas.height = bh;
       }
       // Cover-fit, like object-fit: cover.
       const scale = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
@@ -125,6 +130,7 @@ export default function ProgramChapter({ exhibit, steps, flip }: ProgramChapterP
 
     const tick = () => {
       raf = 0;
+      if (!visible) return;
       const rect = track.getBoundingClientRect();
       const span = rect.height - window.innerHeight;
       const p = span > 0 ? Math.min(1, Math.max(0, -rect.top / span)) : 0;
@@ -132,13 +138,26 @@ export default function ProgramChapter({ exhibit, steps, flip }: ProgramChapterP
       if (i !== current) {
         current = i;
         draw(i);
-        setFrame(i);
+        // React only when the year/term or caption band changes — avoids re-render every frame.
+        const st = manifestRef.current?.states[i];
+        const stepKey = scene === "gsoc" ? String(st?.year ?? "") : (st?.term ?? "");
+        const captionBand = CAPTIONS[scene].findIndex((c) => (st?.t ?? 1) < c.until);
+        const reactKey = `${stepKey}:${captionBand}:${(st?.t ?? 1) > 0.45 ? 1 : 0}`;
+        if (reactKey !== lastReactKey) {
+          lastReactKey = reactKey;
+          setFrame(i);
+        }
       }
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(tick); };
     const onResize = () => { current = -1; onScroll(); };
 
-    const io = new IntersectionObserver((entries) => { if (entries.some((e) => e.isIntersecting)) load(); }, { rootMargin: "150% 0px" });
+    const io = new IntersectionObserver((entries) => {
+      const on = entries.some((e) => e.isIntersecting);
+      if (on) load();
+      visible = on;
+      if (on) onScroll();
+    }, { rootMargin: "40% 0px" });
     io.observe(track);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
@@ -174,11 +193,51 @@ export default function ProgramChapter({ exhibit, steps, flip }: ProgramChapterP
     >
       <div ref={trackRef} className="chapter__track">
         <div className="chapter__stage">
-          {/* Still frame for small screens, reduced motion and before the canvas has drawn. */}
-          <picture className="chapter__still">
-            <img className="art-dark" src={`/art/seq/${scene}-dark/${last}-960.webp`} srcSet={`/art/seq/${scene}-dark/${last}-960.webp 960w, /art/seq/${scene}-dark/${last}-1600.webp 1600w`} sizes="100vw" alt="" width={1600} height={1000} loading="lazy" decoding="async" />
-            <img className="art-light" src={`/art/seq/${scene}-light/${last}-960.webp`} srcSet={`/art/seq/${scene}-light/${last}-960.webp 960w, /art/seq/${scene}-light/${last}-1600.webp 1600w`} sizes="100vw" alt="" width={1600} height={1000} loading="lazy" decoding="async" />
-          </picture>
+          {/* Still: mobile uses exhibit art (#18); ≥641px keeps sequence posters for desktop scrub. */}
+          <div className="chapter__still">
+            <picture className="chapter__still-mobile">
+              <source
+                type="image/avif"
+                srcSet={`/art/exhibit-${scene}-mobile-780.avif 780w, /art/exhibit-${scene}-mobile-1170.avif 1170w`}
+                sizes="100vw"
+              />
+              <source
+                type="image/webp"
+                srcSet={`/art/exhibit-${scene}-mobile-780.webp 780w, /art/exhibit-${scene}-mobile-1170.webp 1170w`}
+                sizes="100vw"
+              />
+              <img
+                src={`/art/exhibit-${scene}-mobile-780.webp`}
+                alt=""
+                width={1170}
+                height={1462}
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
+            <img
+              className="art-dark chapter__still-desktop"
+              src={`/art/seq/${scene}-dark/${last}-960.webp`}
+              srcSet={`/art/seq/${scene}-dark/${last}-960.webp 960w, /art/seq/${scene}-dark/${last}-1600.webp 1600w`}
+              sizes="100vw"
+              alt=""
+              width={1600}
+              height={1000}
+              loading="lazy"
+              decoding="async"
+            />
+            <img
+              className="art-light chapter__still-desktop"
+              src={`/art/seq/${scene}-light/${last}-960.webp`}
+              srcSet={`/art/seq/${scene}-light/${last}-960.webp 960w, /art/seq/${scene}-light/${last}-1600.webp 1600w`}
+              sizes="100vw"
+              alt=""
+              width={1600}
+              height={1000}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
           {active && <canvas ref={canvasRef} className="chapter__canvas" aria-hidden="true" />}
 
           <div className={cn("chapter__overlay cine-wrap font-ui", flip && "chapter__overlay--flip")}>
@@ -208,7 +267,7 @@ export default function ProgramChapter({ exhibit, steps, flip }: ProgramChapterP
                   <span>{steps[steps.length - 1].label}</span>
                 </p>
               </div>
-              {active && <p className="chapter__caption mt-6 max-w-[28rem] text-[0.95rem] leading-relaxed text-[var(--cine-fg-2)]">{caption}</p>}
+              <p className="chapter__caption mt-6 max-w-[28rem] text-[0.95rem] leading-relaxed text-[var(--cine-fg-2)]">{caption}</p>
             </div>
 
             <div className="chapter__facts" style={{ opacity: factsIn, transform: `translateY(${(1 - factsIn) * 24}px)` }}>

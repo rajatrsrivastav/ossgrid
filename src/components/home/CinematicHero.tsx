@@ -50,6 +50,7 @@ export default function CinematicHero({ counts, staged, lqip, mission }: Cinemat
   const theme = resolvedTheme === "light" ? "light" : "dark";
   const [live, setLive] = useState(false);
   const [drawn, setDrawn] = useState(false);
+  const drawnOnce = useRef(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: no-preference)");
@@ -69,7 +70,8 @@ export default function CinematicHero({ counts, staged, lqip, mission }: Cinemat
     // Portrait screens get the tall mobile frames; others the wide set at a size that fits.
     const variant = window.innerWidth / window.innerHeight < 0.9 ? "mobile" : "desktop";
     const count = FRAMES[variant];
-    const width = variant === "mobile" ? 720 : window.innerWidth * Math.min(window.devicePixelRatio || 1, 2) > 1300 ? 1920 : 1080;
+    const dprCap = variant === "mobile" ? 1 : 1.5;
+    const width = variant === "mobile" ? 720 : window.innerWidth * Math.min(window.devicePixelRatio || 1, dprCap) > 1300 ? 1920 : 1080;
     const dir = `/art/seq/hero-${variant}-${theme}`;
     const images: HTMLImageElement[] = [];
     const ready: boolean[] = Array(count).fill(false);
@@ -78,6 +80,7 @@ export default function CinematicHero({ counts, staged, lqip, mission }: Cinemat
     let raf = 0;
     let introRaf = 0;
     let cancelled = false;
+    let visible = true;
 
     const draw = (i: number) => {
       let k = -1;
@@ -87,18 +90,22 @@ export default function CinematicHero({ counts, staged, lqip, mission }: Cinemat
       }
       if (k === -1) return;
       const img = images[k];
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, dprCap);
       const w = Math.round(canvas.clientWidth * dpr), h = Math.round(canvas.clientHeight * dpr);
       if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
       // Cover-fit anchored to the bottom, like the poster (object-position: center bottom).
       const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
       const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
       ctx.drawImage(img, (w - dw) / 2, h - dh, dw, dh);
-      setDrawn(true);
+      if (!drawnOnce.current) {
+        drawnOnce.current = true;
+        setDrawn(true);
+      }
     };
 
     const tick = () => {
       raf = 0;
+      if (!visible) return;
       const rect = track.getBoundingClientRect();
       const span = rect.height - window.innerHeight;
       const p = span > 0 ? Math.min(1, Math.max(0, -rect.top / span)) : 0;
@@ -162,15 +169,25 @@ export default function CinematicHero({ counts, staged, lqip, mission }: Cinemat
     if (document.readyState === "complete") later();
     else window.addEventListener("load", later, { once: true });
 
+    const io = new IntersectionObserver(
+      (entries) => {
+        visible = entries.some((e) => e.isIntersecting);
+        if (visible) onScroll();
+      },
+      { rootMargin: "20% 0px" },
+    );
+    io.observe(track);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
     tick();
     return () => {
       cancelled = true;
+      io.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       if (raf) cancelAnimationFrame(raf);
       if (introRaf) cancelAnimationFrame(introRaf);
+      drawnOnce.current = false;
       setDrawn(false);
     };
   }, [live, theme]);
