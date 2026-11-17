@@ -3,11 +3,11 @@ import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import PageMasthead from "@/components/PageMasthead";
 import EventDetail from "@/components/events/EventDetail";
-import { getAllEvents, getEventAnnouncements, getEventBySlug, formatEventDateRange } from "@/lib/events-data";
+import { getEventAnnouncements, getEventBySlug, getEventSlugsForBuild, formatEventDateRange } from "@/lib/events-data";
 import { safeJsonLd } from "@/lib/seo";
 
 export function generateStaticParams() {
-  return getAllEvents().map((event) => ({ slug: event.slug }));
+  return getEventSlugsForBuild().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({

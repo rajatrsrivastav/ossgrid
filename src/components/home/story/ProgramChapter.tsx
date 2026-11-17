@@ -53,7 +53,6 @@ export default function ProgramChapter({ exhibit, steps, flip }: ProgramChapterP
   const [manifest, setManifest] = useState<Manifest | null>(null);
   const [frame, setFrame] = useState(FRAMES - 1);
   const manifestRef = useRef<Manifest | null>(null);
-  manifestRef.current = manifest;
 
   // Scroll scenes run only on wide screens with motion allowed.
   useEffect(() => {
@@ -68,7 +67,11 @@ export default function ProgramChapter({ exhibit, steps, flip }: ProgramChapterP
     let cancelled = false;
     fetch(`/art/seq/${scene}-${theme}/manifest.json`)
       .then((r) => r.json())
-      .then((m: Manifest) => { if (!cancelled) setManifest(m); })
+      .then((m: Manifest) => {
+        if (cancelled) return;
+        manifestRef.current = m;
+        setManifest(m);
+      })
       .catch(() => {});
     return () => { cancelled = true; };
   }, [scene, theme]);
