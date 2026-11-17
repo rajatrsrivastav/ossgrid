@@ -913,6 +913,14 @@ header.cine .icon-btn-bordered { border-color: transparent; background: transpar
 .chapter__stage { position: relative; }
 .chapter__still { display: block; position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
 .chapter__still img { width: 100%; height: 100%; object-fit: cover; }
+.chapter__still-mobile { display: none; position: absolute; inset: 0; }
+.chapter__still-mobile img { width: 100%; height: 100%; object-fit: cover; }
+/* Mobile: exhibit art (issue #18). ≥641px keeps sequence stills for desktop scrub (unchanged). */
+@media (max-width: 640px) {
+  .chapter__still { aspect-ratio: 4 / 5; }
+  .chapter__still-mobile { display: block; }
+  .chapter__still-desktop { display: none !important; }
+}
 .chapter__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .chapter__overlay { position: relative; display: grid; gap: clamp(32px, 5vw, 64px); padding-block: clamp(32px, 6vh, 64px) clamp(72px, 12vh, 140px); }
 @media (min-width: 900px) and (max-width: 1279px) { .chapter__overlay { grid-template-columns: 1fr 1fr; } }
@@ -1065,6 +1073,11 @@ header.cine .icon-btn-bordered { border-color: transparent; background: transpar
 
 .hero__progress { position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; z-index: 2; background: var(--cine-accent); transform-origin: left; transform: scaleX(var(--hero-p)); opacity: var(--hero-bar, 0); }
 
+/* Mobile/tablet: cut idle paint cost while keeping desktop scrub visuals (#18 / #20). */
+@media (max-width: 1023px) {
+  .hero[data-live="true"] .hero__media::after { animation: none; }
+  .hero[data-live="true"] .hero__content { will-change: auto; }
+}
 @media (prefers-reduced-motion: reduce) {
   .hero__media::after, .hero__cue i { animation: none !important; }
 }
