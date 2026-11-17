@@ -7,6 +7,14 @@ export function getAllEvents(): Event[] {
   return EVENTS.filter((e) => e.published).sort((a, b) => a.startDate.localeCompare(b.startDate));
 }
 
+/**
+ * Slugs for static generation (`output: export` needs ≥1 path).
+ * Includes unpublished seeds; the page still 404s until `published: true`.
+ */
+export function getEventSlugsForBuild(): string[] {
+  return EVENTS.map((e) => e.slug);
+}
+
 export function getEventBySlug(slug: string): Event | undefined {
   const event = EVENTS.find((e) => e.slug === slug);
   if (!event?.published) return undefined;
